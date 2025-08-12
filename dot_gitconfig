@@ -1,0 +1,9 @@
+[user]
+	name = shouta totsuka
+	email = 5h0utat0t2uka@gmail.com
+
+[merge]
+  conflictstyle = diff3
+
+[diff]
+  colorMoved = default

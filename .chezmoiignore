@@ -1,0 +1,16 @@
+# ~/
+.DS_Store
+.zsh_history
+.ssh/**                                    # 鍵は管理しない
+.claude/**                                 # 個人設定
+.vscode/**                                 # 必要なら後で個別追加
+.Trash/**
+.npm/**                                    # キャッシュ多め
+
+# ~/.config
+.configstore/**                  # 自動生成
+.gh/hosts.yml                    # tokenを含む
+.karabiner/automatic_backups/**  # バックアップは不要
+.raycast/**                      # Raycastは内蔵同期に任せるのが安全
+.zed/conversations/**            # 会話ログDB
+.zed/prompts/**                  # mdbファイル(DB)
