@@ -17,3 +17,6 @@ if type brew &>/dev/null; then
   autoload -Uz compinit
   compinit
 fi
+
+# alias
+alias vpn="~/Documents/shellscripts/vpn/vpn.sh"
