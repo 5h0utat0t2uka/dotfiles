@@ -1,15 +1,3 @@
-[".tmux/plugins/tpm"]
-type = "git-repo"
-url = "https://github.com/tmux-plugins/tpm.git"
-
-[".tmux/plugins/tmux-sensible"]
-type = "git-repo"
-url = "https://github.com/tmux-plugins/tmux-sensible.git"
-
-[".tmux/plugins/tmux-battery"]
-type = "git-repo"
-url = "https://github.com/tmux-plugins/tmux-battery.git"
-
-[".tmux/plugins/nord-tmux"]
-type = "git-repo"
-url = "https://github.com/arcticicestudio/nord-tmux.git"
+# [".tmux/plugins/tpm"]
+# type = "git-repo"
+# url = "https://github.com/tmux-plugins/tpm.git"
