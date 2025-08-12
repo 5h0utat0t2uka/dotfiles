@@ -104,7 +104,7 @@
     todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
     timewarrior             # timewarrior tracking status (https://timewarrior.net/)
     taskwarrior             # taskwarrior task count (https://taskwarrior.org/)
-    per_directory_history   # Oh My Zsh per-directory-history local/global indicator
+    # per_directory_history   # Oh My Zsh per-directory-history local/global indicator
     # cpu_arch              # CPU architecture
     time                    # current time
     # =========================[ Line #2 ]=========================
@@ -732,7 +732,7 @@
   typeset -g POWERLEVEL9K_RANGER_FOREGROUND=3
   # Custom icon.
   # typeset -g POWERLEVEL9K_RANGER_VISUAL_IDENTIFIER_EXPANSION='⭐'
-  
+
   ####################[ yazi: yazi shell (https://github.com/sxyazi/yazi) ]#####################
   # Yazi shell color.
   typeset -g POWERLEVEL9K_YAZI_FOREGROUND=3
