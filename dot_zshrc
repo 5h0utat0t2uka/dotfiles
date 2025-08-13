@@ -1,22 +1,46 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-source $(brew --prefix)/share/powerlevel10k/powerlevel10k.zsh-theme
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Enable Homebrew zsh-completions
-if type brew &>/dev/null; then
-  FPATH="$(brew --prefix)/share/zsh-completions:$FPATH"
-
-  autoload -Uz compinit
-  compinit
-fi
-
 # alias
-alias vpn="~/Documents/shellscripts/vpn/vpn.sh"
+alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
+
+# Homebrew
+BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
+if [[ ! -d "$BREW_PREFIX" ]] && command -v brew >/dev/null 2>&1; then
+  BREW_PREFIX="$(brew --prefix)"
+fi
+[[ -d "$BREW_PREFIX" ]] || BREW_PREFIX=""
+
+# Powerlevel10k
+# if [[ -n "$BREW_PREFIX" ]]; then
+#   source "${BREW_PREFIX}/share/powerlevel10k/powerlevel10k.zsh-theme"
+# fi
+# [[ -f "${HOME}/.p10k.zsh" ]] && source "${HOME}/.p10k.zsh"
+# [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
+if [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]]; then
+  source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
+fi
+[[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
+
+# zsh-completions
+# if [[ -n "$BREW_PREFIX" ]]; then
+#   typeset -U fpath
+#   fpath=("${BREW_PREFIX}/share/zsh-completions" $fpath)
+# fi
+typeset -U fpath
+# [[ -d "$BREW_PREFIX/share/zsh-completions" ]] && fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
+if [[ -d "$BREW_PREFIX/share/zsh-completions" ]]; then
+  fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
+fi
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+mkdir -p "$CACHE_DIR"
+autoload -Uz compinit
+compinit -d "$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
+# zsh-autosuggestions
+# if [[ -n "$BREW_PREFIX" ]]; then
+#   source "${BREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+# fi
+if [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
