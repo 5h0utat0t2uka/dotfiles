@@ -53,7 +53,7 @@ FZF_OPTIONS=(
   "--info=default"
   "--height=50%"
   "--layout=reverse"
-  "--header="
+  # "--header="
   "--pointer=❯"
   "--no-separator"
   "--no-scrollbar"
