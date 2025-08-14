@@ -2,30 +2,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# alias
-alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
-
-chpwd() {
-  local exclude_patterns=(
-    "$HOME"
-    node_modules
-    .git
-    vendor
-    .venv venv
-    dist build
-    .cache
-    .next
-    target
-    .terraform
-  )
-
-  for pattern in "${exclude_patterns[@]}"; do
-    [[ $PWD == *$pattern* ]] && return
-  done
-  ls -alG
-}
-
-
 # Homebrew
 BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
 if [[ ! -d "$BREW_PREFIX" ]] && command -v brew >/dev/null 2>&1; then
@@ -54,18 +30,45 @@ if [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; th
   source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 fi
 
+# fzf
+# export FZF_DEFAULT_OPTS='
+#   --color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb --color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb --color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb --color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1 --color=border:#4c566a --border=rounded
+#   --preview "bat --style=numbers --color=always {}"
+# '
+typeset -a FZF_OPTION
+FZF_OPTION=(
+  # Color
+  "--color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb"
+  "--color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb"
+  "--color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb"
+  "--color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1"
+  "--color=border:#4c566a"
+  # UI
+  "--border=rounded"
+  # Preview
+  "--preview" 'bat --style=numbers --color=always {}'
+)
+export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTION}"
+
+# alias
+alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
+
+# function
+cd_ls() {
+  if [[ $PWD -ef $HOME ]]; then
+    return
+  fi
+  local exclude=(node_modules vendor .venv venv dist build .cache .next target .terraform .git)
+  local pattern
+  for pattern in "${exclude[@]}"; do
+    [[ $PWD == *"/$pattern"* ]] && return
+  done
+  ls -alG
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd cd_ls
+
 # zsh-syntax-highlighting
 if [[ -r "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
   source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
-
-# fzf
-# export FZF_DEFAULT_OPTS='
-#   --color gutter:#2E3440,bg+:#2E3440,bg+:#3B4252
-#   --color pointer:12
-# '
-
-export FZF_DEFAULT_OPTS='
-  --color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb --color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb --color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb --color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1 --color=border:#4c566a --border=rounded
-  --preview "bat --style=numbers --color=always {}"
-'
