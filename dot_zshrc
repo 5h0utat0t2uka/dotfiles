@@ -48,10 +48,9 @@ FZF_OPTIONS=(
   "--height=50%"
   "--layout=reverse"
   "--header="
-  '--prompt=❯ '
   "--pointer=❯"
 )
-export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --preview 'bat --style=numbers --paging=never --color=always {}'"
+export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=$'❯\u00A0' --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
 
 
 
