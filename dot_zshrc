@@ -59,15 +59,6 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 
 # function
-fzf_nvim() {
-  local -a files
-  files=("${(@f)$(fzf -m)}") || return   # 改行で配列化
-  (( $#files )) || return
-  command -v nvim >/dev/null 2>&1 && nvim -- "${files[@]}" || "${EDITOR:-vi}" -- "${files[@]}"
-}
-zle -N fzf_nvim
-bindkey '^O' fzf_nvim
-
 cd_ls() {
   if [[ $PWD -ef $HOME ]]; then
     return
