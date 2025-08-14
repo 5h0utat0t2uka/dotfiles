@@ -50,6 +50,7 @@ FZF_OPTIONS=(
   "--color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1"
   "--color=border:#4c566a"
   "--border=rounded"
+  "--info=default"
   "--height=50%"
   "--layout=reverse"
   "--header="
