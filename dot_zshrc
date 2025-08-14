@@ -50,6 +50,7 @@ FZF_OPTIONS=(
   "--layout=reverse"
   "--header="
   "--pointer=❯"
+  "--no-scrollbar"
 )
 export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
 
