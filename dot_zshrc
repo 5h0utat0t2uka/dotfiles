@@ -36,6 +36,7 @@ fi
 #   --preview "bat --style=numbers --color=always {}"
 # '
 typeset -a FZF_OPTIONS
+typeset -g NBSP=$'\u00A0'
 FZF_OPTIONS=(
   # Color
   "--color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb"
@@ -50,7 +51,7 @@ FZF_OPTIONS=(
   "--header="
   "--pointer=❯"
 )
-export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=$'❯\u00A0' --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
+export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
 
 
 
