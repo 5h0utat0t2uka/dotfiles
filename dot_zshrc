@@ -46,7 +46,7 @@ FZF_OPTIONS=(
   # UI
   "--border=rounded"
 )
-export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --preview 'bat {}'"
+export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --preview 'bat --style=numbers --paging=never --color=always {}'"
 
 
 
