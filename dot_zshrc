@@ -31,20 +31,14 @@ if [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; th
 fi
 
 # fzf
-# export FZF_DEFAULT_OPTS='
-#   --color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb --color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb --color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb --color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1 --color=border:#4c566a --border=rounded
-#   --preview "bat --style=numbers --color=always {}"
-# '
 typeset -a FZF_OPTIONS
 typeset -g NBSP=$'\u00A0'
 FZF_OPTIONS=(
-  # Color
   "--color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb"
   "--color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb"
   "--color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb"
   "--color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1"
   "--color=border:#4c566a"
-  # UI
   "--border=rounded"
   "--height=50%"
   "--layout=reverse"
@@ -54,10 +48,16 @@ FZF_OPTIONS=(
 )
 export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
 
-
+if command -v fd >/dev/null 2>&1; then
+  export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type f'
+  export FZF_ALT_C_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type d'
+fi
 
 # alias
 alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
+alias vim='nvim'
+export EDITOR="nvim"
+export VISUAL="nvim"
 
 # function
 cd_ls() {
