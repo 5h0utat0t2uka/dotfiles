@@ -35,8 +35,8 @@ fi
 #   --color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb --color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb --color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb --color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1 --color=border:#4c566a --border=rounded
 #   --preview "bat --style=numbers --color=always {}"
 # '
-typeset -a FZF_OPTION
-FZF_OPTION=(
+typeset -a FZF_OPTIONS
+FZF_OPTIONS=(
   # Color
   "--color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb"
   "--color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb"
@@ -45,10 +45,10 @@ FZF_OPTION=(
   "--color=border:#4c566a"
   # UI
   "--border=rounded"
-  # Preview
-  "--preview" 'bat {}'
 )
-export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTION}"
+export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --preview 'bat {}'"
+
+
 
 # alias
 alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
