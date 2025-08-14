@@ -5,6 +5,27 @@ fi
 # alias
 alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
 
+chpwd() {
+  local exclude_patterns=(
+    "$HOME"
+    node_modules
+    .git
+    vendor
+    .venv venv
+    dist build
+    .cache
+    .next
+    target
+    .terraform
+  )
+
+  for pattern in "${exclude_patterns[@]}"; do
+    [[ $PWD == *$pattern* ]] && return
+  done
+  ls -alG
+}
+
+
 # Homebrew
 BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
 if [[ ! -d "$BREW_PREFIX" ]] && command -v brew >/dev/null 2>&1; then
