@@ -60,8 +60,12 @@ FZF_OPTIONS=(
   "--preview-window=hidden,down,60%"
   "--bind=?:toggle-preview"
 )
+
+# ここは“文字列”として保持（init中に実行されない）
 FZF_PREVIEW='[[ -s {} && $(wc -c < {}) -lt 200000 ]] && bat --style=numbers,changes --color=always --paging=never {} || echo "(no preview)"'
-export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview $FZF_PREVIEW"
+
+# 要点：--preview=<quoted> の形にし、${(qq)} で厳密クォート = 1トークン化
+export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview=${(qq)FZF_PREVIEW}"
 
 # typeset -a FZF_OPTIONS
 # typeset -g NBSP=$'\u00A0'
