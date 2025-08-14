@@ -43,4 +43,7 @@ fi
 #   --color gutter:#2E3440,bg+:#2E3440,bg+:#3B4252
 #   --color pointer:12
 # '
-export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS' --color=fg:#d8dee9,bg:#2e3440,hl:#5e81ac --color=fg+:#d8dee9,bg+:#2e3440,hl+:#5e81ac --color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb --color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1'
+export FZF_DEFAULT_OPTS='
+  --color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb --color=fg+:#d8dee9,bg+:#2e3440,hl+:#5e81ac --color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb --color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1
+  --preview "cat --style=numbers --color=always {}"
+'
