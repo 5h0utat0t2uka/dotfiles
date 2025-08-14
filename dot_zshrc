@@ -45,6 +45,11 @@ FZF_OPTIONS=(
   "--color=border:#4c566a"
   # UI
   "--border=rounded"
+  "--height=50%"
+  "--layout=reverse"
+  "--header="
+  '--prompt=❯ '
+  "--pointer=❯"
 )
 export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --preview 'bat --style=numbers --paging=never --color=always {}'"
 
