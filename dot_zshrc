@@ -1,7 +1,5 @@
-
 [[ $- != *i* ]] && return
 
-# p10k instant prompt
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -17,14 +15,6 @@ fi
 [[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
 
 # zsh-completions
-typeset -U fpath
-[[ -d "$BREW_PREFIX/share/zsh-completions" ]] && fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"; mkdir -p "$CACHE_DIR"
-autoload -Uz compinit
-dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
-[[ ! -s $dump ]] && compinit -d "$dump" || compinit -C -d "$dump"
-
-# zsh-completions
 # typeset -U fpath
 # if [[ -d "$BREW_PREFIX/share/zsh-completions" ]]; then
 #   fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
@@ -33,6 +23,13 @@ dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
 # mkdir -p "$CACHE_DIR"
 # autoload -Uz compinit
 # compinit -d "$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
+typeset -U fpath
+[[ -d "$BREW_PREFIX/share/zsh-completions" ]] && fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"; mkdir -p "$CACHE_DIR"
+autoload -Uz compinit
+dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
+[[ ! -s $dump ]] && compinit -d "$dump" || compinit -C -d "$dump"
+
 
 # zsh-autosuggestions
 # if [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
@@ -41,6 +38,7 @@ dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
 ZSH_AUTOSUGGEST_STRATEGY=(history)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=2000
 [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
 
 # fzf
 typeset -a FZF_OPTIONS
@@ -57,55 +55,36 @@ FZF_OPTIONS=(
   "--header="
   "--pointer=❯"
   "--no-scrollbar"
-  "--preview-window=hidden,down,60%"
-  "--bind=?:toggle-preview"
 )
+export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
 
-# ここは“文字列”として保持（init中に実行されない）
-FZF_PREVIEW='[[ -s {} && $(wc -c < {}) -lt 200000 ]] && bat --style=numbers,changes --color=always --paging=never {} || echo "(no preview)"'
-
-# 要点：--preview=<quoted> の形にし、${(qq)} で厳密クォート = 1トークン化
-export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview=${(qq)FZF_PREVIEW}"
-
-# typeset -a FZF_OPTIONS
-# typeset -g NBSP=$'\u00A0'
-# FZF_OPTIONS=(
-#   "--color=fg:#d8dee9,bg:#2e3440,hl:#8fbcbb"
-#   "--color=fg+:#d8dee9,bg+:#2e3440,hl+:#8fbcbb"
-#   "--color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb"
-#   "--color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1"
-#   "--color=border:#4c566a"
-#   "--border=rounded"
-#   "--height=50%"
-#   "--layout=reverse"
-#   "--header="
-#   "--pointer=❯"
-#   "--no-scrollbar"
-# )
-# export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
-
-# if command -v fd >/dev/null 2>&1; then
-#   export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type f'
-#   export FZF_ALT_C_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type d'
-# fi
+if command -v fd >/dev/null 2>&1; then
+  export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type f'
+  export FZF_ALT_C_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type d'
+fi
 
 # alias
 alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
 alias vim='nvim'
-export EDITOR="nvim" VISUAL="nvim"
+export EDITOR="nvim"
+export VISUAL="nvim"
 
 # function
 cd_ls() {
-  [[ $PWD -ef $HOME || -n $SSH_CONNECTION || $PWD == /Volumes/* ]] && return
+  if [[ $PWD -ef $HOME ]]; then
+    return
+  fi
   local exclude=(node_modules vendor .venv venv dist build .cache .next target .terraform .git)
-  local p; for p in "${exclude[@]}"; do [[ $PWD == *"/$p"* ]] && return; done
-  local n; n=$(command ls -1A 2>/dev/null | wc -l | tr -d ' '); (( n > 500 )) && return
-  command ls -alG
+  local pattern
+  for pattern in "${exclude[@]}"; do
+    [[ $PWD == *"/$pattern"* ]] && return
+  done
+  ls -alG
 }
 autoload -Uz add-zsh-hook
 add-zsh-hook chpwd cd_ls
 
 # zsh-syntax-highlighting
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
-ZSH_HIGHLIGHT_MAXLENGTH=1000
-[[ -r "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [[ -r "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
