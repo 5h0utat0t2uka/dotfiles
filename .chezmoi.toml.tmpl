@@ -1,0 +1,7 @@
+[edit]
+{{- if (lookPath "code") }}
+  command = "code"
+  args = ["--wait"]
+{{- else }}
+  command = "vim"
+{{- end }}
