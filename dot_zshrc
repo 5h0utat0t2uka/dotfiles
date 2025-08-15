@@ -68,7 +68,8 @@ cd_ls() {
   for pattern in "${exclude[@]}"; do
     [[ $PWD == *"/$pattern"* ]] && return
   done
-  command ls -alG
+  # command ls -alG
+  command eza -al --color=never -o --time-style=long-iso -F always
 }
 autoload -Uz add-zsh-hook
 add-zsh-hook chpwd cd_ls
