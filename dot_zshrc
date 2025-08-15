@@ -73,6 +73,22 @@ cd_ls() {
 autoload -Uz add-zsh-hook
 add-zsh-hook chpwd cd_ls
 
+fzf_history() {
+  local sel
+  sel=$(
+    history -n -r 1 \
+    | awk '!seen[$0]++' \
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP}" fzf --query "$LBUFFER"
+  ) || return 0
+
+  [[ -n $sel ]] || return 0
+  BUFFER=$sel
+  CURSOR=$#BUFFER
+  zle reset-prompt
+}
+zle -N fzf_history
+bindkey '^r' fzf_history
+
 # zsh-syntax-highlighting
 if [[ -r "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
   source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
