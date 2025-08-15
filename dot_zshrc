@@ -53,6 +53,7 @@ if command -v fd >/dev/null 2>&1; then
 fi
 
 # alias
+alias ..='cd ..'
 alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
 alias vim='nvim'
 export EDITOR="nvim"
@@ -68,7 +69,6 @@ cd_ls() {
   for pattern in "${exclude[@]}"; do
     [[ $PWD == *"/$pattern"* ]] && return
   done
-  # command ls -alG
   command eza -al --color=never -o --time-style=long-iso -F always
 }
 autoload -Uz add-zsh-hook
