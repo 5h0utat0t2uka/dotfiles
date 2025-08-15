@@ -1,23 +1,23 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.cmd.syntax("on")
-vim.opt.termguicolors = true        -- 24bit color
+-- vim.cmd.syntax("on")
+vim.opt.termguicolors = true
 vim.opt.ttimeoutlen = 50
-vim.opt.backup = false
+-- vim.opt.backup = false
 vim.opt.swapfile = false
-vim.opt.showcmd = true              -- 必要なら。0.9+ では showcmdloc も検討可
+-- vim.opt.showcmdloc = true
 vim.opt.wildmode = { "list", "full" }
 vim.opt.number = true
-vim.opt.autoindent = true
-vim.opt.mouse = "a"
+-- vim.opt.autoindent = true
+-- vim.opt.mouse = "a"
 vim.opt.expandtab = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.showmatch = true
 vim.opt.cursorline = true
-vim.opt.ruler = true
-vim.opt.wrap = true
+-- vim.opt.ruler = true
+-- vim.opt.wrap = true
 
 -- lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -56,18 +56,29 @@ require("lazy").setup({
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      local nord = require("lualine.themes.nord")
+      -- local nord = require("lualine.themes.nord")
+      local custom = vim.deepcopy(require("lualine.themes.nord"))
+      local colors = {
+        normal   = "#81a1c1",
+        insert   = "#a3be8c",
+        visual   = "#b48ead",
+        replace  = "#d08770",
+        command  = "#bf616a",
+        inactive = "#2E3440",
+      }
       local bg = "#2E3440"
-
-      for _, mode in ipairs({ "normal","insert","visual","replace","command","inactive" }) do
-        if nord[mode] and nord[mode].c then
-          nord[mode].c.bg = bg
+      for mode, sections in pairs(custom) do
+        if sections.c then
+          sections.c.bg = colors.inactive
         end
+        local color = colors[mode] or colors.normal
+        if sections.a then sections.a.bg = color end
+        if sections.z then sections.z.bg = color end
       end
 
       require("lualine").setup({
         options = {
-          theme = nord,
+          theme = custom,
           section_separators = {
             left = "▓░",
             right = "░▓",
