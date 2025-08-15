@@ -22,7 +22,6 @@ autoload -Uz compinit
 dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
 [[ ! -s $dump ]] && compinit -d "$dump" || compinit -C -d "$dump"
 
-
 # zsh-autosuggestions
 ZSH_AUTOSUGGEST_STRATEGY=(history)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=2000
@@ -41,7 +40,6 @@ FZF_OPTIONS=(
   "--info=default"
   "--height=50%"
   "--layout=reverse"
-  # "--header="
   "--pointer=❯"
   "--no-separator"
   "--no-scrollbar"
@@ -75,28 +73,27 @@ autoload -Uz add-zsh-hook
 add-zsh-hook chpwd cd_ls
 
 fzf_history() {
-  zle -I  # ← 未処理入力をフラッシュ（Esc対策）
+  zle -I
   local sel
   sel=$(
     history -n -r 1 \
     | awk '!seen[$0]++' \
     | FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP}" fzf --query "$LBUFFER"
   )
-  # キャンセル or 空選択 → 即座に再描画して終了
   if [[ $? -ne 0 || -z $sel ]]; then
-    zle -R            # or: zle reset-prompt
+    zle -R
     return 0
   fi
   BUFFER=$sel
   CURSOR=$#BUFFER
-  zle redisplay       # or: zle reset-prompt
+  zle redisplay
 }
 zle -N fzf_history
 bindkey '^r' fzf_history
 
 fzf_find() {
   setopt localoptions pipefail
-  zle -I  # ← 未処理入力のフラッシュ
+  zle -I
   local file
   if command -v fd >/dev/null 2>&1; then
     file=$(fd --hidden --follow --exclude .git --exclude node_modules --type f | fzf)
@@ -104,7 +101,7 @@ fzf_find() {
     file=$(command find . -type d \( -name .git -o -name node_modules \) -prune -o -type f -print | fzf)
   fi
   if [[ $? -ne 0 || -z $file ]]; then
-    zle -R            # or: zle reset-prompt
+    zle -R
     return 0
   fi
   BUFFER="nvim ${(q)file}"
@@ -113,38 +110,6 @@ fzf_find() {
 }
 zle -N fzf_find
 bindkey '^f' fzf_find
-
-# fzf_history() {
-#   local sel
-#   sel=$(
-#     history -n -r 1 \
-#     | awk '!seen[$0]++' \
-#     | FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP}" fzf --query "$LBUFFER"
-#   ) || return 0
-
-#   [[ -n $sel ]] || return 0
-#   BUFFER=$sel
-#   CURSOR=$#BUFFER
-#   zle reset-prompt
-# }
-# zle -N fzf_history
-# bindkey '^r' fzf_history
-
-# fzf_find() {
-#   setopt localoptions pipefail
-#   local file
-#   if command -v fd >/dev/null 2>&1; then
-#     file=$(fd --hidden --follow --exclude .git --exclude node_modules --type f | fzf) || return 0
-#   else
-#     file=$(command find . -type d \( -name .git -o -name node_modules \) -prune -o -type f -print | fzf) || return 0
-#   fi
-#   [[ -n $file ]] || return 0
-#   BUFFER="nvim ${(q)file}"
-#   CURSOR=$#BUFFER
-#   zle accept-line
-# }
-# zle -N fzf_find
-# bindkey '^f' fzf_find
 
 # zsh-syntax-highlighting
 if [[ -r "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
