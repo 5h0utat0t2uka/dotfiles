@@ -14,3 +14,4 @@
 .raycast/**                      # Raycastは内蔵同期に任せるのが安全
 .zed/conversations/**            # 会話ログDB
 .zed/prompts/**                  # mdbファイル(DB)
+README.md
