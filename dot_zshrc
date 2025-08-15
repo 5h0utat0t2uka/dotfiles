@@ -82,7 +82,11 @@ fzf_history() {
     | FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP}" fzf --query "$LBUFFER"
   ) || return 0
 
-  [[ -n $sel ]] || return 0
+  # [[ -n $sel ]] || return 0
+  if [[ -z $sel ]]; then
+    zle reset-prompt
+    return 0
+  fi
   BUFFER=$sel
   CURSOR=$#BUFFER
   zle reset-prompt
@@ -98,7 +102,11 @@ fzf_find() {
   else
     file=$(command find . -type d \( -name .git -o -name node_modules \) -prune -o -type f -print | fzf) || return 0
   fi
-  [[ -n $file ]] || return 0
+  # [[ -n $file ]] || return 0
+  if [[ -z $file ]]; then
+    zle reset-prompt
+    return 0
+  fi
   BUFFER="nvim ${(q)file}"
   CURSOR=$#BUFFER
   zle accept-line
