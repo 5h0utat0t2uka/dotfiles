@@ -56,7 +56,6 @@ require("lazy").setup({
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      -- local nord = require("lualine.themes.nord")
       local custom = vim.deepcopy(require("lualine.themes.nord"))
       local colors = {
         normal   = "#81a1c1",
@@ -66,7 +65,6 @@ require("lazy").setup({
         command  = "#bf616a",
         inactive = "#2E3440",
       }
-      local bg = "#2E3440"
       for mode, sections in pairs(custom) do
         if sections.c then
           sections.c.bg = colors.inactive
