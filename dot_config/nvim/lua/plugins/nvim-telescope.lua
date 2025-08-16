@@ -14,6 +14,9 @@ return {
         { "<leader>ff", b("find_files", { hidden = true }), desc = "Find files" },
         { "<leader>fg", b("live_grep"),                     desc = "Live grep" },
         { "<leader>fb", b("buffers"),                       desc = "Buffers" },
+        { "<leader>gs", b("git_status"),                    desc = "Git status" },
+        { "<leader>gc", b("git_commits"),                   desc = "Git commits" },
+        { "<leader>gb", b("git_branches"),                  desc = "Git branches" },
         { "<leader>fh", b("help_tags"),                     desc = "Help tags" },
       }
     end,

@@ -4,6 +4,7 @@ vim.opt.ttimeoutlen = 50
 vim.opt.swapfile = false
 vim.opt.wildmode = { "list", "full" }
 vim.opt.number = true
+vim.opt.signcolumn = "yes:1"
 vim.opt.expandtab = true
 vim.opt.wildmenu = true
 vim.opt.tabstop = 2
