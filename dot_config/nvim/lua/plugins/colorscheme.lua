@@ -1,6 +1,6 @@
 return {
   "shaunsingh/nord.nvim",
-  lazy=false,
+  lazy = false,
   priority = 1000,
   config = function()
     vim.g.nord_contrast = true
@@ -9,9 +9,24 @@ return {
     vim.g.nord_italic = false
     vim.g.nord_uniform_diff_background = true
     vim.g.nord_bold = true
+
     vim.cmd.colorscheme("nord")
 
+    -- indent-blankline
     vim.api.nvim_set_hl(0, "IblIndent", { fg = "#3b4252" })
     vim.api.nvim_set_hl(0, "IblScope",  { fg = "#4c566a" })
+
+    -- telescope
+    local function set_telescope_hl()
+      vim.api.nvim_set_hl(0, "TelescopeBorder",        { fg = "#d8dee9", bg = "none" })
+      vim.api.nvim_set_hl(0, "TelescopePromptBorder",  { fg = "#d8dee9", bg = "none" })
+      vim.api.nvim_set_hl(0, "TelescopeResultsBorder", { fg = "#d8dee9", bg = "none" })
+      vim.api.nvim_set_hl(0, "TelescopePreviewBorder", { fg = "#d8dee9", bg = "none" })
+    end
+    set_telescope_hl()
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      group = vim.api.nvim_create_augroup("MyTelescopeHl", { clear = true }),
+      callback = set_telescope_hl,
+    })
   end,
 }

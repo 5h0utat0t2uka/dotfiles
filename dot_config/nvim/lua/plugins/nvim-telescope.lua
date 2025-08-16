@@ -5,8 +5,22 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
+    cmd = "Telescope",
+    keys = function()
+      local b = function(fn, opts)
+        return function() require("telescope.builtin")[fn](opts) end
+      end
+      return {
+        { "<leader>ff", b("find_files", { hidden = true }), desc = "Find files" },
+        { "<leader>fg", b("live_grep"),                     desc = "Live grep" },
+        { "<leader>fb", b("buffers"),                       desc = "Buffers" },
+        { "<leader>fh", b("help_tags"),                     desc = "Help tags" },
+      }
+    end,
     opts = {
       defaults = {
+        border = true,
+        winblend = 10,
         layout_strategy = "horizontal",
         layout_config = {
           width = 0.90,
