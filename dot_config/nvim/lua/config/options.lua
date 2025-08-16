@@ -9,6 +9,6 @@ vim.opt.expandtab = true
 vim.opt.wildmenu = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
-vim.opt.cmdheight = 0
+-- vim.opt.cmdheight = 0
 vim.opt.showmatch = true
 vim.opt.cursorline = true
