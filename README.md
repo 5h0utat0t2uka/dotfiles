@@ -22,9 +22,9 @@ exec $SHELL -l
 
 ## ドットファイルの変更をリポジトリに反映
 ``` shell
-chezmoi cd
+chezmoi cd # ソースディレクトリに入る
 git add .
-git commit -- -m "Update zshrc"
+git commit -m "Update .zshrc"
 git push
 ```
 
@@ -36,8 +36,41 @@ chezmoi forget ~/.zshrc
 chezmoi destroy ~/.zshrc
 ```
 
-## neovim のセットアップ
+## テンプレートファイルの更新
+``` shell
+# エディタで編集
+chezmoi edit-config-template
+```
+テンプレートを実体に反映（上書き）
+```
+chezmoi execute-template < ~/.local/share/chezmoi/.chezmoi.toml.tmpl > ~/.config/chezmoi/chezmoi.toml
+```
+あるいはテンプレートから設定を再生成して`apply`で反映
+```
+chezmoi init --apply
+```
+
+## 管理対象外のファイルの更新
+``` shell
+chezmoi cd     # ソースディレクトリに入る
+vim README.md  # エディタで編集
+git add README.md
+git commit -m "Update README"
+git push
+```
+
+## nvim
+- セットアップを行う場合
 ``` shell
 chezmoi apply
 nvim --headless "+Lazy! sync" +qa
+```
+
+- プラグイン追加の手順
+1. `~/.config/nvim/lua/plugins/nvim-plugin.lua`に追加するプラグインの設定ファイルを追加後
+2. 以下のコマンドで追加
+``` shell
+chezmoi add ~/.config/nvim/lua/plugins/nvim-plugin.lua  # chezmoiに追加
+nvim --headless "+Lazy! sync" +qa                       # nvimにプラグインをインストール
+chezmoi add ~/.config/nvim/lazy-lock.json               # インストール後に生成されたロックファイルをchezmoiに追加
 ```
