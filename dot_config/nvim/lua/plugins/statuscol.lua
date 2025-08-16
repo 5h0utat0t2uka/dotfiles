@@ -9,15 +9,15 @@ return {
 
         relculright = true,
         segments = {
+          -- {
+          --   sign = {
+          --     namespace = { 'diagnostic/signs' },
+          --     maxwidth = 1,
+          --   },
+          -- },
           {
             sign = {
-              namespace = { 'diagnostic/signs' },
-              maxwidth = 1,
-            },
-          },
-          {
-            sign = {
-              namespace = { 'gitsigns' },
+              namespace = { 'diagnostic/signs', 'gitsigns' },
               maxwidth = 1,
               colwidth = 1,
               wrap = true,
