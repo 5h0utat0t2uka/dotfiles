@@ -16,17 +16,18 @@ return {
             maxwidth = 2,
             colwidth = 1,
             auto = true,
-            wrap = true,
+            wrap = false,
           },
           click = "v:lua.ScSa",
         },
         -- GitSigns
         {
           sign = {
-            name = { "GitSigns" },
+            namespace = { "gitsigns" },
             maxwidth = 1,
             colwidth = 1,
             auto = true,
+            wrap = false,
             fillchar = " ",
           },
           click = "v:lua.ScSa",
