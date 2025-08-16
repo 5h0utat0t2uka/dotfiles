@@ -1,5 +1,5 @@
 # ~/
-.DS_Store
+**/.DS_Store
 .zsh_history
 .ssh/**                                    # 鍵は管理しない
 .claude/**                                 # 個人設定
