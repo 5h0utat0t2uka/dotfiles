@@ -3,20 +3,15 @@ return {
   main = "ibl",
   opts = {
     indent = {
-      char = "│",
+      -- char = "│",
+      char = "▏",
+      highlight = { "IblIndent" },
     },
     scope = {
       enabled = true,
       show_start = true,
       show_end = true,
+      highlight = { "IblScope" },
     },
   },
-  config = function(_, opts)
-    -- デフォルトのセットアップ
-    require("ibl").setup(opts)
-
-    -- ハイライトを赤に変更
-    vim.api.nvim_set_hl(0, "IblIndent", { fg = "#ff0000" })
-    vim.api.nvim_set_hl(0, "IblScope", { fg = "#ff5555" })
-  end,
 }
