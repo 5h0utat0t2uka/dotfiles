@@ -67,10 +67,21 @@ nvim --headless "+Lazy! sync" +qa
 ```
 
 - プラグイン追加の手順
-1. `~/.config/nvim/lua/plugins/nvim-plugin.lua`に追加するプラグインの設定ファイルを追加後
+1. `~/.config/nvim/lua/plugins/<plugin>.lua`に追加するプラグインの設定ファイルを追加後
 2. 以下のコマンドで追加
 ``` shell
-chezmoi add ~/.config/nvim/lua/plugins/nvim-plugin.lua  # chezmoiに追加
-nvim --headless "+Lazy! sync" +qa                       # nvimにプラグインをインストール
-chezmoi add ~/.config/nvim/lazy-lock.json               # インストール後に生成されたロックファイルをchezmoiに追加
+chezmoi add ~/.config/nvim/lua/plugins/<plugin>.lua    # chezmoiに追加
+nvim --headless "+Lazy! sync" +qa                      # nvimのプラグインを同期（インストール）
+chezmoi add ~/.config/nvim/lazy-lock.json              # インストール後に生成されたロックファイルをchezmoiに追加
 ```
+
+- プラグイン削除の手順
+1. 以下のコマンドで削除
+``` shell
+chezmoi forget ~/.config/nvim/lua/plugins/<plugin>.lua # chezmoiから外す
+nvim --headless "+Lazy! sync" +qa                      # nvimのプラグインを同期（アンインストール）
+chezmoi add ~/.config/nvim/lazy-lock.json              # アンインストール後に生成されたロックファイルをchezmoiに追加
+
+rm ~/.config/nvim/lua/plugins/<plugin>.lua             # 管理から外れてもホームディレクトリ側には残るので、完全に消すなら`rm`する
+```
+
