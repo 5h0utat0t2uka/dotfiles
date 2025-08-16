@@ -22,6 +22,34 @@ return {
         input = { view = "cmdline_input", icon = "󰥻 " }, -- Used by input()
         -- lua = false, -- to disable a format, set to `false`
       },
+    },
+    views = {
+      cmdline_popup = {
+        position = { row = "50%", col = "50%" }, -- 例: 画面中央
+        size = {
+          width = 80,        -- 固定幅（"auto" も可）
+          height = "auto",   -- 入力に応じて自動高さ
+          min_width = 40,    -- 任意
+          max_width = 80,    -- 任意
+        },
+        border = {
+          style = "rounded",
+          padding = { 1, 1 },
+          text = {
+            top = "",
+            top_align = "center",
+          }
+        },
+        -- border = {
+        --   style = "none",
+        --   padding = { 1, 2 },
+        -- },
+        filter_options = {},
+        win_options = {
+          winhighlight = { Normal = "Normal", FloatBorder = "NoiceCmdlinePopupBorder" },
+          -- winhighlight = "NormalFloat:NormalFloat,FloatBorder:FloatBorder",
+        },
+      }
     }
   },
   dependencies = {
