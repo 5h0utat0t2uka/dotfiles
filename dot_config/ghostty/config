@@ -45,7 +45,7 @@
 theme = nord
 
 font-family = DejaVuSansM Nerd Font Mono
-font-size = 13
+font-size = 13.2
 font-thicken = false
 font-feature = -dlig
 
@@ -64,5 +64,6 @@ macos-titlebar-style = hidden
 macos-window-shadow = false
 macos-non-native-fullscreen = visible-menu
 macos-titlebar-proxy-icon = visible
+macos-icon = retro
 
 
