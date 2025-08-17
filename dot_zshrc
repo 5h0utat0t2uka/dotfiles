@@ -58,6 +58,15 @@ export EDITOR="nvim"
 export VISUAL="nvim"
 
 # function
+autoload -Uz add-zsh-hook
+
+after_prompt_once() {
+  command -v mise    >/dev/null 2>&1 && eval "$(command mise activate zsh)"
+  command -v zoxide  >/dev/null 2>&1 && eval "$(command zoxide init zsh)"
+  add-zsh-hook -d precmd after_prompt_once
+}
+add-zsh-hook precmd after_prompt_once
+
 cd_ls() {
   if [[ $PWD -ef $HOME ]]; then
     return
@@ -69,7 +78,6 @@ cd_ls() {
   done
   command eza -al --color=never -o --time-style=long-iso -F always
 }
-autoload -Uz add-zsh-hook
 add-zsh-hook chpwd cd_ls
 
 fzf_history() {
