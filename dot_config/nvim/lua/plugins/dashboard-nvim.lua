@@ -24,7 +24,7 @@ return {
       end
       local function nvim_version()
         local v = vim.version()
-        return ("nvim v%d.%d.%d"):format(v.major, v.minor, v.patch)
+        return ("NVIM v%d.%d.%d"):format(v.major, v.minor, v.patch)
       end
 
       local function make_footer()
@@ -53,19 +53,19 @@ return {
           },
           center = {
             {
-              icon = "  ",
+              icon = " ",
               desc = "Recent files",
               key = "R",
               action = "Telescope oldfiles"
             },
             {
-              icon = "  ",
+              icon = " ",
               desc = "Quit nvim",
               key = "Q",
               action = function() vim.cmd("qa") end
             },
             {
-              icon = "  ",
+              icon = " ",
               desc = "Seek help",
               key = "H",
               action = function()
