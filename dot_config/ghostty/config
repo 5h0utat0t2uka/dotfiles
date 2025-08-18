@@ -44,8 +44,10 @@
 
 theme = nord
 
-font-family = DejaVuSansM Nerd Font Mono
 font-size = 13.2
+font-family = DejaVuSansM Nerd Font Mono
+font-family-bold = DejaVuSansM Nerd Font Mono
+font-style-bold = false
 font-thicken = false
 font-feature = -dlig
 
