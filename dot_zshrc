@@ -23,7 +23,7 @@ path=(
   $path
 )
 
-# コマンドの確認
+# コマンドのインストールを確認
 install_missing_command() {
   local missing=()
   local -A tools=(
@@ -43,7 +43,7 @@ install_missing_command() {
   touch "$CACHE_DIR/.command_installed"
 }
 
-# History関連とオプション
+# 履歴関連とオプション
 HISTFILE="$CACHE_DIR/.zsh_history"
 HISTSIZE=10000
 SAVEHIST=10000
@@ -142,7 +142,7 @@ export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --ty
 
 # alias
 alias ..='cd ..'
-alias vpn="$HOME/Documents/shellscripts/vpn/vpn.sh"
+alias vpn="$HOME/Documents/scripts/vpn/vpn.sh"
 alias vim='nvim'
 
 # function
