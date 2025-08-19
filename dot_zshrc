@@ -132,8 +132,8 @@ _ZO_OPTS=(
   # "--preview"
   # "'([[ -e {2..}/README.md ]] && bat --color=always --style=numbers --line-range=:50 {2..}/README.md) || eza -alo --time-style iso --color=always --group-directories-first -- {2..}'"
   # "eza -alo --time-style iso --color=always --group-directories-first -- {2..}"
-  "--preview='eza -alo \
-    --time-style=iso --color=always --group-directories-first -- {2..}'"
+  "--preview='eza -al --color=always --group-directories-first \
+    -T -L 2 -I \"node_modules|.git|dist|build\" -- {2..}'"
   "--preview-window=wrap"
 )
 export _ZO_FZF_OPTS="${(j: :)_ZO_OPTS}"
