@@ -48,8 +48,12 @@ font-size = 13.2
 font-family = DejaVuSansM Nerd Font Mono
 font-family-bold = DejaVuSansM Nerd Font Mono
 font-style-bold = true
-font-thicken = false
+font-thicken = true
+font-thicken-strength = 1
 font-feature = -dlig
+
+adjust-cell-width = 1
+adjust-cell-height = 1
 
 cursor-style = block
 cursor-style-blink = true
