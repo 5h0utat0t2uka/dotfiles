@@ -2,8 +2,20 @@
 	name = shouta totsuka
 	email = 5h0utat0t2uka@gmail.com
 
+[init]
+	defaultBranch = main
+
 [merge]
-  conflictstyle = diff3
+  conflictstyle = zdiff3
 
 [diff]
-  colorMoved = default
+  tool = difftastic
+  external = difft
+[difftool]
+
+  prompt = false
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
+
+[pager]
+  difftool = true
