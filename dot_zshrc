@@ -31,10 +31,11 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=2000
 [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # fzf
+typeset -a FZF_BASE_OPTS
 typeset -a FZF_OPTIONS
 typeset -a _ZO_OPTS
 typeset -g NBSP=$'\u00A0'
-FZF_OPTIONS=(
+FZF_BASE_OPTS=(
   "--color=fg:#d8dee9,bg:#2e3440,hl:#b48ead"
   "--color=fg+:#d8dee9,bg+:#2e3440,hl+:#b48ead"
   "--color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb"
@@ -47,7 +48,37 @@ FZF_OPTIONS=(
   "--pointer=❯"
   "--no-separator"
   "--no-scrollbar"
+  "--prompt=❯${NBSP}"
 )
+export FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS}"
+typeset -a FZF_FILE_PREVIEW_OPTS
+# FZF_FILE_PREVIEW_OPTS=(
+#   "--preview"
+#   'bat --style=numbers,changes --color=always --paging=never {}'
+# )
+FZF_FILE_PREVIEW_OPTS=(
+  "--preview"
+  "'bat --style=numbers,changes --color=always --paging=never {}'"
+)
+
+# FZF_OPTIONS=(
+#   "--color=fg:#d8dee9,bg:#2e3440,hl:#b48ead"
+#   "--color=fg+:#d8dee9,bg+:#2e3440,hl+:#b48ead"
+#   "--color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb"
+#   "--color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1"
+#   "--color=border:#4c566a"
+#   "--border=rounded"
+#   "--info=default"
+#   "--height=75%"
+#   "--layout=reverse"
+#   "--pointer=❯"
+#   "--no-separator"
+#   "--no-scrollbar"
+#   "--prompt=❯${NBSP}"
+#   "--preview"
+#   "'bat --style=numbers,changes --color=always --paging=never {}'"
+# )
+# export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS}"
 _ZO_OPTS=(
   "--no-sort"
   "--height=75%"
@@ -65,12 +96,14 @@ _ZO_OPTS=(
   "--no-scrollbar"
   "--pointer=❯"
   "--prompt=❯${NBSP}"
-  "--preview=\"([[ -e {2..}/README.md ]] && bat --color=always --style=numbers --line-range=:50 {2..}/README.md) || eza -alo --time-style iso --color=always --group-directories-first -- {2..}\""
-  # "--preview=([[ -e \{2..\}/README.md ]] && bat --color=always --style=numbers --line-range=:50 \{2..\}/README.md) || eza -alo --time-style iso --color=always --group-directories-first -- \{2..\}"
+  "--preview"
+  "'([[ -e {2..}/README.md ]] && bat --color=always --style=numbers --line-range=:50 {2..}/README.md) || eza -alo --time-style iso --color=always --group-directories-first -- {2..}'"
   "--preview-window=wrap"
 )
-export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview=\"bat --style=numbers,changes --color=always --paging=never {}\""
 export _ZO_FZF_OPTS="${(j: :)_ZO_OPTS}"
+
+# export FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP} --preview=\"bat --style=numbers,changes --color=always --paging=never {}\""
+# export _ZO_FZF_OPTS="${(j: :)_ZO_OPTS}"
 if command -v fd >/dev/null 2>&1; then
   export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type f'
   export FZF_ALT_C_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type d'
@@ -140,11 +173,10 @@ fzf_history() {
   sel=$(
     history -n -r 1 \
     | awk '!seen[$0]++' \
-    | FZF_DEFAULT_OPTS="${(j: :)FZF_OPTIONS} --prompt=❯${NBSP}" fzf --query "$LBUFFER"
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} --prompt=❯${NBSP}" fzf --query "$LBUFFER"
   )
   if [[ $? -ne 0 || -z $sel ]]; then
-    zle -R
-    return 0
+    zle -R; return 0
   fi
   BUFFER=$sel
   CURSOR=$#BUFFER
@@ -156,15 +188,24 @@ bindkey '^r' fzf_history
 fzf_find() {
   setopt localoptions pipefail
   zle -I
+  local fzf_opts
+  fzf_opts="${(j: :)FZF_BASE_OPTS} --preview 'bat --style=numbers,changes --color=always --paging=never {}'"
+
   local file
   if command -v fd >/dev/null 2>&1; then
-    file=$(fd --hidden --follow --exclude .git --exclude node_modules --type f | fzf)
+    file=$(
+      fd --hidden --follow --exclude .git --exclude node_modules --type f \
+      | FZF_DEFAULT_OPTS="$fzf_opts" fzf
+    )
   else
-    file=$(command find . -type d \( -name .git -o -name node_modules \) -prune -o -type f -print | fzf)
+    file=$(
+      command find . -type d \( -name .git -o -name node_modules \) -prune -o -type f -print \
+      | FZF_DEFAULT_OPTS="$fzf_opts" fzf
+    )
   fi
+
   if [[ $? -ne 0 || -z $file ]]; then
-    zle -R
-    return 0
+    zle -R; return 0
   fi
   BUFFER="nvim ${(q)file}"
   CURSOR=$#BUFFER
