@@ -1,21 +1,21 @@
-# 1. 非インタラクティブシェルのチェック
+# 非インタラクティブシェルのチェック
 [[ $- != *i* ]] && return
 
-# 2. XDG環境変数
+# XDG環境変数
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
-# 3. キャッシュディレクトリ
+# キャッシュディレクトリ
 CACHE_DIR="${XDG_CACHE_HOME}/zsh"
 mkdir -p "$CACHE_DIR"
 
-# 4. Instant Prompt (P10k)
+# Instant Prompt (P10k)
 if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# 5. Homebrew検出とPATH設定
+# Homebrew検出とPATH設定
 find_brew() {
   local paths=("/opt/homebrew" "/usr/local" "$HOME/.linuxbrew")
   for p in $paths; do
@@ -32,24 +32,40 @@ path=(
   $path
 )
 
-# 6. History設定
+# コマンドの確認
+install_missing_command() {
+  local missing=()
+  local -A tools=(
+    [rg]=ripgrep
+    [eza]=eza
+    [bat]=bat
+    [fd]=fd
+    [fzf]=fzf
+  )
+  for cmd pkg in ${(kv)tools}; do
+    command -v $cmd >/dev/null 2>&1 || missing+=($pkg)
+  done
+  [[ -n "$missing" ]] && brew install $missing
+}
+[[ ! -f "$CACHE_DIR/.command_installed" ]] && {
+  install_missing_command
+  touch "$CACHE_DIR/.command_installed"
+}
+
+# History関連とオプション
 HISTFILE="$CACHE_DIR/.zsh_history"
-HISTSIZE=100000
-SAVEHIST=100000
+HISTSIZE=10000
+SAVEHIST=10000
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_FIND_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt SHARE_HISTORY
 setopt HIST_VERIFY
-
-# 7. Zshオプション
 setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
-setopt CORRECT
-setopt INTERACTIVE_COMMENTS  # 追加推奨
-setopt AUTO_CD               # 追加推奨
+setopt INTERACTIVE_COMMENTS
 
-# 8. Completions
+# Completions
 typeset -U fpath
 [[ -d "$BREW_PREFIX/share/zsh-completions" ]] && fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
 
@@ -62,12 +78,12 @@ else
   [[ -f "$dump" ]] && zcompile "$dump"
 fi
 
-# 9. Powerlevel10k
+# Powerlevel10k
 [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && \
   source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
 [[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
 
-# 10. エディタ設定
+# エディタ設定
 export EDITOR="nvim"
 export VISUAL="nvim"
 
@@ -161,13 +177,13 @@ fzf_history() {
   zle -I
   local sel
   sel=$(
-    history -n -r 1 \
-    | awk '!seen[$0]++' \
-    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} --prompt=❯${NBSP}" fzf --query "$LBUFFER"
+    fc -rl 1 \
+    | perl -ne 'print if !$seen{(/^\s*\d+\s+(.*)$/)[0]}++' \
+    | sed 's/^[ ]*[0-9]*[ ]*//' \
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} --prompt=❯${NBSP}" \
+    fzf --query "$LBUFFER"
   )
-  if [[ $? -ne 0 || -z $sel ]]; then
-    zle -R; return 0
-  fi
+  [[ -z "$sel" ]] && { zle -R; return 0; }
   BUFFER=$sel
   CURSOR=$#BUFFER
   zle redisplay
@@ -178,23 +194,20 @@ bindkey '^r' fzf_history
 fzf_find() {
   setopt localoptions pipefail
   zle -I
-  local fzf_env file
-  fzf_env="${(j: :)FZF_BASE_OPTS} ${(j: :)FZF_FILE_PREVIEW_OPTS}"
-
-  if command -v fd >/dev/null 2>&1; then
-    file=$(
-      fd --hidden --follow --exclude .git --exclude node_modules --type f \
-      | FZF_DEFAULT_OPTS="$fzf_env" fzf
-    )
-  else
-    file=$(
-      command find . -type d \( -name .git -o -name node_modules \) -prune -o -type f -print \
-      | FZF_DEFAULT_OPTS="$fzf_env" fzf
-    )
-  fi
-  if [[ $? -ne 0 || -z $file ]]; then
-    zle -R; return 0
-  fi
+  local file
+  file=$(
+    rg --files --hidden \
+      --glob '!.git' \
+      --glob '!node_modules' \
+      --glob '!*.pyc' \
+      --glob '!*.swp' \
+      --glob '!.DS_Store' \
+      --glob '!target' \
+      --glob '!dist' \
+      --glob '!build' \
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} ${(j: :)FZF_FILE_PREVIEW_OPTS}" fzf
+  )
+  [[ -z "$file" ]] && { zle -R; return 0; }
   BUFFER="nvim ${(q)file}"
   CURSOR=$#BUFFER
   zle accept-line
