@@ -16,19 +16,10 @@ if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
 fi
 
 # Homebrew検出とPATH設定
-find_brew() {
-  local paths=("/opt/homebrew" "/usr/local" "$HOME/.linuxbrew")
-  for p in $paths; do
-    [[ -x "$p/bin/brew" ]] && { echo "$p"; return 0; }
-  done
-  return 1
-}
-BREW_PREFIX="${HOMEBREW_PREFIX:-$(find_brew 2>/dev/null)}"
-
+BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
 typeset -U path
 path=(
   "$HOME/.local/bin"(N-/)
-  "$BREW_PREFIX/bin"(N-/)
   $path
 )
 
@@ -146,11 +137,8 @@ _ZO_OPTS=(
   "--preview-window=wrap"
 )
 export _ZO_FZF_OPTS="${(j: :)_ZO_OPTS}"
-
-if command -v fd >/dev/null 2>&1; then
-  export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type f'
-  export FZF_ALT_C_COMMAND='fd --hidden --follow --exclude .git --exclude node_modules --type d'
-fi
+export FZF_DEFAULT_COMMAND='fd --hidden --exclude .git --exclude node_modules --type f'
+export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --type d'
 
 # alias
 alias ..='cd ..'
