@@ -88,18 +88,21 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=2000
 
 # fzf
 typeset -a FZF_IGNORE_DIRS=(.git node_modules vendor .venv venv dist build .cache .next target .terraform)
+typeset -a FZF_BASE_OPTS
+typeset -a FZF_FILE_OPTS
+# typeset -a _ZO_OPTS
 typeset -g NBSP=$'\u00A0'
-typeset -a FZF_THEME=(
+
+# 共通オプションを配列として定義（重要：配列のまま維持）
+typeset -a FZF_BASE_OPTS=(
   "--color=fg:#6b7994,bg:#2e3440,hl:#b48ead"
   "--color=fg+:#d8dee9,bg+:#2e3440,hl+:#b48ead"
   "--color=info:#8fbcbb,prompt:#8fbcbb,pointer:#8fbcbb"
   "--color=marker:#8fbcbb,spinner:#5e81ac,header:#81a1c1"
   "--color=border:#4c566a"
-)
-typeset -a FZF_UI=(
   "--border=rounded"
   "--info=default"
-  "--height=60%"
+  "--height=75%"
   "--layout=reverse"
   "--pointer=❯"
   "--no-separator"
@@ -107,15 +110,21 @@ typeset -a FZF_UI=(
   "--prompt=❯${NBSP}"
 )
 
-export FZF_DEFAULT_OPTS="${(j: :)FZF_THEME} ${(j: :)FZF_UI}"
-local eza_ignore="${(j:|:)FZF_IGNORE_DIRS}"
-export _ZO_FZF_OPTS="${FZF_DEFAULT_OPTS} \
-  --no-sort --exit-0 --select-1 \
-  --preview='eza -al --color=always --group-directories-first \
-    -T -L 2 -I \"${eza_ignore}\" -- {2..}' \
-  --preview-window=wrap"
+typeset -a FZF_FILE_OPTS=(
+  "--preview"
+  "'bat --style=numbers,changes --color=always --paging=never {}'"
+)
 
-# fd設定
+# zoxide
+typeset -a _ZO_ADDITIONAL_OPTS=(
+  "--no-sort"
+  "--exit-0"
+  "--select-1"
+  "--preview='eza -al --color=always --group-directories-first -T -L 2 -I \"${(j:|:)FZF_IGNORE_DIRS}\" -- {2..}'"
+  "--preview-window=wrap"
+)
+export _ZO_FZF_OPTS="${(j: :)FZF_BASE_OPTS} ${(j: :)_ZO_ADDITIONAL_OPTS}"
+export FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS}"
 export FZF_DEFAULT_COMMAND='fd --hidden --exclude .git --exclude node_modules --type f'
 export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --type d'
 
@@ -135,7 +144,7 @@ add-zsh-hook precmd after_prompt_once
 
 cd_ls() {
   [[ $PWD -ef $HOME ]] && return
-  [[ $PWD =~ '/(\.git|node_modules|vendor|\.venv|venv|dist|build|\.cache|\.next|target|\.terraform)' ]] && return
+  [[ $PWD =~ '/(node_modules|vendor|\.venv|venv|dist|build|\.cache|\.next|target|\.terraform|\.git)' ]] && return
   command eza -al --color=never -o --time-style=long-iso -F always
 }
 add-zsh-hook chpwd cd_ls
@@ -147,7 +156,8 @@ fzf_history() {
     fc -rl 1 \
     | perl -ne 'print if !$seen{(/^\s*\d+\s+(.*)$/)[0]}++' \
     | sed 's/^[ ]*[0-9]*[ ]*//' \
-    | fzf --query "$LBUFFER"
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} --prompt=❯${NBSP}" \
+    fzf --query "$LBUFFER"
   )
   [[ -z "$sel" ]] && { zle -R; return 0; }
   BUFFER=$sel
@@ -167,7 +177,7 @@ fzf_find() {
   local file
   file=$(
     rg --files --hidden ${rg_globs[@]} \
-    | fzf --preview 'bat --style=numbers,changes --color=always --paging=never {}'
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} ${(j: :)FZF_FILE_OPTS}" fzf
   )
   [[ -z "$file" ]] && { zle -R; return 0; }
   BUFFER="nvim ${(q)file}"
@@ -184,8 +194,14 @@ fi
 
 #  .zshrcのコンパイル（次回起動時の高速化）
 () {
-  local files=("$HOME/.zshrc" "$HOME/.p10k.zsh")
-  for f in $files; do
-    [[ -f "$f" && ( ! -f "$f.zwc" || "$f" -nt "$f.zwc" ) ]] && zcompile "$f"
-  done
+  local zshrc="$HOME/.zshrc"
+  local p10k="$HOME/.p10k.zsh"
+  local zwc="$zshrc.zwc"
+
+  if [[ -f "$zshrc" && ( ! -f "$zwc" || "$zshrc" -nt "$zwc" ) ]]; then
+    zcompile "$zshrc"
+  fi
+  if [[ -f "$p10k" && ( ! -f "$p10k.zwc" || "$p10k" -nt "$p10k.zwc" ) ]]; then
+    zcompile "$p10k"
+  fi
 }
