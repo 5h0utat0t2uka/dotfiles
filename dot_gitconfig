@@ -1,12 +1,13 @@
 [user]
-	name = shouta totsuka
-	email = 5h0utat0t2uka@gmail.com
+  name = shouta totsuka
+  email = 5h0utat0t2uka@gmail.com
 
 [init]
-	defaultBranch = main
+  defaultBranch = main
 
 [push]
   autoSetupRemote = true
+
 [merge]
   conflictstyle = zdiff3
 
@@ -22,3 +23,16 @@
 
 [pager]
   difftool = true
+
+# ghq
+[ghq]
+  root = ~/Developer/repositories/private
+
+[ghq "https://github.com/you-ec"]
+  root = ~/Developer/repositories/youinc
+
+[ghq "https://github.com/witomteam"]
+  root = ~/Developer/repositories/witom
+
+[url "git@github.com:"]
+  insteadOf = https://github.com/
