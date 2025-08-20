@@ -1,6 +1,10 @@
 # 非インタラクティブシェルのチェック
 [[ $- != *i* ]] && return
 
+if [[ -o interactive ]] && command -v fastfetch >/dev/null 2>&1; then
+  fastfetch
+fi
+
 # XDG環境変数
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
