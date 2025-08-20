@@ -43,11 +43,13 @@
 # resize-overlay-duration = 4s 200ms
 
 theme = nord
+fullscreen = true
 
 font-size = 13.2
 font-family = DejaVuSansM Nerd Font Mono
 font-family = BIZ UDGothic
 font-family-bold = DejaVuSansM Nerd Font Mono
+font-family-bold = BIZ UDGothic
 font-style-bold = false
 font-thicken = true
 font-thicken-strength = 1
@@ -66,12 +68,11 @@ window-padding-x = 10
 window-padding-y = 10
 window-padding-balance = true
 
-fullscreen
-
 macos-titlebar-style = hidden
 macos-window-shadow = false
 macos-non-native-fullscreen = visible-menu
 macos-titlebar-proxy-icon = visible
 macos-icon = retro
 
+resize-overlay = never
 
