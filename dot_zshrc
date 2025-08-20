@@ -131,6 +131,7 @@ export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --ty
 # alias
 alias ..='cd ..'
 alias vpn="$HOME/Documents/scripts/vpn/vpn.sh"
+alias lll='eza -alo --icons --time-style iso'
 alias vim='nvim'
 
 # function
