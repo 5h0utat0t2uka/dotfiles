@@ -87,7 +87,16 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=2000
 [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # fzf
-typeset -a FZF_IGNORE_DIRS=(.git node_modules vendor .venv venv dist build .cache .next target .terraform)
+typeset -a FZF_IGNORE_PATTERNS=(
+  # ディレクトリ
+  .git node_modules vendor .venv venv
+  dist build .cache .next target .terraform
+  # ファイル
+  .DS_Store "*.pyc" "*.swp" Thumbs.db
+  # パターン
+  "*.log" "*.tmp" ".env*"
+)
+# typeset -a FZF_IGNORE_DIRS=(.git node_modules vendor .venv venv dist build .cache .next target .terraform)
 typeset -a FZF_BASE_OPTS
 typeset -a FZF_FILE_OPTS
 # typeset -a _ZO_OPTS
@@ -120,7 +129,7 @@ typeset -a _ZO_ADDITIONAL_OPTS=(
   "--no-sort"
   "--exit-0"
   "--select-1"
-  "--preview='eza -al --color=always --group-directories-first -T -L 2 -I \"${(j:|:)FZF_IGNORE_DIRS}\" -- {2..}'"
+  "--preview='eza -al --color=always --group-directories-first -T -L 2 -I \"${(j:|:)FZF_IGNORE_PATTERNS}\" -- {2..}'"
   "--preview-window=wrap"
 )
 export _ZO_FZF_OPTS="${(j: :)FZF_BASE_OPTS} ${(j: :)_ZO_ADDITIONAL_OPTS}"
@@ -172,7 +181,7 @@ fzf_find() {
   setopt localoptions pipefail
   zle -I
   local -a rg_globs
-  for dir in $FZF_IGNORE_DIRS; do
+  for dir in $FZF_IGNORE_PATTERNS; do
     rg_globs+=("--glob" "!$dir")
   done
   local file
