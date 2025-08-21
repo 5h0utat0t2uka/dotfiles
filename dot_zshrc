@@ -199,7 +199,7 @@ fzf_ghq() {
   repo=$(
     ghq list \
     | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} \
-      --prompt='repo${NBSP}❯${NBSP}' \
+      --prompt='❯${NBSP}' \
       --preview='eza -al --color=always --group-directories-first \
         -T -L 2 -I \"${(j:|:)IGNORE_PATTERNS}\" \
         $(ghq root)/{} 2>/dev/null' \
