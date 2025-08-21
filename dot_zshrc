@@ -57,6 +57,9 @@ setopt AUTO_PUSHD
 setopt PUSHD_IGNORE_DUPS
 setopt INTERACTIVE_COMMENTS
 
+export EDITOR="nvim"
+export VISUAL="nvim"
+
 # Completions
 typeset -U fpath
 [[ -d "$BREW_PREFIX/share/zsh-completions" ]] && fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
@@ -74,10 +77,6 @@ fi
 [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && \
   source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
 [[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
-
-# エディタ設定
-export EDITOR="nvim"
-export VISUAL="nvim"
 
 # zsh-autosuggestions
 typeset -A ZSH_HIGHLIGHT_STYLES

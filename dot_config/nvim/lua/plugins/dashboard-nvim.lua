@@ -93,7 +93,7 @@ return {
           end
         end,
       })
-      vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#5e81ac", bold = true })
+      vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#81a1c1", bold = true })
       vim.api.nvim_set_hl(0, "DashboardFooter", { fg = "#4c566a", bold = false })
     end,
   }
