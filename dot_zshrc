@@ -136,10 +136,18 @@ export FZF_DEFAULT_COMMAND='fd --hidden --exclude .git --exclude node_modules --
 export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --type d'
 
 # alias
-# alias ..='cd ..'
 alias vpn="$HOME/Documents/scripts/vpn/vpn.sh"
-alias lll='eza -alo --icons --time-style iso'
 alias vim='nvim'
+alias ll='eza -alo --icons --time-style iso'
+alias lg='lazygit'
+
+# abbr
+ABBR_SET_EXPANSION_CURSOR=1
+[[ -r "$BREW_PREFIX/share/zsh-abbr/zsh-abbr.zsh" ]] && source "$BREW_PREFIX/share/zsh-abbr/zsh-abbr.zsh"
+abbr -S -qq gs="git status"
+abbr -S -qq ga="git add ."
+abbr -S -qq gc="git commit -m \"%\""
+abbr -S -qq gp="git push origin HEAD"
 
 # function
 autoload -Uz add-zsh-hook
