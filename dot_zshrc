@@ -28,10 +28,11 @@ install_missing_command() {
   local missing=()
   local -A tools=(
     [rg]=ripgrep
+    [fd]=fd
     [eza]=eza
     [bat]=bat
-    [fd]=fd
     [fzf]=fzf
+    [ghq]=ghq
   )
   for cmd pkg in ${(kv)tools}; do
     command -v $cmd >/dev/null 2>&1 || missing+=($pkg)
@@ -151,6 +152,7 @@ after_prompt_once() {
 add-zsh-hook precmd after_prompt_once
 
 fzf_history() {
+  # ^+R でコマンド履歴
   zle -I
   local sel
   sel=$(
@@ -169,6 +171,7 @@ zle -N fzf_history
 bindkey '^r' fzf_history
 
 fzf_find() {
+  # ^+F でファイル検索
   setopt localoptions pipefail
   zle -I
   local -a rg_globs
@@ -187,6 +190,28 @@ fzf_find() {
 }
 zle -N fzf_find
 bindkey '^f' fzf_find
+
+fzf_ghq() {
+  # ^+G でリポジトリ検索
+  setopt localoptions pipefail
+  zle -I
+  local repo
+  repo=$(
+    ghq list \
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} \
+      --prompt='repo${NBSP}❯${NBSP}' \
+      --preview='eza -al --color=always --group-directories-first \
+        -T -L 2 -I \"${(j:|:)IGNORE_PATTERNS}\" \
+        $(ghq root)/{} 2>/dev/null' \
+      --preview-window=wrap" fzf
+  )
+  [[ -z "$repo" ]] && { zle -R; return 0; }
+  BUFFER="cd $(ghq root)/${repo}"
+  CURSOR=$#BUFFER
+  zle accept-line
+}
+zle -N fzf_ghq
+bindkey '^g' fzf_ghq
 
 chpwd() {
   [[ $PWD -ef $HOME ]] && return
