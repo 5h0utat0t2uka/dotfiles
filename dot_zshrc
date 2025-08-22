@@ -129,10 +129,18 @@ typeset -a _ZO_ADDITIONAL_OPTS=(
   "--no-sort"
   "--exit-0"
   "--select-1"
-  "--preview='eza -al --color=always --group-directories-first -T -L 2 -I \"${(j:|:)IGNORE_PATTERNS}\" -- {2..}'"
+  "--preview='eza -al --color=always --group-directories-first -T -L 2 -I \"${(j:|:)IGNORE_PATTERNS}\" -- {2..} 2>/dev/null | { IFS= read -r first_line; echo \"\$first_line\"; echo; cat; }'"
   "--preview-window=wrap"
 )
 export _ZO_FZF_OPTS="${(j: :)FZF_BASE_OPTS} ${(j: :)_ZO_ADDITIONAL_OPTS}"
+# typeset -a _ZO_ADDITIONAL_OPTS=(
+#   "--no-sort"
+#   "--exit-0"
+#   "--select-1"
+#   "--preview='eza -al --color=always --group-directories-first -T -L 2 -I \"${(j:|:)IGNORE_PATTERNS}\" -- {2..}'"
+#   "--preview-window=wrap"
+# )
+# export _ZO_FZF_OPTS="${(j: :)FZF_BASE_OPTS} ${(j: :)_ZO_ADDITIONAL_OPTS}"
 export FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS}"
 export FZF_DEFAULT_COMMAND='fd --hidden --exclude .git --exclude node_modules --type f'
 export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --type d'
@@ -213,6 +221,22 @@ bindkey '^f' fzf_find
 
 fzf_ghq() {
   # ^+G でリポジトリ検索
+  # setopt localoptions pipefail
+  # zle -I
+  # local repo
+  # repo=$(
+  #   ghq list \
+  #   | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} \
+  #     --prompt='❯${NBSP}' \
+  #     --preview='eza -al --color=always --group-directories-first \
+  #       -T -L 2 -I \"${(j:|:)IGNORE_PATTERNS}\" \
+  #       $(ghq root)/{} 2>/dev/null' \
+  #     --preview-window=wrap" fzf
+  # )
+  # [[ -z "$repo" ]] && { zle -R; return 0; }
+  # BUFFER="cd $(ghq root)/${repo}"
+  # CURSOR=$#BUFFER
+  # zle accept-line
   setopt localoptions pipefail
   zle -I
   local repo
@@ -220,9 +244,15 @@ fzf_ghq() {
     ghq list \
     | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} \
       --prompt='❯${NBSP}' \
-      --preview='eza -al --color=always --group-directories-first \
+      --preview='dir=\$(ghq root)/{}; \
+        eza -al --color=always --group-directories-first \
         -T -L 2 -I \"${(j:|:)IGNORE_PATTERNS}\" \
-        $(ghq root)/{} 2>/dev/null' \
+        \"\$dir\" 2>/dev/null | { \
+          IFS= read -r first_line; \
+          echo \"\$first_line\"; \
+          echo; \
+          cat; \
+        }' \
       --preview-window=wrap" fzf
   )
   [[ -z "$repo" ]] && { zle -R; return 0; }
