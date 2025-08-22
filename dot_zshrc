@@ -136,7 +136,7 @@ export FZF_DEFAULT_COMMAND='fd --hidden --exclude .git --exclude node_modules --
 export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --type d'
 
 # alias
-alias vpn="$HOME/Documents/scripts/vpn/vpn.sh"
+alias vpn="$HOME/Developer/scripts/vpn/vpn.sh"
 alias vim='nvim'
 alias ll='eza -alo --icons --time-style iso'
 alias lg='lazygit'
@@ -181,15 +181,19 @@ fzf_find() {
   # ^+F でファイル検索
   setopt localoptions pipefail
   zle -I
-
   if [[ "$PWD" == "$HOME" ]]; then
     zle -M "⚠️ Too many files in HOME. Use from a project directory."
     zle -R
     return 1
   fi
-
+  local -a local_ignore_patterns=(
+    $IGNORE_PATTERNS
+    "*.jpg" "*.jpeg" "*.png" "*.gif" "*.bmp" "*.svg"
+    "*.webp" "*.ico" "*.tiff" "*.tif" "*.heic" "*.heif"
+    "*.raw" "*.cr2" "*.nef" "*.arw" "*.dng"
+  )
   local -a rg_globs
-  for dir in $IGNORE_PATTERNS; do
+  for dir in $local_ignore_patterns; do
     rg_globs+=("--glob" "!$dir")
   done
   local file
