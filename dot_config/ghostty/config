@@ -45,19 +45,21 @@
 theme = nord
 fullscreen = true
 
-font-size = 13.2
-font-family = DejaVuSansM Nerd Font Mono
+font-size = 13.6
+# font-family = DejaVuSansM Nerd Font Mono
+font-family = GeistMono Nerd Font Mono
 font-family = BIZ UDGothic
-font-family-bold = DejaVuSansM Nerd Font Mono
+# font-family-bold = DejaVuSansM Nerd Font Mono
+font-family-bold = GeistMono Nerd Font Mono
 font-family-bold = BIZ UDGothic
 font-style-bold = false
 font-thicken = true
-font-thicken-strength = 1
+font-thicken-strength = 0
 font-feature = -dlig
 alpha-blending = linear
 
-adjust-cell-width = 1
-adjust-cell-height = 1
+# adjust-cell-width = 1
+# adjust-cell-height = 1
 
 cursor-style = block
 cursor-style-blink = true

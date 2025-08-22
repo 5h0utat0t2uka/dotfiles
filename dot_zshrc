@@ -89,15 +89,24 @@ ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=2000
 [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 # fzf
-typeset -a IGNORE_PATTERNS=(
-  # ディレクトリ
+typeset -a IGNORE_DIRS=(
   .git node_modules vendor .venv venv
   dist build .cache .next target .terraform
-  # ファイル
+)
+typeset -a IGNORE_FILES=(
   .DS_Store "*.pyc" "*.swp" Thumbs.db
-  # パターン
   "*.log" "*.tmp" ".env*"
 )
+typeset -a IGNORE_PATTERNS=(
+  $IGNORE_DIRS
+  $IGNORE_FILES
+)
+# typeset -a IGNORE_PATTERNS=(
+#   .git node_modules vendor .venv venv
+#   dist build .cache .next target .terraform
+#   .DS_Store "*.pyc" "*.swp" Thumbs.db
+#   "*.log" "*.tmp" ".env*"
+# )
 typeset -a FZF_BASE_OPTS
 typeset -a FZF_FILE_OPTS
 typeset -g NBSP=$'\u00A0'
@@ -242,10 +251,16 @@ bindkey '^g' fzf_ghq
 
 chpwd() {
   [[ $PWD -ef $HOME ]] && return
-  local pattern="/($(IFS='|'; echo "${IGNORE_PATTERNS[*]}"))"
+  local pattern="/($(IFS='|'; echo "${IGNORE_DIRS[*]}"))"
   [[ $PWD =~ $pattern ]] && return
   command eza -al --color=never -o --time-style=long-iso -F always
 }
+# chpwd() {
+#   [[ $PWD -ef $HOME ]] && return
+#   local pattern="/($(IFS='|'; echo "${IGNORE_PATTERNS[*]}"))"
+#   [[ $PWD =~ $pattern ]] && return
+#   command eza -al --color=never -o --time-style=long-iso -F always
+# }
 
 # zsh-syntax-highlighting
 if [[ -r "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
