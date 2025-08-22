@@ -24,25 +24,27 @@ path=(
 )
 
 # コマンドのインストールを確認
-install_missing_command() {
-  local missing=()
-  local -A tools=(
-    [rg]=ripgrep
-    [fd]=fd
-    [eza]=eza
-    [bat]=bat
-    [fzf]=fzf
-    [ghq]=ghq
-  )
-  for cmd pkg in ${(kv)tools}; do
-    command -v $cmd >/dev/null 2>&1 || missing+=($pkg)
-  done
-  [[ -n "$missing" ]] && brew install $missing
-}
-[[ ! -f "$CACHE_DIR/.command_installed" ]] && {
-  install_missing_command
-  touch "$CACHE_DIR/.command_installed"
-}
+# install_missing_command() {
+#   local missing=()
+#   local -A tools=(
+#     [rg]=ripgrep
+#     [fd]=fd
+#     [eza]=eza
+#     [bat]=bat
+#     [fzf]=fzf
+#     [lazygit]=lazygit
+#     [abbr]=olets/tap/zsh-abbr
+#     [ghq]=ghq
+#   )
+#   for cmd pkg in ${(kv)tools}; do
+#     command -v $cmd >/dev/null 2>&1 || missing+=($pkg)
+#   done
+#   [[ -n "$missing" ]] && brew install $missing
+# }
+# [[ ! -f "$CACHE_DIR/.command_installed" ]] && {
+#   install_missing_command
+#   touch "$CACHE_DIR/.command_installed"
+# }
 
 # 履歴関連とオプション
 HISTFILE="$CACHE_DIR/.zsh_history"
