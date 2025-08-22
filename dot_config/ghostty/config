@@ -47,11 +47,13 @@ fullscreen = true
 
 font-size = 13.7
 # font-family = DejaVuSansM Nerd Font Mono
+# font-family = BIZ UDGothic
 font-family = GeistMono Nerd Font Mono
-font-family = BIZ UDGothic
+font-family = UDEV Gothic NF
 # font-family-bold = DejaVuSansM Nerd Font Mono
+# font-family-bold = BIZ UDGothic
 font-family-bold = GeistMono Nerd Font Mono
-font-family-bold = BIZ UDGothic
+font-family-bold = UDEV Gothic NF
 font-style-bold = false
 font-thicken = true
 font-thicken-strength = 0
