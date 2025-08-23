@@ -62,7 +62,7 @@ alpha-blending = linear
 
 adjust-cell-width = 1%
 adjust-cell-height = 0%
-adjust-underline-position = 10%
+adjust-underline-position = 4%
 
 cursor-style = block
 cursor-style-blink = true
