@@ -60,7 +60,7 @@ font-thicken-strength = 0
 font-feature = -dlig
 alpha-blending = linear
 
-# adjust-cell-width = 1
+adjust-cell-width = 1
 # adjust-cell-height = 1
 
 cursor-style = block
