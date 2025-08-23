@@ -55,8 +55,8 @@ font-family = UDEV Gothic NF
 font-family-bold = GeistMono Nerd Font Mono
 font-family-bold = UDEV Gothic NF
 font-style-bold = false
-font-thicken = true
-font-thicken-strength = 0
+# font-thicken = true
+# font-thicken-strength = 0
 font-feature = -dlig
 alpha-blending = linear
 
