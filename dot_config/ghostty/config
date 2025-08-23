@@ -60,8 +60,9 @@ font-style-bold = false
 font-feature = -dlig
 alpha-blending = linear
 
-adjust-cell-width = 1
-# adjust-cell-height = 1
+adjust-cell-width = 1%
+adjust-cell-height = 0%
+adjust-underline-position = 10%
 
 cursor-style = block
 cursor-style-blink = true
