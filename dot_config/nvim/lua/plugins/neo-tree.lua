@@ -24,6 +24,8 @@ return {
           padding = 0
         },
       },
+      hide_root_node = true,
+      retain_hidden_root_indent = true,
       filesystem = {
         filtered_items = {
           hide_dotfiles = false,
@@ -36,7 +38,6 @@ return {
     },
     config = function(_, opts)
       require("neo-tree").setup(opts)
-      -- vim.api.nvim_set_hl(0, "NeoTreeWinSeparator", { fg = "#4c566a", bg = "NONE" })
     end,
   }
 }

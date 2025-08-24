@@ -53,13 +53,13 @@ return {
           },
           center = {
             {
-              icon = " ",
+              icon = " ",
               desc = "Recent files",
               key = "R",
               action = "Telescope oldfiles"
             },
             {
-              icon = " ",
+              icon = " ",
               desc = "New file",
               key  = "N",
               action = function()
@@ -74,7 +74,7 @@ return {
               end,
             },
             {
-              icon = " ",
+              icon = " ",
               desc = "Quit nvim",
               key = "Q",
               action = function() vim.cmd("qa") end
