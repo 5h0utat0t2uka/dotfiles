@@ -60,17 +60,12 @@ return {
             },
             {
               icon = " ",
-              desc = "Quit nvim",
-              key = "Q",
-              action = function() vim.cmd("qa") end
-            },
-            {
-              icon = " ",
-              desc = "Seek help",
-              key = "H",
+              desc = "New file",
+              key  = "N",
               action = function()
                 local dbuf = vim.api.nvim_get_current_buf()
-                require("telescope.builtin").help_tags()
+                vim.cmd("enew")
+                vim.cmd("startinsert")
                 vim.schedule(function()
                   if vim.api.nvim_buf_is_valid(dbuf) then
                     pcall(vim.api.nvim_buf_delete, dbuf, { force = true })
@@ -78,6 +73,26 @@ return {
                 end)
               end,
             },
+            {
+              icon = " ",
+              desc = "Quit nvim",
+              key = "Q",
+              action = function() vim.cmd("qa") end
+            },
+            -- {
+            --   icon = " ",
+            --   desc = "Seek help",
+            --   key = "H",
+            --   action = function()
+            --     local dbuf = vim.api.nvim_get_current_buf()
+            --     require("telescope.builtin").help_tags()
+            --     vim.schedule(function()
+            --       if vim.api.nvim_buf_is_valid(dbuf) then
+            --         pcall(vim.api.nvim_buf_delete, dbuf, { force = true })
+            --       end
+            --     end)
+            --   end,
+            -- },
           },
           footer = make_footer(),
           vertical_center = true,
