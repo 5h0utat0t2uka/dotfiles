@@ -1,5 +1,7 @@
 return {
   "romgrk/barbar.nvim",
+  enabled = false,
+
   dependencies = {
     'lewis6991/gitsigns.nvim',
   },
@@ -15,14 +17,6 @@ return {
       },
       separator = {left = '', right = ''},
       separator_at_end = false,
-      -- buffer_number = false,
-      -- button = false,
-      -- diagnostics = {
-      --   [vim.diagnostic.severity.ERROR] = { enabled = false },
-      --   [vim.diagnostic.severity.WARN]  = { enabled = false },
-      --   [vim.diagnostic.severity.INFO]  = { enabled = false },
-      --   [vim.diagnostic.severity.HINT]  = { enabled = false },
-      -- },
     }
   },
   version = '^1.0.0',
