@@ -5,7 +5,8 @@ return {
     main = "scrollbar",
     opts = {
       show = true,
-      handle = { blend = 30, color = nil }, -- color=nil ならハイライトから取得
+      -- handle = { blend = 50, color = nil },
+      handle = { color = '#3b4252' },
       marks = {
         Search = { color = "#d08770" },
         Error  = { color = "#bf616a" },
