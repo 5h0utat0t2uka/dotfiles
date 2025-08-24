@@ -10,6 +10,7 @@ vim.opt.wildmenu = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.scrolloff = 5
+vim.o.winbar = " "
 -- vim.opt.cmdheight = 0
 vim.opt.showmatch = true
 vim.opt.cursorline = true

@@ -36,7 +36,7 @@ return {
     },
     config = function(_, opts)
       require("neo-tree").setup(opts)
-      vim.api.nvim_set_hl(0, "NeoTreeWinSeparator", { fg = "#4c566a", bg = "NONE" })
+      -- vim.api.nvim_set_hl(0, "NeoTreeWinSeparator", { fg = "#4c566a", bg = "NONE" })
     end,
   }
 }
