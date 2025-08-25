@@ -61,7 +61,7 @@ font-feature = -dlig
 alpha-blending = linear
 
 adjust-cell-width = 1%
-adjust-cell-height = 0%
+adjust-cell-height = 0.5%
 adjust-underline-position = 4%
 
 cursor-style = block
@@ -75,9 +75,9 @@ window-padding-balance = true
 window-colorspace = display-p3
 
 macos-titlebar-style = hidden
+# macos-titlebar-proxy-icon = visible
 macos-window-shadow = false
 macos-non-native-fullscreen = visible-menu
-macos-titlebar-proxy-icon = visible
 macos-icon-frame = plastic
 macos-icon = retro
 
