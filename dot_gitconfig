@@ -38,6 +38,7 @@
 
 # ghq
 [ghq]
+  user = 5h0utat0t2uka
   root = ~/Developer/repositories
 
 [ghq "https://github.com/you-ec"]
