@@ -54,6 +54,23 @@ return {
           "--hidden",
         }
       },
+      pickers = {
+        buffers = {
+          initial_mode = "normal",
+          sort_mru = true,
+          ignore_current_buffer = true,
+          mappings = {
+            n = {
+              -- ノーマルモードで dd でバッファ削除
+              ["dd"] = require("telescope.actions").delete_buffer,
+            },
+            i = {
+              -- インサートモードで Ctrl+d で削除
+              ["<C-d>"] = require("telescope.actions").delete_buffer,
+            }
+          }
+        }
+      },
     }
   },
   {
