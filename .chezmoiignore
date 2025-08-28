@@ -15,6 +15,7 @@
 .zed/prompts/**                  # mdbファイル(DB)
 
 README.md
+68544e5ef841.png
 *.DS_Store
 */*.DS_Store
 **/.DS_Store

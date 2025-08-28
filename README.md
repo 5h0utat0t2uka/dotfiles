@@ -57,7 +57,10 @@ git commit -m "Update README"
 git push
 ```
 
+---
+
 ## Neovim
+![](/68544e5ef841.png)
 プラグインマネージャーに[lazy.nvim](https://github.com/folke/lazy.nvim)を利用する場合の運用  
 ### セットアップの手順
 ``` shell
