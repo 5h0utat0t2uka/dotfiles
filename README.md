@@ -84,3 +84,27 @@ chezmoi add ~/.config/nvim/lazy-lock.json                 # アンインスト�
 
 ```
 
+### プラグインの設定内容
+`<Leader>`はスペースに割り当て
+``` lua
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+```
+
+#### [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim)
+ファイルエクスプローラー  
+- `<Leader>e`でトグル
+
+#### [telescope](https://github.com/nvim-telescope/telescope.nvim)
+ファジーファインダー
+- `<Leader>ff`でファイル検索
+- `<Leader>fg`でグレップ
+- `<Leader>fb`でバッファ一覧、ノーマルモードの場合は`dd`で、インサートモードの場合は`<C-d>`でバッファ削除
+
+#### [toggleterm](https://github.com/akinsho/toggleterm.nvim)
+フローティングでターミナル表示
+- `<Leader>tt`でターミナル起動して表示・非表示をトグル
+- `<Leader>lg`でlazygitを開く
+> [!TIP]
+> フォーカスが当たらない（入力できない）場合はインサートモード(`i`)にする
+
