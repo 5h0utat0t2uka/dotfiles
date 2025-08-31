@@ -1,11 +1,6 @@
 # 非インタラクティブシェルのチェック
 [[ $- != *i* ]] && return
 
-# XDG環境変数
-# export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-# export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-# export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-
 # キャッシュ関連ディレクトリ
 CACHE_DIR="${XDG_CACHE_HOME}/zsh"
 mkdir -p "$CACHE_DIR"
@@ -92,7 +87,6 @@ fi
 # Powerlevel10k
 [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && \
   source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
-# [[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
 [[ -f "$ZDOTDIR/.p10k.zsh" ]] && source "$ZDOTDIR/.p10k.zsh"
 
 # zsh-autosuggestions
@@ -274,9 +268,6 @@ fi
 
 # .zshrcのコンパイル（次回起動時の高速化）
 () {
-  # local zshrc="$HOME/.zshrc"
-  # local p10k="$HOME/.p10k.zsh"
-  # local zwc="$zshrc.zwc"
   local zshrc="$ZDOTDIR/.zshrc"
   local p10k="$ZDOTDIR/.p10k.zsh"
   local zwc="$zshrc.zwc"
