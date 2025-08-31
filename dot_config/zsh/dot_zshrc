@@ -2,13 +2,14 @@
 [[ $- != *i* ]] && return
 
 # XDG環境変数
-export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+# export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+# export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+# export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 
-# キャッシュディレクトリ
+# キャッシュ関連ディレクトリ
 CACHE_DIR="${XDG_CACHE_HOME}/zsh"
 mkdir -p "$CACHE_DIR"
+mkdir -p "$SHELL_SESSIONS_DIR"
 
 # Instant Prompt (P10k)
 if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -78,7 +79,7 @@ export VISUAL="nvim"
 # Completions
 typeset -U fpath
 [[ -d "$BREW_PREFIX/share/zsh-completions" ]] && fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
-
+zstyle ':completion:*' cache-path "$CACHE_DIR/.zcompcache"
 autoload -Uz compinit
 dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
 if [[ -f "$dump.zwc" ]] && [[ "$dump.zwc" -nt "$dump" ]]; then
@@ -91,7 +92,8 @@ fi
 # Powerlevel10k
 [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && \
   source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
-[[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
+# [[ -f "$HOME/.p10k.zsh" ]] && source "$HOME/.p10k.zsh"
+[[ -f "$ZDOTDIR/.p10k.zsh" ]] && source "$ZDOTDIR/.p10k.zsh"
 
 # zsh-autosuggestions
 typeset -A ZSH_HIGHLIGHT_STYLES
@@ -159,6 +161,7 @@ alias ll='eza -alo --icons --time-style iso'
 alias lg='lazygit'
 
 # abbr
+export ABBR_USER_ABBREVIATIONS_FILE="$XDG_CONFIG_HOME/zsh/abbreviations"
 ABBR_SET_EXPANSION_CURSOR=1
 [[ -r "$BREW_PREFIX/share/zsh-abbr/zsh-abbr.zsh" ]] && source "$BREW_PREFIX/share/zsh-abbr/zsh-abbr.zsh"
 abbr -S -qq gs="git status"
@@ -271,8 +274,11 @@ fi
 
 # .zshrcのコンパイル（次回起動時の高速化）
 () {
-  local zshrc="$HOME/.zshrc"
-  local p10k="$HOME/.p10k.zsh"
+  # local zshrc="$HOME/.zshrc"
+  # local p10k="$HOME/.p10k.zsh"
+  # local zwc="$zshrc.zwc"
+  local zshrc="$ZDOTDIR/.zshrc"
+  local p10k="$ZDOTDIR/.p10k.zsh"
   local zwc="$zshrc.zwc"
 
   if [[ -f "$zshrc" && ( ! -f "$zwc" || "$zshrc" -nt "$zwc" ) ]]; then
