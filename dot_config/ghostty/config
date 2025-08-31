@@ -57,8 +57,10 @@ font-family-bold = UDEV Gothic NF
 font-style-bold = false
 # font-thicken = true
 # font-thicken-strength = 0
+font-feature = -calt
+font-feature = -liga
 font-feature = -dlig
-alpha-blending = linear
+alpha-blending = native
 
 adjust-cell-width = 1%
 adjust-cell-height = 0.5%
