@@ -152,6 +152,8 @@ abbr -S -qq gs="git status"
 abbr -S -qq ga="git add ."
 abbr -S -qq gc="git commit -m \"%\""
 abbr -S -qq gp="git push origin HEAD"
+abbr -S -qq nd="npm run dev"
+abbr -S -qq nb="npm run build"
 
 # function
 autoload -Uz add-zsh-hook
