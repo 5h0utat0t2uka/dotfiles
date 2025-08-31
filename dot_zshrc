@@ -15,6 +15,19 @@ if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# banner
+# BANNER_FONT="DOS Rebel"
+# BANNER_TEXT="${BANNER_TEXT:-~/${HOST%%.*}}"
+# BANNER_WIDTH="${COLUMNS:-120}"
+# BANNER_HEX="${FIGLET_COLOR:-4c566a}"
+# R=$((16#${BANNER_HEX:0:2}))
+# G=$((16#${BANNER_HEX:2:2}))
+# B=$((16#${BANNER_HEX:4:2}))
+# BANNER_CACHE="$CACHE_DIR/banner-${BANNER_WIDTH}.txt"
+# [[ -s "$BANNER_CACHE" ]] || figlet -f "$BANNER_FONT" -w "$BANNER_WIDTH" -- "$BANNER_TEXT" > "$BANNER_CACHE"
+# printf '\n'
+# printf "\e[38;2;${R};${G};${B}m"; cat "$BANNER_CACHE"; printf '\e[0m'
+
 # Homebrew検出とPATH設定
 BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
 typeset -U path
