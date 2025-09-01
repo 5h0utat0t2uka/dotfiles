@@ -7,8 +7,11 @@ mkdir -p "$CACHE_DIR"
 mkdir -p "$SHELL_SESSIONS_DIR"
 
 # Instant Prompt (P10k)
-if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
+# if [[ -r "$CACHE_DIR/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#   source "$CACHE_DIR/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # banner
@@ -74,8 +77,10 @@ export VISUAL="nvim"
 # Completions
 typeset -U fpath
 [[ -d "$BREW_PREFIX/share/zsh-completions" ]] && fpath=("$BREW_PREFIX/share/zsh-completions" $fpath)
+zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "$CACHE_DIR/.zcompcache"
 autoload -Uz compinit
+
 dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
 if [[ -f "$dump.zwc" ]] && [[ "$dump.zwc" -nt "$dump" ]]; then
   compinit -C -d "$dump"
@@ -85,9 +90,14 @@ else
 fi
 
 # Powerlevel10k
+export POWERLEVEL9K_INSTANT_PROMPT_DIR="$CACHE_DIR"
+export POWERLEVEL9K_DUMP_DIR="$CACHE_DIR"
 [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && \
   source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
 [[ -f "$ZDOTDIR/.p10k.zsh" ]] && source "$ZDOTDIR/.p10k.zsh"
+# [[ -r "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && \
+#   source "$BREW_PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
+# [[ -f "$ZDOTDIR/.p10k.zsh" ]] && source "$ZDOTDIR/.p10k.zsh"
 
 # zsh-autosuggestions
 typeset -A ZSH_HIGHLIGHT_STYLES
@@ -155,7 +165,8 @@ alias ll='eza -alo --icons --time-style iso'
 alias lg='lazygit'
 
 # abbr
-export ABBR_USER_ABBREVIATIONS_FILE="$XDG_CONFIG_HOME/zsh/abbreviations"
+# export ABBR_USER_ABBREVIATIONS_FILE="$XDG_CONFIG_HOME/zsh/abbreviations"
+export ABBR_USER_ABBREVIATIONS_FILE="$ZDOTDIR/abbreviations"
 ABBR_SET_EXPANSION_CURSOR=1
 [[ -r "$BREW_PREFIX/share/zsh-abbr/zsh-abbr.zsh" ]] && source "$BREW_PREFIX/share/zsh-abbr/zsh-abbr.zsh"
 abbr -S -qq gs="git status"
@@ -270,12 +281,23 @@ fi
 () {
   local zshrc="$ZDOTDIR/.zshrc"
   local p10k="$ZDOTDIR/.p10k.zsh"
-  local zwc="$zshrc.zwc"
 
-  if [[ -f "$zshrc" && ( ! -f "$zwc" || "$zshrc" -nt "$zwc" ) ]]; then
+  if [[ -f "$zshrc" && ( ! -f "$zshrc.zwc" || "$zshrc" -nt "$zshrc.zwc" ) ]]; then
     zcompile "$zshrc"
   fi
   if [[ -f "$p10k" && ( ! -f "$p10k.zwc" || "$p10k" -nt "$p10k.zwc" ) ]]; then
     zcompile "$p10k"
   fi
 }
+# () {
+#   local zshrc="$ZDOTDIR/.zshrc"
+#   local p10k="$ZDOTDIR/.p10k.zsh"
+#   local zwc="$zshrc.zwc"
+
+#   if [[ -f "$zshrc" && ( ! -f "$zwc" || "$zshrc" -nt "$zwc" ) ]]; then
+#     zcompile "$zshrc"
+#   fi
+#   if [[ -f "$p10k" && ( ! -f "$p10k.zwc" || "$p10k" -nt "$p10k.zwc" ) ]]; then
+#     zcompile "$p10k"
+#   fi
+# }
