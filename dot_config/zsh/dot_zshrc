@@ -98,8 +98,8 @@ export POWERLEVEL9K_DUMP_DIR="$CACHE_DIR"
 
 # zsh-autosuggestions
 typeset -A ZSH_HIGHLIGHT_STYLES
-ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=#d8dee9'
-ZSH_HIGHLIGHT_STYLES[unknown-command]='fg=#d8dee9'
+ZSH_HIGHLIGHT_STYLES[unknown-token]='fg=white'
+ZSH_HIGHLIGHT_STYLES[unknown-command]='fg=red,underline'
 ZSH_AUTOSUGGEST_STRATEGY=(history)
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=2000
 [[ -r "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
