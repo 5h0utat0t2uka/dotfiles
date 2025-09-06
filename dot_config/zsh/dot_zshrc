@@ -120,6 +120,15 @@ typeset -a IGNORE_PATTERNS=(
 typeset -a FZF_BASE_OPTS
 typeset -a FZF_FILE_OPTS
 typeset -g NBSP=$'\u00A0'
+typeset -g FZF_PREVIEW_SWITCH_COLS=120
+
+fzf_preview_window_opt() {
+  if (( COLUMNS < FZF_PREVIEW_SWITCH_COLS )); then
+    echo "--preview-window=down,60%,border-rounded"
+  else
+    echo "--preview-window=right,60%,border-rounded"
+  fi
+}
 
 # 共通オプションを配列として定義（重要：配列のまま維持）
 typeset -a FZF_BASE_OPTS=(
@@ -136,6 +145,7 @@ typeset -a FZF_BASE_OPTS=(
   "--no-separator"
   "--no-scrollbar"
   "--prompt=❯${NBSP}"
+  "$(fzf_preview_window_opt)"
 )
 typeset -a FZF_FILE_OPTS=(
   "--preview"
