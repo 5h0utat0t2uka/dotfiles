@@ -1,24 +1,24 @@
-# Dotfiles
+## Chezmoi
 ドットファイルを[chezmoi](https://www.chezmoi.io/)で運用する
 
-## ドットファイルの追加
+### ドットファイルの追加
 ``` shell
 chezmoi add ~/.zshrc
 ```
 
-## ドットファイルの編集と確認
+### ドットファイルの編集と確認
 ``` shell
 chezmoi edit ~/.zshrc
 chezmoi diff
 ```
 
-## ドットファイルの反映
+### ドットファイルの反映
 ``` shell
 chezmoi apply ~/.zshrc
 exec $SHELL -l
 ```
 
-## ドットファイルの変更をリポジトリに反映
+### ドットファイルの変更をリポジトリに反映
 ``` shell
 chezmoi cd # ソースディレクトリに入る
 git add .
@@ -26,7 +26,7 @@ git commit -m "Update .zshrc"
 git push
 ```
 
-## ドットファイルの管理を除外
+### ドットファイルの管理を除外
 ``` shell
 chezmoi forget ~/.zshrc
 
@@ -34,7 +34,7 @@ chezmoi forget ~/.zshrc
 chezmoi destroy ~/.zshrc
 ```
 
-## テンプレートファイルの更新
+### テンプレートファイルの更新
 ``` shell
 # エディタで編集
 chezmoi edit-config-template
@@ -48,7 +48,7 @@ chezmoi execute-template < ~/.local/share/chezmoi/.chezmoi.toml.tmpl > ~/.config
 chezmoi init --apply
 ```
 
-## 管理対象外のファイルの更新
+### 管理対象外のファイルの更新
 ``` shell
 chezmoi cd     # ソースディレクトリに入る
 vim README.md  # エディタで編集
