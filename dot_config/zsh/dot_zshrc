@@ -124,9 +124,9 @@ typeset -g FZF_PREVIEW_SWITCH_COLS=120
 
 fzf_preview_window_opt() {
   if (( COLUMNS < FZF_PREVIEW_SWITCH_COLS )); then
-    echo "--preview-window=down,60%,border-rounded"
+    echo "--preview-window=down,50%,border-rounded"
   else
-    echo "--preview-window=right,60%,border-rounded"
+    echo "--preview-window=right,50%,border-rounded"
   fi
 }
 
@@ -145,7 +145,7 @@ typeset -a FZF_BASE_OPTS=(
   "--no-separator"
   "--no-scrollbar"
   "--prompt=❯${NBSP}"
-  "$(fzf_preview_window_opt)"
+  # "$(fzf_preview_window_opt)"
 )
 typeset -a FZF_FILE_OPTS=(
   "--preview"
@@ -185,6 +185,11 @@ abbr -S -qq nb="npm run build"
 
 # function
 autoload -Uz add-zsh-hook
+update_zo_opts() {
+  export _ZO_FZF_OPTS="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt) ${(j: :)_ZO_ADDITIONAL_OPTS}"
+}
+add-zsh-hook precmd update_zo_opts
+
 after_prompt_once() {
   command -v mise   >/dev/null 2>&1 && eval "$(command mise activate zsh)"
   command -v zoxide >/dev/null 2>&1 && eval "$(command zoxide init zsh)"
@@ -200,7 +205,7 @@ fzf_history() {
     fc -rl 1 \
     | perl -ne 'print if !$seen{(/^\s*\d+\s+(.*)$/)[0]}++' \
     | sed 's/^[ ]*[0-9]*[ ]*//' \
-    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} --prompt=❯${NBSP}" \
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt) --prompt=❯${NBSP}" \
     fzf --query "$LBUFFER"
   )
   [[ -z "$sel" ]] && { zle -R; return 0; }
@@ -233,7 +238,7 @@ fzf_find() {
   local file
   file=$(
     rg --files --hidden ${rg_globs[@]} \
-    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} ${(j: :)FZF_FILE_OPTS}" fzf
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt) ${(j: :)FZF_FILE_OPTS}" fzf
   )
   [[ -z "$file" ]] && { zle -R; return 0; }
   BUFFER="nvim ${(q)file}"
@@ -250,7 +255,7 @@ fzf_ghq() {
   local repo
   repo=$(
     ghq list \
-    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} \
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt) \
       --prompt='❯${NBSP}' \
       --preview='dir=\$(ghq root)/{}; \
         root=\$(ghq root); \
