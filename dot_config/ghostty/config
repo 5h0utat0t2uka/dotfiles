@@ -63,12 +63,12 @@ font-feature = -dlig
 alpha-blending = native
 
 adjust-cell-width = 1%
-adjust-cell-height = 0.5%
+adjust-cell-height = 0%
 adjust-underline-position = 4%
 
 cursor-style = block
 cursor-style-blink = true
-cursor-invert-fg-bg = true
+# cursor-invert-fg-bg = true
 shell-integration-features = no-cursor
 
 window-padding-x = 10
@@ -84,4 +84,3 @@ macos-icon-frame = plastic
 macos-icon = retro
 
 resize-overlay = never
-
