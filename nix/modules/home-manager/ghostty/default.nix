@@ -21,11 +21,12 @@
     font-feature = -liga
     font-feature = -dlig
     alpha-blending = native
-    adjust-underline-position = 2%
+    # adjust-underline-position = 2%
+    # adjust-underline-thickness = -2%
     cursor-style = block
     cursor-style-blink = true
     cursor-color = #d8dee9
-    cursor-opacity = 0.8
+    # cursor-opacity = 0.8
     shell-integration-features = no-cursor,ssh-terminfo,ssh-env
     notify-on-command-finish = unfocused
     notify-on-command-finish-action = no-bell,notify

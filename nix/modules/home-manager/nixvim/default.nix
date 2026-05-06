@@ -100,11 +100,6 @@
       { mode = "n"; key = "<S-l>"; action = "<cmd>bnext<cr>"; options.desc = "Next buffer"; }
       { mode = "n"; key = "<S-h>"; action = "<cmd>bprevious<cr>"; options.desc = "Previous buffer"; }
       { mode = "n"; key = "U"; action = "<C-r>"; options = { noremap = true; silent = true; desc = "Redo"; }; }
-      { mode = "n"; key = "gk"; action = "<Cmd>tabnew<CR>"; options.desc = "New tab"; }
-      { mode = "n"; key = "gh"; action = "<Cmd>tabprevious<CR>"; options.desc = "Previous tab"; }
-      { mode = "n"; key = "gl"; action = "<Cmd>tabnext<CR>"; options.desc = "Next tab"; }
-      { mode = "n"; key = "gj"; action = "<Cmd>tabclose<CR>"; options.desc = "Close tab"; }
-      { mode = "n"; key = "gJ"; action = "<Cmd>tabclose!<CR>"; options.desc = "Force close tab"; }
       { mode = "n"; key = "Q"; action = "q"; options.desc = "Record macro"; }
       { mode = "n"; key = "q"; action = "<Nop>"; options.desc = "Disable accidental macro recording"; }
       { mode = [ "n" "x" ]; key = "x"; action = "\"_x"; options = { silent = true; desc = "Delete without yank"; }; }
