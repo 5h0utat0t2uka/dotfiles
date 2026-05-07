@@ -10,10 +10,11 @@
     };
     taps = [];
     brews = [
-      # FIXME: issue: failing tests (https://github.com/nixos/nixpkgs/issues/476308)
+      # FIXME: issue: samba build failure (https://github.com/NixOS/nixpkgs/issues/494532)
       "termscp"
     ];
     casks = [
+      "codex-app"
       "karabiner-elements"
       "ollama-app"
       "zed"

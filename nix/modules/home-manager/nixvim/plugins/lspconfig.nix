@@ -38,7 +38,7 @@
       config.settings.nixd.formatting.command = [ "nixfmt" ];
     };
 
-    # FIXME: issue: lsp.progress notification on every keystroke (https://github.com/microsoft/pyright/issues/11408?utm_source=chatgpt.com)
+    # FIXME: issue: lsp.progress notification on every keystroke (https://github.com/microsoft/pyright/issues/11408)
     pyright = {
       enable = true;
       config.settings.python.analysis = {
@@ -79,7 +79,7 @@
       '';
     };
 
-    # FIXME: issue: language-server crashes on attach #16612 (https://github.com/withastro/astro/issues/16612?utm_source=chatgpt.com)
+    # FIXME: issue: language-server crashes on attach #16612 (https://github.com/withastro/astro/issues/16612)
     astro = {
       enable = true;
       package = pkgs.astro-language-server;

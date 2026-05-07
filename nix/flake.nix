@@ -72,8 +72,11 @@
               config.allowUnfree = true;
               # overlay をここで追加
               overlays = [
+                # tools
                 # (import ./overlays/tools/codex { inherit inputs; })
                 # (import ./overlays/tools/claude-code { inherit inputs; })
+
+                # fonts
                 (import ./overlays/fonts/shcode-jp-zen-haku.nix)
               ];
             };

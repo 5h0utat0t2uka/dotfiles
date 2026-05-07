@@ -75,6 +75,15 @@
       winblend = 10;
       number = true;
       showcmd = true;
+      list = false;
+      listchars = {
+        tab = ">-";
+        trail = "·";
+        nbsp = "␣";
+        extends = "…";
+        space = "·";
+        eol = "¬";
+      };
       ignorecase = true;
       smartcase = true;
       wrap = true;
@@ -108,8 +117,9 @@
       { mode = "n"; key = "<A-l>"; action = "w"; options = { remap = true; silent = true; desc = "Next word"; }; }
       { mode = "n"; key = "<A-k>"; action = "<C-u>"; options = { remap = true; silent = true; desc = "Page up"; }; }
       { mode = "n"; key = "<A-j>"; action = "<C-d>"; options = { remap = true; silent = true; desc = "Page down"; }; }
-      { mode = "n"; key = "<leader>rw"; action = "\"_diwP"; options.desc = "Replace word with yanked"; }
+      { mode = "n"; key = "<leader>tl"; action = "<cmd>set list!<cr>"; options = { desc = "Toggle listchars"; }; }
       { mode = "n"; key = "<leader>tc"; action = "g~iw"; options = { remap = false; desc = "Toggle word case"; }; }
+      { mode = "n"; key = "<leader>rw"; action = "\"_diwP"; options.desc = "Replace word with yanked"; }
       { mode = "i"; key = "<A-w>"; action = "<C-Right>"; options.desc = "Move words to right"; }
       { mode = "i"; key = "<A-b>"; action = "<C-Left>"; options.desc = "Move words to left"; }
       { mode = "i"; key = "<A-l>"; action = "<End>"; options.desc = "Move to end of line"; }
