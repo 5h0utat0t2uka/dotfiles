@@ -58,6 +58,7 @@ in
         ni
         nmap
         nodejs_24
+        opentofu
         pnpm
         pinentry_mac
         ripgrep
@@ -71,6 +72,7 @@ in
         nixd
         nil
         lua-language-server
+        tofu-ls
         vscode-langservers-extracted
         copilot-language-server
       ];

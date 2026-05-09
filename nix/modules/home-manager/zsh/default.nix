@@ -47,7 +47,7 @@
         nrd = "nr dev";
         nrb = "nr build";
         nrs = "nr start";
-        ll = "eza -alo --icons --time-style iso";
+        ll = "eza -alo --time-style iso";
         lg = "lazygit";
       };
     };
