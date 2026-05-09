@@ -8,7 +8,9 @@
 ---
 
 <div align="center">
-  <img alt="nix" src="https://img.shields.io/badge/nix-5277C3?style=for-the-badge&logo=nixos&logoColor=white"/> <img alt="macOS" src="https://img.shields.io/badge/macOS-222222?style=for-the-badge&logo=apple&logoColor=white"/>
+  <img alt="技術者倫理 遵守済み" src="https://img.shields.io/badge/%E6%8A%80%E8%A1%93%E8%80%85%E5%80%AB%E7%90%86-%E9%81%B5%E5%AE%88%E6%B8%88%E3%81%BF-0a0a0a?style=for-the-badge&labelColor=ffffff"/>  
+  <img alt="nix" src="https://img.shields.io/badge/nix-5277C3?style=for-the-badge&logo=nixos&logoColor=white"/>  
+  <img alt="macOS" src="https://img.shields.io/badge/macOS-222222?style=for-the-badge&logo=apple&logoColor=white"/>  
 </div>
 
 ## 設定
@@ -52,13 +54,13 @@ cd ~/.local/share/chezmoi/scripts
 ## 更新  
 各 `input` に対する確認と更新のコマンドは下記  
 | 対象 | 確認 | 更新 |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | `nixpkgs`      | `just check-update-pkg` | `just update-pkg` |
-| `nix-homebrew` | `just check-update-all` | `just update-all` |
 | `home-manager` | `just check-update-all` | `just update-all` |
-| `darwin`       | `just check-update-all` | `just update-all` |
-| `wezterm`      | `just check-update-all` | `just update-all` |
-| `nixvim`       | `just check-update-all` | `just update-all` |
+| `nix-homebrew` | 〃 | 〃 |
+| `darwin`       | 〃 | 〃 |
+| `wezterm`      | 〃 | 〃 |
+| `nixvim`       | 〃 | 〃 |
 
 ### `flake.lcok` の更新を実行
 ``` sh
@@ -74,7 +76,7 @@ just update-all
 ### `flake.lcok` 更新後の検証と反映
 
 | 内容 | コマンド |
-| --- | --- |
+| :--- | :--- |
 | 評価と検証  | `just check`       |
 | ビルドを検証 | `just check-build` |
 | ビルドと反映 | `just switch`      |
@@ -175,6 +177,9 @@ You are running the latest version of Determinate Nix.
 git tag -a snapshot-yyyy.mm.dd-1 -m "Update determinate"
 git push origin --tags
 ```
+
+> [!IMPORTANT]
+> Determinateを更新後は`.github/workflows/nix-check.yml`の`[determinate-nix-action](https://github.com/DeterminateSystems/determinate-nix-action)`のバージョンのハッシュ値を確認して合わせる  
 
 ## ロールバック  
 更新で問題があった場合以下のコマンドで前世代に戻す  
