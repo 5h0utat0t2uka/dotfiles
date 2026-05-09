@@ -99,7 +99,7 @@ git commit -m "update flake inputs"
 ```
 ``` sh
 # タグ付けしておく
-git tag -a yyyy-mm-dd -m "Update flake inputs"
+git tag -a snapshot-yyyy.mm.dd-1 -m "Update flake inputs"
 git push origin --tags
 ```
 
@@ -172,7 +172,7 @@ You are running the latest version of Determinate Nix.
 ```
 
 ``` sh
-git tag -a yyyy-mm-dd -m "Update determinate"
+git tag -a snapshot-yyyy.mm.dd-1 -m "Update determinate"
 git push origin --tags
 ```
 

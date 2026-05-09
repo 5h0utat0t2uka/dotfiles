@@ -7,7 +7,8 @@
       autoUpdate = true;
       upgrade = true;
       cleanup = "zap";
-      # FIXME: extraEnvを削除した場合は下記をuntapする
+      # FIXME: chore: update homebrew to 5.1.10 (https://github.com/zhaofengli/nix-homebrew/pull/136)
+      # #136 がマージされたら extraEnv を削除して、再ビルド後に下記をuntapする
       # brew untap homebrew/core
       # brew untap homebrew/cask
       extraEnv = {
