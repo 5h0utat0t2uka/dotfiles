@@ -79,9 +79,10 @@
       };
       nix_shell = {
         symbol = " ";
-        format = "[$symbol$state](blue)  ";
-        impure_msg = "impure";
-        pure_msg = "pure";
+        # format = "[$symbol$state( \($name\))](blue)  ";
+        format = "[$symbol$state(\\($name\\))](blue) ";
+        impure_msg = "";
+        pure_msg = "pure ";
       };
       time = {
         disabled = false;

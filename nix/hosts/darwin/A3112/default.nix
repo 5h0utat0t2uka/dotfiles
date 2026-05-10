@@ -23,7 +23,7 @@ in
       ../../../modules/home-manager/starship
       ../../../modules/home-manager/pass
       ../../../modules/home-manager/nixvim
-      # ../../../modules/home-manager/neovim モジュールは残しつつ nixvim に移行する
+      # ../../../modules/home-manager/neovim
       ../../../modules/home-manager/direnv
       ../../../modules/home-manager/lazygit
       ../../../modules/home-manager/aerospace
