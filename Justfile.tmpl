@@ -14,7 +14,7 @@ check-update-pkg:
 # input を全て最新に差し替えてビルドを検証
 check-update-all:
   nix build -L \
-    --override-input nixpkgs github:NixOS/nixpkgs/nixos-unstable \
+    --override-input nixpkgs github:NixOS/nixpkgs/nixpkgs-unstable \
     --override-input nix-homebrew github:zhaofengli/nix-homebrew \
     --override-input home-manager github:nix-community/home-manager \
     --override-input darwin github:LnL7/nix-darwin \
