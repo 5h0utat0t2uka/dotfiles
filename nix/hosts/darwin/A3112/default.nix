@@ -22,6 +22,7 @@ in
       ../../../modules/home-manager/zsh
       ../../../modules/home-manager/starship
       ../../../modules/home-manager/pass
+      ../../../modules/home-manager/sops
       ../../../modules/home-manager/nixvim
       # ../../../modules/home-manager/neovim
       ../../../modules/home-manager/direnv

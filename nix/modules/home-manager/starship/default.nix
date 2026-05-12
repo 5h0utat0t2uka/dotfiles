@@ -79,10 +79,11 @@
       };
       nix_shell = {
         symbol = " ";
-        # format = "[$symbol$state( \($name\))](blue)  ";
-        format = "[$symbol$state(\\($name\\))](blue) ";
-        impure_msg = "";
-        pure_msg = "pure ";
+        format = "[$symbol$state](blue) ";
+        # format = "[$symbol$state(\\($name\\))](blue) ";
+        # impure_msg = "impure";
+        impure_msg = "\\(nix dev-shell\\)";
+        pure_msg = "pure";
       };
       time = {
         disabled = false;
