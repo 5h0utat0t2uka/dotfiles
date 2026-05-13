@@ -45,7 +45,7 @@
         untracked = "[ ?\${count}](green)";
         stashed = "[ *\${count}](purple)";
         modified = "[ !\${count}](yellow)";
-        staged = "[ +\${count}](green)";
+        staged = "[ +\${count}](blue)";
         renamed = "[ ~\${count}](yellow)";
         deleted = "[ -\${count}](red)";
       };

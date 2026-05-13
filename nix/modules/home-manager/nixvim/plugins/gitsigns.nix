@@ -71,5 +71,12 @@
         end
       '';
     };
+    highlight = {
+      GitSignsAdd.fg = "#A3BE8C";
+      GitSignsChange.fg = "#EBCB8B";
+      GitSignsDelete.fg = "#BF616A";
+      GitSignsChangedelete.fg = "#D08770";
+      GitSignsUntracked.fg = "#B48EAD";
+    };
   };
 }
