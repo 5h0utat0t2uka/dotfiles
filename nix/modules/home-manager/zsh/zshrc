@@ -1,7 +1,7 @@
 # キャッシュ関連ディレクトリ
-CACHE_DIR="${XDG_CACHE_HOME}/zsh"
-mkdir -p "$CACHE_DIR"
-mkdir -p "$SHELL_SESSIONS_DIR"
+# CACHE_DIR="${XDG_CACHE_HOME}/zsh"
+# mkdir -p "$CACHE_DIR"
+# mkdir -p "$SHELL_SESSIONS_DIR"
 
 # Homebrew検出とPATH設定
 # BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
@@ -11,18 +11,15 @@ mkdir -p "$SHELL_SESSIONS_DIR"
 #   $path
 # )
 
-# History
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_FIND_NO_DUPS
-setopt HIST_REDUCE_BLANKS
-setopt HIST_VERIFY
-setopt HIST_IGNORE_SPACE
-setopt SHARE_HISTORY
-# Directory stack
-setopt AUTO_PUSHD
-setopt PUSHD_IGNORE_DUPS
-# Shell usability
-setopt INTERACTIVE_COMMENTS
+# setopt HIST_IGNORE_ALL_DUPS
+# setopt HIST_FIND_NO_DUPS
+# setopt HIST_REDUCE_BLANKS
+# setopt HIST_VERIFY
+# setopt HIST_IGNORE_SPACE
+# setopt SHARE_HISTORY
+# setopt AUTO_PUSHD
+# setopt PUSHD_IGNORE_DUPS
+# setopt INTERACTIVE_COMMENTS
 
 autoload -Uz add-zsh-hook
 
@@ -106,22 +103,25 @@ fi
 # fi
 # [[ -n "$new_fpath" ]] && fpath=($new_fpath $fpath)
 
-typeset -U fpath
-fpath=(
-  "${NIX_PROFILE_PREFIX:-}/share/zsh/site-functions"(N-/)
-  $fpath
-)
 
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "$CACHE_DIR/.zcompcache"
-autoload -Uz compinit
-dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
-if [[ -f "$dump.zwc" ]] && [[ "$dump.zwc" -nt "$dump" ]]; then
-  compinit -C -d "$dump"
-else
-  compinit -d "$dump"
-  [[ -f "$dump" ]] && zcompile "$dump"
-fi
+
+
+# typeset -U fpath
+# fpath=(
+#   "${NIX_PROFILE_PREFIX:-}/share/zsh/site-functions"(N-/)
+#   $fpath
+# )
+
+# zstyle ':completion:*' use-cache on
+# zstyle ':completion:*' cache-path "$CACHE_DIR/.zcompcache"
+# autoload -Uz compinit
+# dump="$CACHE_DIR/.zcompdump-${ZSH_VERSION}"
+# if [[ -f "$dump.zwc" ]] && [[ "$dump.zwc" -nt "$dump" ]]; then
+#   compinit -C -d "$dump"
+# else
+#   compinit -d "$dump"
+#   [[ -f "$dump" ]] && zcompile "$dump"
+# fi
 
 # fzf
 typeset -a IGNORE_DIRS=(

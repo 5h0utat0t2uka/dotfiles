@@ -21,6 +21,17 @@
       ABBR_EXPANSION_CURSOR_MARKER = "@";
       ABBR_LINE_CURSOR_MARKER = "@";
     };
+    setOptions = [
+      "HIST_IGNORE_ALL_DUPS"
+      "HIST_FIND_NO_DUPS"
+      "HIST_REDUCE_BLANKS"
+      "HIST_VERIFY"
+      "HIST_IGNORE_SPACE"
+      "SHARE_HISTORY"
+      "AUTO_PUSHD"
+      "PUSHD_IGNORE_DUPS"
+      "INTERACTIVE_COMMENTS"
+    ];
     history = {
       path = "${config.xdg.cacheHome}/zsh/.zsh_history";
       size = 10000;
@@ -57,6 +68,29 @@
       webp = "${config.home.homeDirectory}/Development/scripts/webp.sh";
     };
     initContent = lib.mkMerge [
+      (lib.mkBefore ''
+        CACHE_DIR="''${XDG_CACHE_HOME}/zsh"
+        mkdir -p "$CACHE_DIR"
+        mkdir -p "$SHELL_SESSIONS_DIR"
+
+        typeset -U fpath
+        fpath=(
+          "${config.home.profileDirectory}/share/zsh/site-functions"(N-/)
+          "''${NIX_PROFILE_PREFIX:-}/share/zsh/site-functions"(N-/)
+          $fpath
+        )
+
+        zstyle ':completion:*' use-cache on
+        zstyle ':completion:*' cache-path "$CACHE_DIR/.zcompcache"
+        autoload -Uz compinit
+        dump="$CACHE_DIR/.zcompdump-''${ZSH_VERSION}"
+        if [[ -f "$dump.zwc" ]] && [[ "$dump.zwc" -nt "$dump" ]]; then
+          compinit -C -d "$dump"
+        else
+          compinit -d "$dump"
+          [[ -f "$dump" ]] && zcompile "$dump"
+        fi
+      '')
       (builtins.readFile ./zshrc)
     ];
   };
