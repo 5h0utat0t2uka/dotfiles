@@ -51,6 +51,7 @@ in
         gh
         gifski
         gnupg
+        hyperfine
         just
         jq
         libwebp

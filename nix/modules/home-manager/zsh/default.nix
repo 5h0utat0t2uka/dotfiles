@@ -4,7 +4,7 @@
   xdg.enable = true;
   programs.zsh = {
     enable = true;
-    enableCompletion = false;
+    enableCompletion = true;
     dotDir = "${config.xdg.configHome}/zsh";
     defaultKeymap = "emacs";
     profileExtra = builtins.readFile ./zprofile;
@@ -72,24 +72,6 @@
         CACHE_DIR="''${XDG_CACHE_HOME}/zsh"
         mkdir -p "$CACHE_DIR"
         mkdir -p "$SHELL_SESSIONS_DIR"
-
-        typeset -U fpath
-        fpath=(
-          "${config.home.profileDirectory}/share/zsh/site-functions"(N-/)
-          "''${NIX_PROFILE_PREFIX:-}/share/zsh/site-functions"(N-/)
-          $fpath
-        )
-
-        zstyle ':completion:*' use-cache on
-        zstyle ':completion:*' cache-path "$CACHE_DIR/.zcompcache"
-        autoload -Uz compinit
-        dump="$CACHE_DIR/.zcompdump-''${ZSH_VERSION}"
-        if [[ -f "$dump.zwc" ]] && [[ "$dump.zwc" -nt "$dump" ]]; then
-          compinit -C -d "$dump"
-        else
-          compinit -d "$dump"
-          [[ -f "$dump" ]] && zcompile "$dump"
-        fi
       '')
       (builtins.readFile ./zshrc)
     ];
