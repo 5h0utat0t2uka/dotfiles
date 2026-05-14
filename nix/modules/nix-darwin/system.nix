@@ -89,22 +89,19 @@ in
         NSAutomaticPeriodSubstitutionEnabled = false;
         NSAutomaticQuoteSubstitutionEnabled = false;
         NSAutomaticSpellingCorrectionEnabled = false;
+        NSAutomaticInlinePredictionEnabled = false;
         AppleShowAllExtensions = true;
         KeyRepeat = 2;
         InitialKeyRepeat = 15;
       };
       dock = {
         autohide = true;
-        tilesize = 50;
+        tilesize = 48;
         magnification = false;
         show-recents = false;
         static-only = false;
         launchanim = false;
         mineffect = "scale";
-        wvous-bl-corner = 5;
-        wvous-br-corner = 1;
-        wvous-tl-corner = 1;
-        wvous-tr-corner = 4;
         mru-spaces = false;
         persistent-apps = [ ];
         persistent-others = [
@@ -125,6 +122,27 @@ in
             };
           }
         ];
+        # Hot corner actions below:
+        # 1: Disabled
+        # 2: Mission Control
+        # 3: Application Windows
+        # 4: Desktop
+        # 5: Start Screen Saver
+        # 6: Disable Screen Saver
+        # 7: Dashboard
+        # 10: Put Display to Sleep
+        # 11: Launchpad
+        # 12: Notification Center
+        # 13: Lock Screen
+        # 14: Quick Note
+        # Top left corner
+        wvous-tl-corner = 1;
+        # Top right corner
+        wvous-tr-corner = 4;
+        # Bottom left corner
+        wvous-bl-corner = 5;
+        # Bottom right corner
+        wvous-br-corner = 1;
       };
       finder = {
         AppleShowAllExtensions = true;
@@ -142,6 +160,8 @@ in
       };
       trackpad = {
         TrackpadRightClick = true;
+        FirstClickThreshold = 0;
+        SecondClickThreshold = 0;
       };
       screencapture = {
         location = "~/Desktop";
@@ -167,7 +187,6 @@ in
 
   fonts.packages = with pkgs; [
     nerd-fonts.geist-mono
-    # nerd-fonts.noto
     shcode-jp-zen-haku
     udev-gothic-nf
   ];
