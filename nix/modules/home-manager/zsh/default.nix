@@ -4,7 +4,7 @@
   xdg.enable = true;
   programs.zsh = {
     enable = true;
-    enableCompletion = true;
+    enableCompletion = false;
     dotDir = "${config.xdg.configHome}/zsh";
     defaultKeymap = "emacs";
     profileExtra = builtins.readFile ./zprofile;
@@ -12,9 +12,9 @@
       export XDG_CONFIG_HOME="''${XDG_CONFIG_HOME:-$HOME/.config}"
       export XDG_CACHE_HOME="''${XDG_CACHE_HOME:-$HOME/.cache}"
       export XDG_DATA_HOME="''${XDG_DATA_HOME:-$HOME/.local/share}"
+      export SHELL_SESSIONS_DISABLE=1
     '';
     sessionVariables = {
-      SHELL_SESSIONS_DIR = "${config.xdg.cacheHome}/zsh/sessions";
       ABBR_USER_ABBREVIATIONS_FILE = "${config.xdg.configHome}/zsh-abbr/user-abbreviations";
       ABBR_SET_EXPANSION_CURSOR = "1";
       ABBR_SET_LINE_CURSOR = "1";
@@ -71,7 +71,24 @@
       (lib.mkBefore ''
         CACHE_DIR="''${XDG_CACHE_HOME}/zsh"
         mkdir -p "$CACHE_DIR"
-        mkdir -p "$SHELL_SESSIONS_DIR"
+
+        typeset -U fpath
+        fpath=(
+          "${config.home.profileDirectory}/share/zsh/site-functions"(N-/)
+          "''${NIX_PROFILE_PREFIX:-}/share/zsh/site-functions"(N-/)
+          $fpath
+        )
+
+        zstyle ':completion:*' use-cache on
+        zstyle ':completion:*' cache-path "$CACHE_DIR/.zcompcache"
+        autoload -Uz compinit
+        dump="$CACHE_DIR/.zcompdump-''${ZSH_VERSION}"
+        if [[ -f "$dump.zwc" ]] && [[ "$dump.zwc" -nt "$dump" ]]; then
+          compinit -C -d "$dump"
+        else
+          compinit -d "$dump"
+          [[ -f "$dump" ]] && zcompile "$dump"
+        fi
       '')
       (builtins.readFile ./zshrc)
     ];

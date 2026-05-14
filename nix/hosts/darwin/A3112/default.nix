@@ -45,6 +45,8 @@ in
         age
         chafa
         devbox
+        doggo
+        dust
         eza
         fd
         fzf
@@ -53,6 +55,7 @@ in
         gnupg
         hyperfine
         just
+        jnv
         jq
         libwebp
         macism
@@ -68,6 +71,7 @@ in
         tree
         viu
         wget
+        xh
         zbar
         zizmor
         zoxide
