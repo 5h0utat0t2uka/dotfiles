@@ -1,0 +1,103 @@
+name: nix-update-check
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 毎週日曜 18:00 UTC = 毎週月曜 03:00 JST
+    - cron: '0 18 * * 0'
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  update-check:
+    name: Nix Flake Full Update Check
+    runs-on: macos-26
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: DeterminateSystems/determinate-nix-action@bafaa638b9d5ec0e7e3ac1a7fc80453ef1fd265f # v3.20.0
+        with:
+          kvm: false
+
+      - name: Use Cachix
+        uses: cachix/cachix-action@1eb2ef646ac0255473d23a5907ad7b04ce94065c # v17
+        with:
+          name: 5h0uta
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - run: nix --version
+
+      - name: update all inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd nix
+          nix flake update
+
+      - name: show flake.lock diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd nix
+          git diff -- flake.lock
+
+      - name: flake check after full update
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd nix
+          nix flake check
+
+      - name: eval each darwin host after full update
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd nix
+          for h in hosts/darwin/*; do
+            [[ -d "$h" ]] || continue
+            hn="$(basename "$h")"
+            echo "==> evaluating $hn"
+            nix eval ".#darwinConfigurations.${hn}.config.system.build.toplevel" >/dev/null
+          done
+
+      - name: build each darwin host after full update
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd nix
+          for h in hosts/darwin/*; do
+            [[ -d "$h" ]] || continue
+            hn="$(basename "$h")"
+            echo "==> building $hn"
+            nix build -L ".#darwinConfigurations.${hn}.system" --no-link
+          done
+
+      - name: create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ github.token }}
+          commit-message: "chore(nix): update flake.lock"
+          title: "chore(nix): update flake.lock"
+          body: |
+            Automated weekly full input update.
+            This PR was created only after:
+            - nix flake update
+            - nix flake check
+            - eval each darwin host
+            - build each darwin host
+
+          branch: chore/nix-update-flake-lock
+          base: main
+          delete-branch: true
+          add-paths: |
+            nix/flake.lock

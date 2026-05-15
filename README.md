@@ -51,7 +51,19 @@ cd ~/.local/share/chezmoi/scripts
 ./setup.sh
 ```
 
-## 更新  
+## 自動更新  
+`.github/workflows/nix-update-check.yml` で週に1回、全てのinputを更新して`nix flake check`, `nix build`の確認を行い、エラーがなければ`flake.lock`を更新してPRを作成するので、下記で取り込んで更新する  
+``` sh
+cd ~/.local/share/chezmoi/nix
+git pull --ff-only
+```
+``` sh
+just check
+just check-build
+just switch
+```
+
+## 手動更新  
 各 `input` に対する確認と更新のコマンドは下記  
 | 対象 | 確認 | 更新 |
 | :--- | :--- | :--- |
@@ -99,28 +111,19 @@ just switch
 git add .
 git commit -m "update flake inputs"
 ```
-``` sh
-# タグ付けしておく
-git tag -a snapshot-yyyy.mm.dd-1 -m "Update flake inputs"
-git push origin --tags
-```
 
 ### Determinate Nix の更新
 現在のバージョンと更新情報を確認して、更新があれば実行
 
 1. バージョンを確認
 ``` sh
-nix --version
-```
-``` sh
+❯ nix --version
 nix (Determinate Nix 3.15.1) 2.33.0
 ```
 
 2. 更新を確認
 ``` sh
-determinate-nixd version
-```
-``` sh
+❯ determinate-nixd version
 Determinate Nixd daemon version: 3.15.1
 Determinate Nixd client version: 3.15.1
 Latest version: 3.17.1
@@ -135,9 +138,7 @@ For more information, see: https://dtr.mn/update
 
 3. 更新を実行
 ``` sh
-sudo determinate-nixd upgrade
-```
-``` sh
+❯ sudo determinate-nixd upgrade
 Upgrading Determinate Nixd... 
 Upgrading Determinate Nix... 
 Upgrading Nix to "/nix/store/rhxidj1q2l9y3v4ssn691l7f69gpayfg-determinate-nix-3.17.1" 
@@ -158,16 +159,12 @@ nix flake check /Users/shouta/.local/share/chezmoi/nix
 
 5. 反映を確認
 ``` sh
-nix --version
-```
-``` sh
+❯ nix --version
 nix (Determinate Nix 3.17.1) 2.33.3
 ```
 
 ``` sh
-determinate-nixd version
-```
-``` sh
+❯ determinate-nixd version
 Determinate Nixd daemon version: 3.17.1 
 Determinate Nixd client version: 3.17.1 
 You are running the latest version of Determinate Nix. 

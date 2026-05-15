@@ -1,8 +1,11 @@
 name: nix-check
+
 on:
-  pull_request:
+  workflow_dispatch:
   push:
     branches: [main]
+    paths:
+      - 'nix/flake.lock'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,21 +29,14 @@ jobs:
         with:
           kvm: false
 
-      - name: Use Cachix read-only
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-        uses: cachix/cachix-action@1eb2ef646ac0255473d23a5907ad7b04ce94065c # v17
-        with:
-          name: 5h0uta
-          skipPush: true
-
-      - name: Use Cachix read/write
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      - name: Use Cachix
         uses: cachix/cachix-action@1eb2ef646ac0255473d23a5907ad7b04ce94065c # v17
         with:
           name: 5h0uta
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - run: nix --version
+
       - name: flake check
         shell: bash
         run: |
@@ -60,14 +56,14 @@ jobs:
             nix eval ".#darwinConfigurations.${hn}.config.system.build.toplevel" >/dev/null
           done
 
-      # - name: build each darwin host
-      #   shell: bash
-      #   run: |
-      #     set -euo pipefail
-      #     cd nix
-      #     for h in hosts/darwin/*; do
-      #       [[ -d "$h" ]] || continue
-      #       hn="$(basename "$h")"
-      #       echo "==> building $hn"
-      #       nix build -L ".#darwinConfigurations.${hn}.system" --no-link
-      #     done
+      - name: build each darwin host
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd nix
+          for h in hosts/darwin/*; do
+            [[ -d "$h" ]] || continue
+            hn="$(basename "$h")"
+            echo "==> building $hn"
+            nix build -L ".#darwinConfigurations.${hn}.system" --no-link
+          done
