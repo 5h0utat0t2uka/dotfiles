@@ -1,4 +1,4 @@
-{ pkgs, identity, ... }:
+{ inputs, pkgs, identity, ... }:
 
 let
   username = identity.username;
@@ -15,6 +15,7 @@ in
 
   home-manager.users.${username} = {
     imports = [
+      inputs.sops-nix.homeManagerModules.sops
       ../../../modules/home-manager/ghostty
       ../../../modules/home-manager/wezterm
       ../../../modules/home-manager/tmux

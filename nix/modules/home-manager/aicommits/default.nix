@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
 
 let
   aicommits = pkgs.writeShellScriptBin "aicommits" ''
@@ -15,16 +15,26 @@ in
     aicommits
     aic
   ];
-  home.file.".aicommits".text = ''
-    provider=openai
-    type=conventional
-    locale=en
-    generate=1
-  '';
-  sops = {
-    age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
-    secrets.openai_api_key = {
-      sopsFile = ../../../../secrets/darwin.yaml;
-    };
+  # home.file.".aicommits".text = ''
+  #   provider=openai
+  #   OPENAI_MODEL=gpt-5-nano
+  #   type=conventional
+  #   locale=en
+  #   generate=1
+  # '';
+  home.activation.writeAicommitsConfig =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      umask 077
+      cat > "$HOME/.aicommits" <<EOF
+provider=openai
+OPENAI_API_KEY=$(cat ${config.sops.secrets.openai_api_key.path})
+OPENAI_MODEL=gpt-5-nano
+type=conventional
+locale=en
+generate=1
+EOF
+    '';
+  sops.secrets.openai_api_key = {
+    sopsFile = ../../../../secrets/darwin.yaml;
   };
 }

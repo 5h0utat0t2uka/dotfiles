@@ -1,19 +1,10 @@
 { config, pkgs, ... }:
 
+let
+  ageKeyPath = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+in
 {
-  home.packages = [
-    pkgs.sops
-  ];
-
-  home.sessionVariables = {
-    SOPS_AGE_KEY_FILE = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
-  };
-
-  # sops = {
-  #   age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
-  #   defaultSopsFile = ../../secrets/darwin.yaml;
-  #   secrets = {
-  #     "cloudflare/api_token" = { };
-  #   };
-  # };
+  home.packages = [ pkgs.sops ];
+  home.sessionVariables = { SOPS_AGE_KEY_FILE = ageKeyPath; };
+  sops.age.keyFile = ageKeyPath;
 }

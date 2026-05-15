@@ -18,6 +18,10 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     wezterm = {
       url = "github:wezterm/wezterm?dir=nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -91,7 +95,7 @@
               # overlay をここで追加
               overlays = [
                 # tools
-                (import ./overlays/tools/aicommits.nix)
+                (import ./overlays/tools/aicommits.nix { inherit inputs; })
                 # (import ./overlays/tools/codex { inherit inputs; })
                 # (import ./overlays/tools/claude-code { inherit inputs; })
 
