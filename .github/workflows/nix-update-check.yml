@@ -3,8 +3,8 @@ name: nix-update-check
 on:
   workflow_dispatch:
   schedule:
-    # 毎週日曜 18:00 UTC = 毎週月曜 03:00 JST
-    - cron: '0 18 * * 0'
+    # 月/水/金 AM 06:00 JST
+    - cron: '0 21 * * 0,2,4'
 
 concurrency:
   group: ${{ github.workflow }}

@@ -27,6 +27,7 @@ in
       # ../../../modules/home-manager/neovim
       ../../../modules/home-manager/direnv
       ../../../modules/home-manager/lazygit
+      ../../../modules/home-manager/aicommits
       ../../../modules/home-manager/aerospace
       ../../../modules/home-manager/glow
       ../../../modules/home-manager/bat
