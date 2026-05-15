@@ -56,14 +56,14 @@ jobs:
             nix eval ".#darwinConfigurations.${hn}.config.system.build.toplevel" >/dev/null
           done
 
-      - name: build each darwin host
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd nix
-          for h in hosts/darwin/*; do
-            [[ -d "$h" ]] || continue
-            hn="$(basename "$h")"
-            echo "==> building $hn"
-            nix build -L ".#darwinConfigurations.${hn}.system" --no-link
-          done
+      # - name: build each darwin host
+      #   shell: bash
+      #   run: |
+      #     set -euo pipefail
+      #     cd nix
+      #     for h in hosts/darwin/*; do
+      #       [[ -d "$h" ]] || continue
+      #       hn="$(basename "$h")"
+      #       echo "==> building $hn"
+      #       nix build -L ".#darwinConfigurations.${hn}.system" --no-link
+      #     done

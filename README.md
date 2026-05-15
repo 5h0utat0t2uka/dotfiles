@@ -52,7 +52,7 @@ cd ~/.local/share/chezmoi/scripts
 ```
 
 ## 自動更新  
-`.github/workflows/nix-update-check.yml` で週に1回、全てのinputを更新して`nix flake check`, `nix build`の確認を行い、エラーがなければ`flake.lock`を更新してPRを作成するので、下記で取り込んで更新する  
+`.github/workflows/nix-update-check.yml` で週に1回、全てのinputを更新して`nix flake check`, `nix build`の確認を行い、エラーがなければ`flake.lock`を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
 ``` sh
 cd ~/.local/share/chezmoi/nix
 git pull --ff-only
