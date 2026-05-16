@@ -63,6 +63,7 @@ in
         macism
         # mise
         ni
+        nix-output-monitor
         nmap
         nodejs_24
         opentofu

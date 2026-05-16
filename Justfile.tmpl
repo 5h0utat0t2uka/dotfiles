@@ -6,14 +6,14 @@ hostname := `scutil --get LocalHostName 2>/dev/null`
 
 # nixpkgs-unstable を最新に差し替えてビルドを検証
 check-update-pkg:
-  nix build -L \
+  nom build \
     --override-input nixpkgs github:NixOS/nixpkgs/nixpkgs-unstable \
     {{ "{{flake}}" }}#darwinConfigurations.{{ "{{hostname}}" }}.system \
     --no-link
 
 # input を全て最新に差し替えてビルドを検証
 check-update-all:
-  nix build -L \
+  nom build \
     --override-input nixpkgs github:NixOS/nixpkgs/nixpkgs-unstable \
     --override-input nix-homebrew github:zhaofengli/nix-homebrew \
     --override-input home-manager github:nix-community/home-manager \
@@ -38,11 +38,11 @@ check:
 
 # 現在の flake.lock のビルドを検証
 check-build:
-  nix build -L {{ "{{flake}}" }}#darwinConfigurations.{{ "{{hostname}}" }}.system --no-link
+  nom build {{ "{{flake}}" }}#darwinConfigurations.{{ "{{hostname}}" }}.system --no-link
 
 # 現在の flake.lock でビルドと反映
 switch:
-  sudo darwin-rebuild switch --flake {{ "{{flake}}" }}#{{ "{{hostname}}" }}
+  sudo darwin-rebuild switch --flake {{ "{{flake}}" }}#{{ "{{hostname}}" }} |& nom
 
 # ガベージコレクション
 gc:
