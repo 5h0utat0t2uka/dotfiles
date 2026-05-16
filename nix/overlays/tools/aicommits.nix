@@ -10,14 +10,15 @@ final: prev: {
       rev = "v${version}";
       hash = "sha256-+qNN4ohW2g+vQv2t2+rBLoTRJS3KYET1p65LxJKOHpA=";
     };
+
     nodejs = prev.nodejs_24;
+    npmInstallFlags = [ "--ignore-scripts" ];
+    npmPackFlags = [ "--ignore-scripts" ];
     npmConfigHook = prev.importNpmLock.npmConfigHook;
     npmDeps = prev.importNpmLock {
       npmRoot = src;
     };
-    # upstream の prepare/prepack 等を install/pack 時に再実行させない
-    npmInstallFlags = [ "--ignore-scripts" ];
-    npmPackFlags = [ "--ignore-scripts" ];
+
     meta = {
       mainProgram = "aicommits";
       description = "A CLI that writes git commit messages with AI";

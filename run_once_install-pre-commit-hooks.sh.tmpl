@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+set -eu
+
+CHEZMOI_REPO="{{ .chezmoi.sourceDir }}"
+if ! command -v pre-commit >/dev/null 2>&1; then
+  echo "pre-commit not found" >&2
+  exit 1
+fi
+
+cd "${CHEZMOI_REPO}"
+pre-commit install
+pre-commit install --hook-type pre-push

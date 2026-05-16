@@ -44,7 +44,6 @@ in
       username = username;
       homeDirectory = homeDirectory;
       packages = with pkgs; [
-        age
         chafa
         devbox
         doggo
@@ -53,6 +52,7 @@ in
         fd
         fzf
         gh
+        gitleaks
         gifski
         gnupg
         hyperfine
@@ -66,6 +66,7 @@ in
         nmap
         nodejs_24
         opentofu
+        pre-commit
         pnpm
         pinentry_mac
         ripgrep

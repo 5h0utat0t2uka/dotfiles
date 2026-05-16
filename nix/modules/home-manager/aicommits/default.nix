@@ -15,13 +15,7 @@ in
     aicommits
     aic
   ];
-  # home.file.".aicommits".text = ''
-  #   provider=openai
-  #   OPENAI_MODEL=gpt-5-nano
-  #   type=conventional
-  #   locale=en
-  #   generate=1
-  # '';
+
   home.activation.writeAicommitsConfig =
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       umask 077
@@ -32,6 +26,7 @@ OPENAI_MODEL=gpt-5-nano
 type=conventional
 locale=en
 generate=1
+timeout=60000
 EOF
     '';
   sops.secrets.openai_api_key = {
