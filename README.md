@@ -32,8 +32,8 @@ xcode-select -p
 
 2. `Nix`を未インストールの場合は [Determinate](https://docs.determinate.systems) からインストールして確認  
 ```sh
-nix --version
-# nix (Determinate Nix 3.15.1) 2.33.0
+❯ nix --version
+nix (Determinate Nix 3.15.1) 2.33.0
 ```
 
 3. `chezmoi`の初期化をしてドットファイルの展開  
@@ -44,11 +44,16 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply <repo
 4. セットアップ  
 ```sh
 cd ~/.local/share/chezmoi/scripts
-
 # 確認
 ./setup.sh --dry-run
 # 実行
 ./setup.sh
+```
+``` sh
+# pre-commit 
+pre-commit install
+pre-commit install --hook-type pre-push
+pre-commit run --all-files
 ```
 
 ## 自動更新  
