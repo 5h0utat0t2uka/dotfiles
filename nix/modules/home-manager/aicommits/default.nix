@@ -22,7 +22,7 @@ in
       cat > "$HOME/.aicommits" <<EOF
 provider=openai
 OPENAI_API_KEY=$(cat ${config.sops.secrets.openai_api_key.path})
-OPENAI_MODEL=gpt-5-nano
+OPENAI_MODEL=gpt-5-mini
 type=conventional
 locale=en
 generate=1
