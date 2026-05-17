@@ -31,6 +31,7 @@ in
       ../../../modules/home-manager/aicommits
       ../../../modules/home-manager/aerospace
       ../../../modules/home-manager/glow
+      ../../../modules/home-manager/jpq
       ../../../modules/home-manager/bat
       ../../../modules/home-manager/lf
       ../../../modules/home-manager/nb
@@ -57,7 +58,6 @@ in
         gnupg
         hyperfine
         just
-        jnv
         jq
         libwebp
         macism
