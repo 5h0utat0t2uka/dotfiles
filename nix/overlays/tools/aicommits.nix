@@ -3,12 +3,12 @@
 final: prev: {
   aicommits = prev.buildNpmPackage rec {
     pname = "aicommits";
-    version = "3.2.0";
+    version = "3.4.0";
     src = prev.fetchFromGitHub {
       owner = "Nutlope";
       repo = "aicommits";
       rev = "v${version}";
-      hash = "sha256-+qNN4ohW2g+vQv2t2+rBLoTRJS3KYET1p65LxJKOHpA=";
+      hash = "sha256-xh7TM3ThajeOXYCj2Vc246u3kYxA1VCHFWM4QbM8DGo=";
     };
 
     nodejs = prev.nodejs_24;
