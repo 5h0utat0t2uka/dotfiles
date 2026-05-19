@@ -19,9 +19,9 @@
     ];
     casks = [
       "codex-app"
+      "claude"
       "karabiner-elements"
       "ollama-app"
-      "zed"
     ];
   };
 }
