@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      # 日曜日 JST AM 04:00
+      interval: "cron"
+      cronjob: "0 19 * * 6"
+    cooldown:
+      default-days: 3
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(actions)"
+    assignees:
+      - 5h0utat0t2uka
