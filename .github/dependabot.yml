@@ -10,6 +10,7 @@ updates:
       default-days: 3
     labels:
       - "dependencies"
+      - "github-actions"
     commit-message:
       prefix: "chore(actions)"
     assignees:
