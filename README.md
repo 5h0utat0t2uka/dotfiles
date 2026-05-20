@@ -1,16 +1,16 @@
 <div align="center">
   <img
     alt="header"
-    src="https://capsule-render.vercel.app/api?type=soft&height=300&color=0:7EBAE4,100:5277C3&text=~/.dotfiles%20with%20Nix%20and%20chezmoi&fontColor=e8effc&fontSize=36&desc=for%20macOS&fontAlignY=48&descAlignY=66&textBg=false&descSize=26"
+    src="https://capsule-render.vercel.app/api?type=soft&height=300&color=0:7EBAE4,100:5277C3&text=~/.dotfiles%20with%20nix%20and%20chezmoi&fontColor=e8effc&fontSize=36&desc=for%20macOS&fontAlignY=48&descAlignY=66&textBg=false&descSize=26"
   />
 </div>
 
 ---
 
 <div align="center">
-  <img alt="技術者倫理 遵守済み" src="https://img.shields.io/badge/%E6%8A%80%E8%A1%93%E8%80%85%E5%80%AB%E7%90%86-%E9%81%B5%E5%AE%88%E6%B8%88%E3%81%BF-0a0a0a?style=for-the-badge&labelColor=ffffff"/>  
   <img alt="nix" src="https://img.shields.io/badge/nix-5277C3?style=for-the-badge&logo=nixos&logoColor=white"/>  
   <img alt="macOS" src="https://img.shields.io/badge/macOS-222222?style=for-the-badge&logo=apple&logoColor=white"/>  
+  <img alt="技術者倫理 遵守済み" src="https://img.shields.io/badge/%E6%8A%80%E8%A1%93%E8%80%85%E5%80%AB%E7%90%86-%E9%81%B5%E5%AE%88%E6%B8%88%E3%81%BF-0a0a0a?style=for-the-badge&labelColor=ffffff"/>  
 </div>
 
 ## 設定
@@ -57,7 +57,7 @@ pre-commit run --all-files
 ```
 
 ## 自動更新  
-`.github/workflows/nix-update-check.yml` で週に1回、全てのinputを更新して`nix flake check`, `nix build`の確認を行い、エラーがなければ`flake.lock`を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
+ワークフローで月曜日/水曜日/金曜日の JST AM 04:00前後に全てのinputを更新して`nix flake check`, `nix build`の確認を行い、エラーがなければ`flake.lock`を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
 ``` sh
 cd ~/.local/share/chezmoi/nix
 git pull --ff-only
