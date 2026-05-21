@@ -307,7 +307,7 @@
         bindings = { "alt-right" = "editor::AcceptEditPrediction"; };
       }
       {
-        context = "Editor && edit_prediction_conflict";
+        context = "Editor && edit_prediction && (showing_completions || in_leading_whitespace)";
         bindings = { "alt-enter" = "editor::AcceptEditPrediction"; };
       }
       {

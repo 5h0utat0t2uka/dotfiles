@@ -30,6 +30,10 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    aicommit2 = {
+      url = "github:tak-bro/aicommit2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, darwin, home-manager, nix-homebrew, wezterm, ... } @inputs:
@@ -95,7 +99,6 @@
               # overlay をここで追加
               overlays = [
                 # tools
-                (import ./overlays/tools/aicommits.nix { inherit inputs; })
                 # (import ./overlays/tools/codex { inherit inputs; })
                 # (import ./overlays/tools/claude-code { inherit inputs; })
 
