@@ -28,10 +28,18 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          add-paths: .pre-commit-config.yaml
+          token: ${{ github.token }}
+          assignees: 5h0utat0t2uka
           commit-message: "chore(pre-commit): autoupdate hooks"
           title: "chore(pre-commit): autoupdate hooks"
+          body: |
+            Automated weekly .pre-commit-config.yaml dependencies update.
+
           branch: "chore/pre-commit-autoupdate"
+          base: main
+          delete-branch: true
+          add-paths: |
+            .pre-commit-config.yaml
           labels: |
             dependencies
             pre-commit
