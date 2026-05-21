@@ -52,8 +52,7 @@ cd ~/.local/share/chezmoi/scripts
 ``` sh
 # pre-commit 
 pre-commit install
-pre-commit install --hook-type pre-push
-pre-commit run --all-files
+pre-commit install --hook-type pre-push --hook-type pre-commit
 ```
 
 ## 自動更新  
@@ -113,6 +112,7 @@ just build
 just switch
 
 # 問題なければ
+pre-commit run --all-files --show-diff-on-failure
 git add .
 git commit -m "update flake inputs"
 ```
