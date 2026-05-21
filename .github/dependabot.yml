@@ -3,9 +3,10 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      # 日曜日 JST AM 04:00
-      interval: "cron"
-      cronjob: "0 19 * * 6"
+      interval: "weekly"
+      day: "sunday"
+      time: "04:00"
+      timezone: "Asia/Tokyo"
     cooldown:
       default-days: 7
     labels:
@@ -13,5 +14,22 @@ updates:
       - "github-actions"
     commit-message:
       prefix: "chore(actions)"
+    assignees:
+      - 5h0utat0t2uka
+
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "04:00"
+      timezone: "Asia/Tokyo"
+    cooldown:
+      default-days: 7
+    labels:
+      - dependencies
+      - pre-commit
+    commit-message:
+      prefix: "chore(pre-commit)"
     assignees:
       - 5h0utat0t2uka
