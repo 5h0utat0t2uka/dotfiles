@@ -93,7 +93,11 @@
       }
     }
   },
-
+  "diagnostics": {
+    "inline": {
+      "enabled": true,
+    },
+  },
   "format_on_save": "off",
   "ui_font_size": 16,
   "ui_font_family": "GeistMono Nerd Font Mono",
@@ -121,6 +125,7 @@
     "enabled": false
   },
   "scrollbar": {
+    "show": "always",
     "axes": {
       "horizontal": false,
       "vertical": true
