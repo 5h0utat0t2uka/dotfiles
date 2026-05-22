@@ -28,18 +28,24 @@ in
     locale=en
     generate=1
     timeout=60000
+    includeBody=false
+    codeReview=false
     modelNameDisplay=short
     diffCompression=compact
-    maxHunkLines=200
-    maxDiffLines=1000
+    maxLength=72
+    maxHunkLines=100
+    maxDiffLines=500
     diffContext=1
 
     [OPENAI]
     model=gpt-5-mini
     envKey=OPENAI_API_KEY
-    maxTokens=1024
+    maxTokens=128
     temperature=0.2
     topP=0.9
+
+    [COPILOT_SDK]
+    disabled=true
   '';
   sops.secrets.openai_api_key = {
     sopsFile = ../../../../secrets/darwin.yaml;
