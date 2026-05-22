@@ -3,6 +3,8 @@
 let
   system = pkgs.stdenv.hostPlatform.system;
   aicommit2Base = inputs.aicommit2.packages.${system}.default;
+
+  # FIXME: issue: build fails due to pnpmDeps hash mismatch (https://github.com/NixOS/nixpkgs/issues/397412)
   aicommit2 = aicommit2Base.overrideAttrs (old: {
     pnpmDeps = pkgs.pnpm.fetchDeps {
       inherit (old) pname version src;
@@ -32,17 +34,11 @@ in
     codeReview=false
     modelNameDisplay=short
     diffCompression=compact
-    maxLength=72
-    maxHunkLines=100
-    maxDiffLines=500
-    diffContext=1
 
     [OPENAI]
-    model=gpt-5-mini
+    model=gpt-4o-mini
     envKey=OPENAI_API_KEY
-    maxTokens=128
-    temperature=0.2
-    topP=0.9
+    maxTokens=1024
 
     [COPILOT_SDK]
     disabled=true
