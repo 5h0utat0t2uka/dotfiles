@@ -2,7 +2,8 @@
 
 {
   programs.zed-editor = {
-    enable = true;
+    # NOTE: nix/modules/nix-darwin/homebrew.nix でインストール
+    enable = false;
     package = pkgs.zed-editor;
     mutableUserSettings = false;
     mutableUserKeymaps = false;

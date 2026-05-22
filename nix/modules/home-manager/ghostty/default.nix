@@ -2,7 +2,8 @@
 
 {
   programs.ghostty = {
-    enable = true;
+    # NOTE: nix/modules/nix-darwin/homebrew.nix でインストール
+    enable = false;
     package = pkgs.ghostty-bin;
     enableZshIntegration = false;
   };

@@ -16,7 +16,7 @@ in
   home-manager.users.${username} = {
     imports = [
       inputs.sops-nix.homeManagerModules.sops
-      ../../../modules/home-manager/ghostty
+      # ../../../modules/home-manager/ghostty
       ../../../modules/home-manager/wezterm
       ../../../modules/home-manager/tmux
       ../../../modules/home-manager/git
@@ -36,7 +36,7 @@ in
       ../../../modules/home-manager/bat
       ../../../modules/home-manager/lf
       ../../../modules/home-manager/nb
-      ../../../modules/home-manager/zed
+      # ../../../modules/home-manager/zed
     ];
     manual = {
       # FIXME: issue: problem with home-manager manual (https://github.com/nix-community/home-manager/issues/7935)

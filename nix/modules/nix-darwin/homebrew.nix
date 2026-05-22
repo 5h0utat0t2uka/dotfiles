@@ -20,8 +20,10 @@
     casks = [
       "codex-app"
       "claude"
+      "ghostty"
       "karabiner-elements"
       "ollama-app"
+      "zed"
     ];
   };
 }
