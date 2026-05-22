@@ -95,7 +95,7 @@
               # overlay をここで追加
               overlays = [
                 # tools
-                (import ./overlays/tools/aicommits { inherit inputs; })
+                (import ./overlays/tools/aicommits.nix { inherit inputs; })
                 # (import ./overlays/tools/codex { inherit inputs; })
                 # (import ./overlays/tools/claude-code { inherit inputs; })
 
