@@ -5,7 +5,7 @@
   # - setup.sh / Justfile から `darwin-rebuild` を呼ぶと、対象ホスト名の modules が合成されて switch/build される
   # ============================================================
 
-  description = "macOS dotfiles with nix-darwin";
+  description = "macOS configuration with nix-darwin";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
