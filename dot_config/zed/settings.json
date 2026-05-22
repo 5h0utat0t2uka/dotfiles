@@ -5,6 +5,7 @@
     "model_parameters": []
   },
   "auto_update": false,
+  "auto_signature_help": true,
   "restore_on_startup": "launchpad",
   "edit_predictions": {
     "provider": "zed"
@@ -98,10 +99,12 @@
   "ui_font_family": "GeistMono Nerd Font Mono",
   "ui_font_weight": 300,
   "buffer_font_family": "SHCode JP Zen Haku",
+  "buffer_font_fallbacks": ["GeistMono Nerd Font Mono"],
   "buffer_font_weight": 300,
   "buffer_font_size": 13.8,
   "tab_size": 2,
   "colorize_brackets": false,
+  "code_lens": "on",
   "show_whitespaces": "selection",
   "whitespace_map": {
     "space": "•",
