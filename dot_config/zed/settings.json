@@ -94,8 +94,9 @@
     }
   },
   "diagnostics": {
+    "include_warnings": true,
     "inline": {
-      "enabled": true,
+      "enabled": false,
     },
   },
   "format_on_save": "off",
