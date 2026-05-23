@@ -1,5 +1,5 @@
 # nix/modules/home-manager/nixvim/default.nix
-{ inputs, ... }:
+{ inputs, pkgs, lib, ... }:
 
 {
   imports = [
@@ -182,7 +182,8 @@
       "snippets/html.json".source = ./snippets/html.json;
       "snippets/package.json".source = ./snippets/package.json;
     };
-    extraConfigLua = ''
+    # macOS 専用の IM 切替
+    extraConfigLua = lib.optionalString pkgs.stdenv.isDarwin ''
       local english_im = "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
       vim.api.nvim_create_autocmd("ModeChanged", {
         group = vim.api.nvim_create_augroup("AutoSwitchIMOnNormal", { clear = true }),

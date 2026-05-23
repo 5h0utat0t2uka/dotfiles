@@ -4,10 +4,17 @@ let
   key-menu-nvim = pkgs.vimUtils.buildVimPlugin {
     pname = "key-menu.nvim";
     version = "unstable-171ad5c";
-    src = builtins.fetchGit {
-      url = "https://github.com/emmanueltouzery/key-menu.nvim.git";
+    src = pkgs.fetchFromGitHub {
+      owner = "emmanueltouzery";
+      repo = "key-menu.nvim";
       rev = "171ad5c40fe978ebba86026beac1ac3ed8eda42d";
+      hash = "sha256-Nh6pXd0UxLlD6BsOge8I2Rh8Gyt8VmxL7tVIca0ozj8=";
     };
+
+    # src = builtins.fetchGit {
+    #   url = "https://github.com/emmanueltouzery/key-menu.nvim.git";
+    #   rev = "171ad5c40fe978ebba86026beac1ac3ed8eda42d";
+    # };
   };
 in
 {

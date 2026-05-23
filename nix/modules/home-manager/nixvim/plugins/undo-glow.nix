@@ -4,10 +4,17 @@ let
   undo-glow-nvim = pkgs.vimUtils.buildVimPlugin {
     pname = "undo-glow.nvim";
     version = "1.13.0";
-    src = builtins.fetchGit {
-      url = "https://github.com/y3owk1n/undo-glow.nvim.git";
+    src = pkgs.fetchFromGitHub {
+      owner = "y3owk1n";
+      repo = "undo-glow.nvim";
       rev = "ac70916caa2f4e57419bb4c1a2e303cdb7bb57e2";
+      hash = "";
     };
+
+    # src = builtins.fetchGit {
+    #   url = "https://github.com/y3owk1n/undo-glow.nvim.git";
+    #   rev = "ac70916caa2f4e57419bb4c1a2e303cdb7bb57e2";
+    # };
   };
 in
 {
