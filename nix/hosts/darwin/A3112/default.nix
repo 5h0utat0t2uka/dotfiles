@@ -58,7 +58,7 @@ in
         just
         jq
         libwebp
-        macism
+        # macism
         # mise
         ni
         nix-output-monitor

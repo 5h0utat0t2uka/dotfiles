@@ -182,14 +182,30 @@
       "snippets/html.json".source = ./snippets/html.json;
       "snippets/package.json".source = ./snippets/package.json;
     };
-    # macOS 専用の IM 切替
+
+    # for macOS IME
+    extraPackages = lib.optionals pkgs.stdenv.isDarwin [
+      pkgs.macism
+    ];
     extraConfigLua = lib.optionalString pkgs.stdenv.isDarwin ''
-      local english_im = "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
-      vim.api.nvim_create_autocmd("ModeChanged", {
-        group = vim.api.nvim_create_augroup("AutoSwitchIMOnNormal", { clear = true }),
-        pattern = "*:n*",
-        callback = function() vim.fn.system({ "macism", english_im }) end,
+      local english_im = "com.apple.keylayout.ABC"
+      vim.api.nvim_create_autocmd({
+        "InsertLeave",
+        "CmdlineLeave",
+        "VimEnter",
+        "VimResume",
+      }, {
+        group = vim.api.nvim_create_augroup("IMESwitcher", { clear = true }),
+        callback = function() vim.fn.jobstart({ "macism", english_im }, { detach = true }) end,
       })
     '';
+    # extraConfigLua = lib.optionalString pkgs.stdenv.isDarwin ''
+    #   local english_im = "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
+    #   vim.api.nvim_create_autocmd("ModeChanged", {
+    #     group = vim.api.nvim_create_augroup("AutoSwitchIMOnNormal", { clear = true }),
+    #     pattern = "*:n*",
+    #     callback = function() vim.fn.system({ "macism", english_im }) end,
+    #   })
+    # '';
   };
 }
