@@ -9,4 +9,4 @@ command = "nvim"
 [git]
 autoPush = false
 autoCommit = true
-commitMessageTemplate = 'chore(chezmoi): {{ .chezmoi.command }} {{ join " " .chezmoi.args }}'
+commitMessageTemplate = 'chore(chezmoi): {{ "{{" }} .chezmoi.command {{ "}}" }}{{ "{{" }} if .chezmoi.args {{ "}}" }} {{ "{{" }} join " " .chezmoi.args {{ "}}" }}{{ "{{" }} end {{ "}}" }}'
