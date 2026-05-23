@@ -31,7 +31,7 @@
           "font_weight": 700
         },
         "constant.comment.todo.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         },
         "property.comment.fixme": {
           "color": "#2E3440",
@@ -39,7 +39,7 @@
           "font_weight": 700
         },
         "property.comment.fixme.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         },
         "property.comment.bug": {
           "color": "#2E3440",
@@ -47,7 +47,7 @@
           "font_weight": 700
         },
         "property.comment.bug.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         },
         "property.comment.error": {
           "color": "#2E3440",
@@ -55,7 +55,7 @@
           "font_weight": 700
         },
         "property.comment.error.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         },
         "keyword.comment.hack": {
           "color": "#2E3440",
@@ -64,7 +64,7 @@
           "font_weight": 700
         },
         "keyword.comment.hack.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         },
         "keyword.comment.warn": {
           "color": "#2E3440",
@@ -72,7 +72,7 @@
           "font_weight": 700
         },
         "keyword.comment.warn.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         },
         "string.comment.note": {
           "color": "#2E3440",
@@ -80,7 +80,7 @@
           "font_weight": 700
         },
         "string.comment.note.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         },
         "string.comment.info": {
           "color": "#2E3440",
@@ -88,7 +88,7 @@
           "font_weight": 700
         },
         "string.comment.info.text": {
-          "color": "#ECEFF4"
+          "color": "#D8DEE9"
         }
       }
     }
