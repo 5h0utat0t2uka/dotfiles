@@ -5,6 +5,9 @@
   imports = [
     inputs.nixvim.homeModules.nixvim
   ];
+  # home.sessionVariables = {
+  #   NVIM_ENGLISH_IM = "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman";
+  # };
   programs.nixvim = {
     enable = true;
     defaultEditor = true;
@@ -180,7 +183,6 @@
     ];
     extraFiles = {
       "snippets/html.json".source = ./snippets/html.json;
-      "snippets/package.json".source = ./snippets/package.json;
     };
 
     # for macOS IME
@@ -188,7 +190,13 @@
       pkgs.macism
     ];
     extraConfigLua = lib.optionalString pkgs.stdenv.isDarwin ''
-      local english_im = "com.apple.keylayout.ABC"
+      local english_im = vim.env.NVIM_ENGLISH_IM or "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
+      local function switch_ime_to_english()
+        if vim.fn.executable("macism") ~= 1 then
+          return
+        end
+        vim.fn.jobstart({ "macism", english_im }, { detach = true })
+      end
       vim.api.nvim_create_autocmd({
         "InsertLeave",
         "CmdlineLeave",
@@ -196,9 +204,10 @@
         "VimResume",
       }, {
         group = vim.api.nvim_create_augroup("IMESwitcher", { clear = true }),
-        callback = function() vim.fn.jobstart({ "macism", english_im }, { detach = true }) end,
+        callback = switch_ime_to_english,
       })
     '';
+
     # extraConfigLua = lib.optionalString pkgs.stdenv.isDarwin ''
     #   local english_im = "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
     #   vim.api.nvim_create_autocmd("ModeChanged", {
