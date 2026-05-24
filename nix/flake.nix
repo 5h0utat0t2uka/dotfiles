@@ -70,7 +70,7 @@
     # ----------------------------------------------------
     # nixpkgs module
     # ----------------------------------------------------
-    nixpkgsModule = { identity, inputs, ... }: {
+    nixPackagesModule = { identity, inputs, ... }: {
       nixpkgs = {
         hostPlatform = identity.system;
         config.allowUnfree = true;
@@ -140,7 +140,7 @@
         };
         modules = [
           nixSettingsModule
-          nixpkgsModule
+          nixPackagesModule
           homeManagerModule
           nixHomebrewModule
 
