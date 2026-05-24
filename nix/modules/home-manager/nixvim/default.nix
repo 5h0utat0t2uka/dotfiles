@@ -9,6 +9,7 @@
   #   NVIM_ENGLISH_IM = "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman";
   # };
   programs.nixvim = {
+    nixpkgs.source = inputs.nixpkgs;
     enable = true;
     defaultEditor = true;
     vimAlias = true;
