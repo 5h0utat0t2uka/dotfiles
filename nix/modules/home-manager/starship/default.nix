@@ -29,9 +29,10 @@
         format = "[$path]($style)";
         style = "blue";
         read_only = "";
-        truncation_length = 6;
+        truncation_length = 1;
         truncation_symbol = "";
         fish_style_pwd_dir_length = 1;
+        truncate_to_repo = false;
       };
       git_branch = {
         symbol = "";
