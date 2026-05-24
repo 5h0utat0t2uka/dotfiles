@@ -38,7 +38,6 @@
       ghq = {
         user = identity.git.user.name;
         root = "${identity.homeDirectory}/Development/repositories";
-        # root = "~/Development/repositories";
       };
     };
   };

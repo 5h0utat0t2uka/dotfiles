@@ -58,8 +58,6 @@ in
         just
         jq
         libwebp
-        # macism
-        # mise
         ni
         nix-output-monitor
         nmap

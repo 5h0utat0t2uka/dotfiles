@@ -1,22 +1,24 @@
 {
   # ============================================================
-  # - darwinConfigurations は ./hosts/darwin 配下のホスト名のディレクトリから自動生成する
-  # - 各 host は `./hosts/darwin/<ホスト名>/identity.nix` を持ち、その `identity.hostname` が <ホスト名> と一致することを `assert` で強制する
-  # - setup.sh / Justfile から `darwin-rebuild` を呼ぶと、対象ホスト名の modules が合成されて switch/build される
+  # - darwinConfigurations は ./hosts/darwin 配下のホスト名のディレクトリから生成する
+  # - host は `./hosts/darwin/<ホスト名>/identity.nix` を持ち、その `identity.hostname` が <ホスト名> と一致することを `assert` で強制する
+  # - setup.sh / Justfile から `darwin-rebuild` を呼ぶと、対象ホスト名の modules が合成されて switch/build する
   # ============================================================
 
   description = "macOS configuration with nix-darwin";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
+    nix-homebrew = {
+      url = "github:zhaofengli/nix-homebrew";
     };
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -32,9 +34,10 @@
     };
   };
 
-  outputs = { self, nixpkgs, darwin, home-manager, nix-homebrew, wezterm, ... } @inputs:
+  outputs = inputs@{ nixpkgs, darwin, home-manager, nix-homebrew, ... }:
   let
-    lib = nixpkgs.lib;
+    inherit (nixpkgs) lib;
+
     # ------------------------------------------------------------
     # ./hosts/darwin 以下のディレクトリ名を hostKey とする
     # ------------------------------------------------------------
@@ -46,107 +49,116 @@
     # ------------------------------------------------------------
     identityFor = hostKey: import (darwinHostsDir + "/${hostKey}/identity.nix");
 
+    # ----------------------------------------------------
+    # nix.settings module
+    # ----------------------------------------------------
+    nixSettingsModule = {
+      nix.settings = {
+        substituters = [
+          "https://cache.nixos.org"
+          "https://nix-community.cachix.org"
+          "https://5h0uta.cachix.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSeBo="
+          "5h0uta.cachix.org-1:YrFB/6azmFXnXmmosBRBwB3lEKBpUq7Hn+tJvzTqtGc="
+        ];
+      };
+    };
+
+    # ----------------------------------------------------
+    # nixpkgs module
+    # ----------------------------------------------------
+    nixpkgsModule = { identity, inputs, ... }: {
+      nixpkgs = {
+        hostPlatform = identity.system;
+        config.allowUnfree = true;
+        overlays = [
+          # tools
+          (import ./overlays/tools/aicommits.nix { inherit inputs; })
+          # (import ./overlays/tools/codex { inherit inputs; })
+          # (import ./overlays/tools/claude-code { inherit inputs; })
+
+          # fonts
+          (import ./overlays/fonts/shcode-jp-zen-haku.nix)
+        ];
+      };
+    };
+
+    # ----------------------------------------------------
+    # home-manager module
+    # ----------------------------------------------------
+    homeManagerModule = { identity, inputs, ... }: {
+      imports = [
+        home-manager.darwinModules.home-manager
+      ];
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        extraSpecialArgs = {
+          inherit identity inputs;
+        };
+      };
+    };
+
+    # ----------------------------------------------------
+    # nix-homebrew module
+    # ----------------------------------------------------
+    nixHomebrewModule = { identity, ... }: {
+      imports = [
+        nix-homebrew.darwinModules.nix-homebrew
+      ];
+      nix-homebrew = {
+        enable = true;
+        enableRosetta = false;
+        user = identity.username;
+        autoMigrate = false;
+        mutableTaps = true;
+      };
+    };
+
     # ------------------------------------------------------------
-    # hostKey -> darwinConfigurations.<hostKey> を生成する関数
-    # - ディレクトリ名と identity.hostname を assert で強制して一致させる
+    # hostKey -> darwinConfigurations.<hostKey> を生成する
+    # ディレクトリ名と identity.hostname を assert で強制
     # ------------------------------------------------------------
     mkDarwinConfig = hostKey:
     let
       identity = identityFor hostKey;
     in
-    # identity に hostname があること、かつ hostKey と一致することを強制
-    assert (identity ? hostname);
-    assert (identity.hostname == hostKey);
+    assert lib.assertMsg (identity ? hostname) "hosts/darwin/${hostKey}/identity.nix must define `hostname`";
+    assert lib.assertMsg (identity ? username) "hosts/darwin/${hostKey}/identity.nix must define `username`";
+    assert lib.assertMsg (identity ? system) "hosts/darwin/${hostKey}/identity.nix must define `system`";
+    assert lib.assertMsg (identity.hostname == hostKey) "`identity.hostname` must match directory name `${hostKey}`";
 
     {
       name = identity.hostname;
-      # nix-darwin のシステム定義
       value = darwin.lib.darwinSystem {
-        system = identity.system;
+        inherit (identity) system;
         specialArgs = {
           inherit identity inputs;
         };
         modules = [
-          # ----------------------------------------------------
-          # キャッシュ
-          # ----------------------------------------------------
-          {
-            nix.settings = {
-              substituters = [
-                "https://cache.nixos.org"
-                "https://nix-community.cachix.org"
-                "https://5h0uta.cachix.org"
-              ];
-              trusted-public-keys = [
-                "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-                "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSeBo="
-                "5h0uta.cachix.org-1:YrFB/6azmFXnXmmosBRBwB3lEKBpUq7Hn+tJvzTqtGc="
-              ];
-            };
-          }
+          nixSettingsModule
+          nixpkgsModule
+          homeManagerModule
+          nixHomebrewModule
 
           # ----------------------------------------------------
-          # nixpkgs 設定
-          # ----------------------------------------------------
-          {
-            nixpkgs = {
-              system = identity.system;
-              config.allowUnfree = true;
-              # overlay をここで追加
-              overlays = [
-                # tools
-                (import ./overlays/tools/aicommits.nix { inherit inputs; })
-                # (import ./overlays/tools/codex { inherit inputs; })
-                # (import ./overlays/tools/claude-code { inherit inputs; })
-
-                # fonts
-                (import ./overlays/fonts/shcode-jp-zen-haku.nix)
-              ];
-            };
-          }
-
-          # ----------------------------------------------------
-          # nix-homebrew 統合
-          # - autoMigrate: 既存 Homebrew がある場合の移行
-          # ----------------------------------------------------
-          nix-homebrew.darwinModules.nix-homebrew
-          ({ identity, ... }: {
-            nix-homebrew = {
-              enable = true;
-              enableRosetta = false;
-              user = identity.username;
-              autoMigrate = false;
-              mutableTaps = true;
-            };
-          })
-
-          # ----------------------------------------------------
-          # home-manager を nix-darwin 経由で統合
-          # ----------------------------------------------------
-          home-manager.darwinModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {
-              inherit identity inputs;
-            };
-          }
-
-          # ----------------------------------------------------
-          # ホスト入口:
+          # host entry
           # ----------------------------------------------------
           (darwinHostsDir + "/${hostKey}/default.nix")
         ];
       };
     };
 
-    # ------------------------------------------------------------
-    # 全 hostKey について mkDarwinConfig を map して attrset 化
-    # ------------------------------------------------------------
-    darwinConfigurations = builtins.listToAttrs (map mkDarwinConfig darwinHostKeys);
+    supportedSystems = [
+      "aarch64-darwin"
+    ];
+    forAllSystems = lib.genAttrs supportedSystems;
   in
   {
-    inherit darwinConfigurations;
-    formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixfmt;
+    darwinConfigurations = builtins.listToAttrs (map mkDarwinConfig darwinHostKeys);
+    formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
   };
 }
