@@ -1,12 +1,19 @@
 { ... }:
 
 {
+  environment.variables = {
+    HOMEBREW_NO_ANALYTICS = "1";
+  };
+
   homebrew = {
     enable = true;
     onActivation = {
       autoUpdate = true;
       upgrade = true;
       cleanup = "zap";
+      extraEnv = {
+        HOMEBREW_NO_ANALYTICS = "1";
+      };
       # NOTE: chore: update homebrew to 5.1.10 (https://github.com/zhaofengli/nix-homebrew/pull/136)
       # extraEnv = {
       #   HOMEBREW_NO_INSTALL_FROM_API = "1";
