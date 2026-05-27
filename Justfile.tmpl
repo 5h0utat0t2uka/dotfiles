@@ -1,3 +1,5 @@
+# 更新後は chezmoi apply
+
 set dotenv-load := false
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
@@ -17,7 +19,7 @@ check-update-all:
     --override-input nixpkgs github:NixOS/nixpkgs/nixpkgs-unstable \
     --override-input nix-homebrew github:zhaofengli/nix-homebrew \
     --override-input home-manager github:nix-community/home-manager \
-    --override-input darwin github:LnL7/nix-darwin \
+    --override-input darwin github:nix-darwin/nix-darwin \
     --override-input wezterm 'github:wezterm/wezterm?dir=nix' \
     --override-input nixvim github:nix-community/nixvim \
     {{ "{{flake}}" }}#darwinConfigurations.{{ "{{hostname}}" }}.system \

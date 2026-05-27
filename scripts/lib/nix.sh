@@ -21,7 +21,7 @@ darwin_switch_first_time() {
   # Usage: darwin_switch_first_time <flake_dir> <hostkey>
   local flake_dir="$1"
   local hostkey="$2"
-  run sudo nix run github:LnL7/nix-darwin -- switch --flake "${flake_dir}#${hostkey}"
+  run sudo nix run github:nix-darwin/nix-darwin -- switch --flake "${flake_dir}#${hostkey}"
 }
 
 darwin_switch_normal() {
@@ -31,7 +31,7 @@ darwin_switch_normal() {
   if command -v darwin-rebuild >/dev/null 2>&1; then
     run sudo darwin-rebuild switch --flake "${flake_dir}#${hostkey}"
   else
-    run sudo nix run github:LnL7/nix-darwin -- switch --flake "${flake_dir}#${hostkey}"
+    run sudo nix run github:nix-darwin/nix-darwin -- switch --flake "${flake_dir}#${hostkey}"
   fi
 }
 
