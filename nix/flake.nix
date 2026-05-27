@@ -20,6 +20,14 @@
     nix-homebrew = {
       url = "github:zhaofengli/nix-homebrew";
     };
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -111,10 +119,14 @@
       ];
       nix-homebrew = {
         enable = true;
-        enableRosetta = false;
         user = identity.username;
+        enableRosetta = false;
         autoMigrate = false;
-        mutableTaps = true;
+        mutableTaps = false;
+        taps = {
+          "homebrew/homebrew-core" = inputs.homebrew-core;
+          "homebrew/homebrew-cask" = inputs.homebrew-cask;
+        };
       };
     };
 

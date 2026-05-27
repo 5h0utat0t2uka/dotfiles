@@ -130,6 +130,38 @@
         "type": "github"
       }
     },
+    "homebrew-cask": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779840072,
+        "narHash": "sha256-U7cReBmEtK8LD32QyxUtbEq22j4hQvKqDCtiN73n1zA=",
+        "owner": "homebrew",
+        "repo": "homebrew-cask",
+        "rev": "81b18c4dcaf0f9d818a9e316627d60f904aad166",
+        "type": "github"
+      },
+      "original": {
+        "owner": "homebrew",
+        "repo": "homebrew-cask",
+        "type": "github"
+      }
+    },
+    "homebrew-core": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779842938,
+        "narHash": "sha256-nn8PYuHKaONyeoiOXlO0wQKywpUvAjlMZer8zrDinpg=",
+        "owner": "homebrew",
+        "repo": "homebrew-core",
+        "rev": "8b80c0a1b8eaf2594a11f70bb74893cb0a38a383",
+        "type": "github"
+      },
+      "original": {
+        "owner": "homebrew",
+        "repo": "homebrew-core",
+        "type": "github"
+      }
+    },
     "libpng": {
       "flake": false,
       "locked": {
@@ -207,6 +239,8 @@
       "inputs": {
         "darwin": "darwin",
         "home-manager": "home-manager",
+        "homebrew-cask": "homebrew-cask",
+        "homebrew-core": "homebrew-core",
         "nix-homebrew": "nix-homebrew",
         "nixpkgs": "nixpkgs",
         "nixvim": "nixvim",
