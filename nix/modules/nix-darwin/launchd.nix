@@ -1,7 +1,9 @@
 { ... }:
 
 let
-  nixBin = "/nix/var/nix/profiles/default/bin";
+  # Determinate Nix / unmanaged multi-user Nix のグローバル profile
+  nixProfile = "/nix/var/nix/profiles/default";
+  nixBin = "${nixProfile}/bin";
 in
 {
   # ============================================================
@@ -21,13 +23,16 @@ in
   };
 
   # ============================================================
-  # Automatic Garbage Collection (launchd, root)
+  # Automatic Garbage Collection
   # 毎週日曜日 AM3:00 に gc
   # ============================================================
   launchd.daemons.nix-gc = {
-    command = "${nixBin}/nix-collect-garbage --delete-older-than 14d";
-
     serviceConfig = {
+      ProgramArguments = [
+        "${nixBin}/nix-collect-garbage"
+        "--delete-older-than"
+        "14d"
+      ];
       RunAtLoad = false;
       StartCalendarInterval = [
         {
@@ -46,9 +51,11 @@ in
   # 毎週日曜日 AM4:00 に optimise
   # ============================================================
   launchd.daemons.nix-optimise = {
-    command = "${nixBin}/nix store optimise";
-
     serviceConfig = {
+      ProgramArguments = [
+        "${nixBin}/nix-store"
+        "--optimise"
+      ];
       RunAtLoad = false;
       StartCalendarInterval = [
         {
