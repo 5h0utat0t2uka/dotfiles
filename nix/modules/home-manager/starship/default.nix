@@ -56,13 +56,14 @@
         format = "[$duration](yellow)  ";
       };
       custom.chezmoi = {
-        command = "printf ''";
+        command = "true";
         when = ''
           test "''${CHEZMOI:-}" = "1"
         '';
-        format = "[$output](blue)  ";
-        shell = [ "sh" ];
-      };
+        symbol = "";
+        format = "[$symbol](blue)  ";
+        shell = [ "sh" "-c" ];
+      };     
       python = {
         symbol = " ";
         version_format = "$raw";
