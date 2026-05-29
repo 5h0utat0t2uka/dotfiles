@@ -62,8 +62,8 @@
         '';
         symbol = "";
         format = "[$symbol](blue)  ";
-        shell = [ "sh" "-c" ];
-      };     
+        shell = [ "sh" ];
+      };
       python = {
         symbol = " ";
         version_format = "$raw";
