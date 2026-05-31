@@ -43,6 +43,7 @@ in
       username = username;
       homeDirectory = homeDirectory;
       packages = with pkgs; [
+        betterleaks
         chafa
         devbox
         doggo
