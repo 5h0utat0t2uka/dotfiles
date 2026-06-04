@@ -12,14 +12,13 @@
       cleanup = "zap";
       extraEnv = {
         HOMEBREW_NO_ANALYTICS = "1";
-        # NOTE: issue: update homebrew to 5.1.10 (https://github.com/zhaofengli/nix-homebrew/pull/136)
         # HOMEBREW_NO_INSTALL_FROM_API = "1";
       };
     };
     taps = builtins.attrNames config.nix-homebrew.taps;
     brews = [
-      # FIXME: issue: samba build failure (https://github.com/NixOS/nixpkgs/issues/494532)
       "termscp"
+      "quien"
     ];
 
     # casks = map (name: { inherit name; greedy = true; }) [];
