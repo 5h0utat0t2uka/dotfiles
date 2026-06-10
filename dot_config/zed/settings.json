@@ -5,7 +5,7 @@
     "model_parameters": []
   },
   "auto_update": false,
-  "auto_signature_help": true,
+  "auto_signature_help": false,
   "restore_on_startup": "launchpad",
   "edit_predictions": {
     // "provider": "zed"
