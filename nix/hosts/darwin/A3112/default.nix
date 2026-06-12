@@ -80,7 +80,7 @@ in
         nil
         lua-language-server
         tofu-ls
-        vscode-langservers-extracted
+        # vscode-langservers-extracted
         copilot-language-server
       ];
     };

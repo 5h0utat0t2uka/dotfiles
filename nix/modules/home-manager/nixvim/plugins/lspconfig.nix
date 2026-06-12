@@ -52,12 +52,19 @@
     };
     eslint = {
       enable = true;
+      package = null;
+    };
+    jsonls = {
+      enable = true;
+      package = null;
     };
     html = {
       enable = true;
+      package = null;
     };
     cssls = {
       enable = true;
+      package = null;
     };
     ts_ls = {
       enable = true;

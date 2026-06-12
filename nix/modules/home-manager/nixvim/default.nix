@@ -186,9 +186,11 @@
       "snippets/html.json".source = ./snippets/html.json;
     };
 
-    # for macOS IME
     extraPackages = lib.optionals pkgs.stdenv.isDarwin [
+      # for macOS IME
       pkgs.macism
+      # vscode-langservers-extracted overlays causes some issues on
+      pkgs.vscode-langservers-extracted
     ];
     extraConfigLua = lib.optionalString pkgs.stdenv.isDarwin ''
       local english_im = vim.env.NVIM_ENGLISH_IM or "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
