@@ -52,7 +52,7 @@ cd ~/.local/share/chezmoi/scripts
 ``` sh
 # pre-commit 
 pre-commit install
-pre-commit install --hook-type pre-push --hook-type pre-commit
+pre-commit install --hook-type pre-commit
 ```
 
 ## 自動更新  
