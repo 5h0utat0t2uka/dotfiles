@@ -90,23 +90,13 @@
     };
 
     # FIXME: issue: language-server crashes on attach #16612 (https://github.com/withastro/astro/issues/16612)
-    astro = {
-      enable = true;
-      package = pkgs.astro-language-server;
-      config = {
-        cmd_env = {
-          NODE_PATH = "${pkgs.typescript}/lib/node_modules";
-        };
-        init_options = {
-          typescript = {
-            tsdk = "${pkgs.typescript}/lib/node_modules/typescript/lib";
-          };
-        };
-      };
-    };
     # astro = {
     #   enable = true;
+    #   package = pkgs.astro-language-server;
     #   config = {
+    #     cmd_env = {
+    #       NODE_PATH = "${pkgs.typescript}/lib/node_modules";
+    #     };
     #     init_options = {
     #       typescript = {
     #         tsdk = "${pkgs.typescript}/lib/node_modules/typescript/lib";
@@ -114,6 +104,16 @@
     #     };
     #   };
     # };
+    astro = {
+      enable = true;
+      config = {
+        init_options = {
+          typescript = {
+            tsdk = "${pkgs.typescript}/lib/node_modules/typescript/lib";
+          };
+        };
+      };
+    };
   };
   extraConfigLua = ''
     vim.filetype.add({
