@@ -45,14 +45,22 @@ jobs:
           cd nix
           nix flake update
 
-      - name: show flake.lock diff
+      - name: check flake.lock diff
+        id: lockfile
         shell: bash
         run: |
           set -euo pipefail
           cd nix
-          git diff -- flake.lock
+          if git diff --quiet -- flake.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No flake.lock changes."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff -- flake.lock
+          fi
 
       - name: flake check after full update
+        if: steps.lockfile.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -60,6 +68,7 @@ jobs:
           nix flake check
 
       - name: eval each darwin host after full update
+        if: steps.lockfile.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -72,6 +81,7 @@ jobs:
           done
 
       - name: build each darwin host after full update
+        if: steps.lockfile.outputs.changed == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -84,6 +94,7 @@ jobs:
           done
 
       - name: create pull request
+        if: steps.lockfile.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ github.token }}
