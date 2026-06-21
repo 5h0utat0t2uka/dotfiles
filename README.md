@@ -1,4 +1,6 @@
-<div align="center">
+<img alt="nix-check" src="https://img.shields.io/github/actions/workflow/status/5h0utat0t2uka/dotfiles/nix-check.yml?branch=main&style=for-the-badge&label=nix-check"/> <img alt="技術者倫理 遵守済み" src="https://img.shields.io/badge/%E6%8A%80%E8%A1%93%E8%80%85%E5%80%AB%E7%90%86-%E9%81%B5%E5%AE%88%E6%B8%88%E3%81%BF-0a0a0a?style=for-the-badge&labelColor=ffffff"/>
+
+<!--<div align="center">
   <img
     alt="header"
     src="https://capsule-render.vercel.app/api?type=soft&height=300&color=0:7EBAE4,100:5277C3&text=~/.dotfiles%20with%20nix%20and%20chezmoi&fontColor=e8effc&fontSize=36&desc=for%20macOS&fontAlignY=48&descAlignY=66&textBg=false&descSize=26"
@@ -11,26 +13,25 @@
   <img alt="nix" src="https://img.shields.io/badge/nix-5277C3?style=for-the-badge&logo=nixos&logoColor=white"/>  
   <img alt="macOS" src="https://img.shields.io/badge/macOS-222222?style=for-the-badge&logo=apple&logoColor=white"/>  
   <img alt="技術者倫理 遵守済み" src="https://img.shields.io/badge/%E6%8A%80%E8%A1%93%E8%80%85%E5%80%AB%E7%90%86-%E9%81%B5%E5%AE%88%E6%B8%88%E3%81%BF-0a0a0a?style=for-the-badge&labelColor=ffffff"/>  
-</div>
+</div>-->
 
 ## 設定
-1. ホスト名の設定と`CLT`のインストールから`ssh`のキー生成もしくは復元  
+1. ホスト名の設定と`CLT`のインストールから`ssh`のキーペア生成  
 ```sh
-# 設定と確認
+# ホスト名設定と確認
 sudo scutil --set LocalHostName <hostKey>
 sudo scutil --set ComputerName <hostKey>
 sudo scutil --set HostName <hostKey>
-
 scutil --get LocalHostName
 
-# インストールと確認
+# CLTインストールと確認
 xcode-select --install
 xcode-select -p
 ```
 > [!IMPORTANT]
 > `hostKey`は`nix/hosts/darwin/<hostKey>`のフォルダ名と一致させる  
 
-2. `Nix`を未インストールの場合は [Determinate](https://docs.determinate.systems) からインストールして確認  
+2. [Determinate Nix](https://docs.determinate.systems) からインストールして確認  
 ```sh
 ❯ nix --version
 nix (Determinate Nix 3.15.1) 2.33.0
@@ -56,7 +57,7 @@ pre-commit install --hook-type pre-commit
 ```
 
 ## 自動更新  
-ワークフローで月曜日/水曜日/金曜日の JST AM 04:00前後に全てのinputを更新して`nix flake check`, `nix build`の確認を行い、エラーがなければ`flake.lock`を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
+[GitHub Actions]() で全てのinputを更新して `nix flake check`, `nix build` の確認を行い、エラーがなければ `flake.lock` を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
 ``` sh
 cd ~/.local/share/chezmoi/nix
 git pull --ff-only
@@ -78,29 +79,13 @@ just switch
 | `wezterm`      | 〃 | 〃 |
 | `nixvim`       | 〃 | 〃 |
 
-### `flake.lcok` の更新を実行
+### `flake.lcok` 更新後の検証と反映  
 ``` sh
-# nixpkgs のみ
-just check-update-pkg
-just update-pkg
-
-# nixpkgs を含むそれ以外も全て
-just check-update-all
-just update-all
-```
-
-### `flake.lcok` 更新後の検証と反映
-
-| 内容 | コマンド |
-| :--- | :--- |
-| 評価と検証  | `just check`       |
-| ビルドを検証 | `just check-build` |
-| ビルドと反映 | `just switch`      |
-
-``` sh
-# チェックとビルド・切り替え
+# 評価と検証
 just check
+# ビルドを検証
 just check-build
+# ビルドと反映
 just switch
 ```
 
@@ -108,7 +93,7 @@ just switch
 # 問題あった場合は restore
 git restore flake.lock
 # ビルド後であれば restore 後に再ビルド・切り替え
-just build
+just check-build
 just switch
 
 # 問題なければ
