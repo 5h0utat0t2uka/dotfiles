@@ -68,6 +68,7 @@ in
         pnpm
         pinentry_mac
         ripgrep
+        smartmontools
         tree-sitter
         tree
         viu
