@@ -17,13 +17,21 @@ jobs:
     name: Nix Flake Full Update Check
     runs-on: macos-26
     permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
+      contents: read
 
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
+          token: ${{ steps.app-token.outputs.token }}
           persist-credentials: false
 
       - uses: DeterminateSystems/determinate-nix-action@629b284231c2a82554b724e357e47fc6020833c8 # v3.21.2
@@ -97,7 +105,7 @@ jobs:
         if: steps.lockfile.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          token: ${{ github.token }}
+          token: ${{ steps.app-token.outputs.token }}
           assignees: 5h0utat0t2uka
           commit-message: "chore(nix): update flake.lock"
           title: "chore(nix): update flake.lock"
@@ -108,7 +116,6 @@ jobs:
             - nix flake check
             - eval each darwin host
             - build each darwin host
-
           branch: chore/nix-update-flake-lock
           base: main
           delete-branch: true
