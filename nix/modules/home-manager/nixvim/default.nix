@@ -29,7 +29,8 @@
       ./plugins/gitsigns.nix
       ./plugins/hlchunk.nix
       ./plugins/key-menu.nix
-      ./plugins/lspconfig.nix
+      # ./plugins/lspconfig.nix
+      ./plugins/lsp.nix
       ./plugins/lspsaga.nix
       ./plugins/lualine.nix
       ./plugins/neoscroll.nix
@@ -44,7 +45,9 @@
       ./plugins/ts-autotag.nix
       ./plugins/vim-astro.nix
     ];
-    plugins.web-devicons.enable = false;
+    plugins.web-devicons =  {
+      enable = false;
+    };
     plugins.lz-n = {
       enable = true;
       autoLoad = true;
