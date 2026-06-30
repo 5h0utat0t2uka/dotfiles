@@ -76,7 +76,6 @@ just switch
 | `home-manager` | `just check-update-all` | `just update-all` |
 | `nix-homebrew` | 〃 | 〃 |
 | `darwin`       | 〃 | 〃 |
-| `wezterm`      | 〃 | 〃 |
 | `nixvim`       | 〃 | 〃 |
 
 ### `flake.lcok` 更新後の検証と反映  

@@ -16,7 +16,7 @@ in
   home-manager.users.${username} = {
     imports = [
       inputs.sops-nix.homeManagerModules.sops
-      ../../../modules/home-manager/wezterm
+      # ../../../modules/home-manager/wezterm
       ../../../modules/home-manager/tmux
       ../../../modules/home-manager/git
       ../../../modules/home-manager/zsh

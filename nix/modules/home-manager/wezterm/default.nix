@@ -5,7 +5,7 @@ let
 in
 {
   programs.wezterm = {
-    enable = true;
+    enable = false;
     package = inputs.wezterm.packages.${system}.default;
     enableZshIntegration = false;
   };
