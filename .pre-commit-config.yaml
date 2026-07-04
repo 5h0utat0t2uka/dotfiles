@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/betterleaks/betterleaks
-    rev: ac65f4739c352ab23dc2650a65be261016543599  # v1.5.0
+    rev: 6475f3fe49bf893d7713cd501131176a051f8d10  # v1.6.0
     hooks:
       - id: betterleaks-system
 
