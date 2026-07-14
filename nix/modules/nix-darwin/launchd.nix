@@ -27,13 +27,18 @@ in
   # 毎週日曜日 AM3:00 に gc
   # ============================================================
   launchd.daemons.nix-gc = {
+    script = ''
+      echo
+      echo "=== GC start: $(/bin/date '+%Y-%m-%d %H:%M:%S %z') ==="
+
+      ${nixBin}/nix-collect-garbage --delete-older-than 14d
+      status=$?
+
+      echo "=== GC end: $(/bin/date '+%Y-%m-%d %H:%M:%S %z') exit=$status ==="
+      exit "$status"
+    '';
+
     serviceConfig = {
-      ProgramArguments = [
-        "${nixBin}/nix-collect-garbage"
-        "--delete-older-than"
-        "14d"
-      ];
-      RunAtLoad = false;
       StartCalendarInterval = [
         {
           Weekday = 0;
@@ -41,6 +46,9 @@ in
           Minute = 0;
         }
       ];
+
+      ProcessType = "Background";
+      LowPriorityIO = true;
       StandardOutPath = "/var/log/nix-gc.log";
       StandardErrorPath = "/var/log/nix-gc.log";
     };
@@ -51,12 +59,18 @@ in
   # 毎週日曜日 AM4:00 に optimise
   # ============================================================
   launchd.daemons.nix-optimise = {
+    script = ''
+      echo
+      echo "=== optimise start: $(/bin/date '+%Y-%m-%d %H:%M:%S %z') ==="
+
+      ${nixBin}/nix-store --optimise
+      status=$?
+
+      echo "=== optimise end: $(/bin/date '+%Y-%m-%d %H:%M:%S %z') exit=$status ==="
+      exit "$status"
+    '';
+
     serviceConfig = {
-      ProgramArguments = [
-        "${nixBin}/nix-store"
-        "--optimise"
-      ];
-      RunAtLoad = false;
       StartCalendarInterval = [
         {
           Weekday = 0;
@@ -64,6 +78,9 @@ in
           Minute = 0;
         }
       ];
+
+      ProcessType = "Background";
+      LowPriorityIO = true;
       StandardOutPath = "/var/log/nix-optimise.log";
       StandardErrorPath = "/var/log/nix-optimise.log";
     };
