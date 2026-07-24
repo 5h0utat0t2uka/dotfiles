@@ -283,5 +283,14 @@
   "telemetry": {
     "metrics": false,
     "diagnostics": false
+  },
+  "context_servers": {
+    "Sanity": {
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer skVPxYxgzv5Rliay0JFpCjhY108FzWE5l24ADsVD5LGYvEp1UJlTpjvgEM2YG8Fg9KgL7kM9XFac9CYjj"
+      },
+      "url": "https://mcp.sanity.io"
+    }
   }
 }
