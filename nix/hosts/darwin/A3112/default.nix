@@ -18,6 +18,7 @@ in
       inputs.sops-nix.homeManagerModules.sops
       # ../../../modules/home-manager/wezterm
       ../../../modules/home-manager/tmux
+      ../../../modules/home-manager/herdr
       ../../../modules/home-manager/git
       ../../../modules/home-manager/zsh
       ../../../modules/home-manager/starship
