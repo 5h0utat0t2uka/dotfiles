@@ -80,6 +80,11 @@
     };
 
     # ----------------------------------------------------
+    # overlays
+    # ----------------------------------------------------
+    vscodeLangserversOverlay = import ./overlays/tools/vscode-langservers-extracted.nix;
+
+    # ----------------------------------------------------
     # nixpkgs module
     # ----------------------------------------------------
     nixPackagesModule = { identity, inputs, ... }: {
@@ -89,7 +94,7 @@
         overlays = [
           # tools
           (import ./overlays/tools/aicommits.nix { inherit inputs; })
-          (import ./overlays/tools/vscode-langservers-extracted.nix)
+          vscodeLangserversOverlay
           # (import ./overlays/tools/codex { inherit inputs; })
           # (import ./overlays/tools/claude-code { inherit inputs; })
 
@@ -176,6 +181,15 @@
   in
   {
     darwinConfigurations = builtins.listToAttrs (map mkDarwinConfig darwinHostKeys);
+    packages = forAllSystems (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ vscodeLangserversOverlay ];
+        };
+      in
+      { inherit (pkgs) vscode-langservers-extracted; }
+    );
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
   };
 }

@@ -1,4 +1,4 @@
-{ buildNpmPackage, lib, fetchurl, makeWrapper, nodejs }:
+{ buildNpmPackage, lib, fetchurl, makeWrapper, nodejs, jq }:
 
 buildNpmPackage rec {
   pname = "vscode-langservers-extracted";
@@ -9,18 +9,15 @@ buildNpmPackage rec {
   };
   sourceRoot = "package";
   postPatch = ''
+    ${lib.getExe jq} --from-file ${./package-json.jq} package.json > package.json.tmp
+    mv package.json.tmp package.json
     cp ${./package-lock.json} package-lock.json
   '';
+
+  npmDepsHash = "sha256-8yAHUf5R9LwPDUHRxPzShmLazRFL0EIAtKKgV0yiKGU=";
   dontNpmBuild = true;
-  npmDepsHash = "sha256-YEvdgoXZI1Hl6EHm+Yw8Gtt9IZhjBOcEhPGUKXj0dS8=";
-  npmRoot = ".";
-  npmFlags = [
-    "--omit=dev"
-    "--loglevel=error"
-  ];
-  nativeBuildInputs = [
-    makeWrapper
-  ];
+  npmFlags = [ "--loglevel=error" ];
+  nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
     runHook preInstall
