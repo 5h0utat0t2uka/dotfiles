@@ -3,7 +3,7 @@
 final: prev: {
   aicommits = prev.buildNpmPackage rec {
     pname = "aicommits";
-    version = "3.4.0";
+    version = "4.0.1";
     src = prev.fetchFromGitHub {
       owner = "Nutlope";
       repo = "aicommits";
