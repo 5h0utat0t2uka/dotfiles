@@ -45,6 +45,7 @@ in
       username = username;
       homeDirectory = homeDirectory;
       packages = with pkgs; [
+        inputs.ax.packages.${pkgs.system}.default
         betterleaks
         chafa
         devbox
@@ -70,6 +71,7 @@ in
         pnpm
         pinentry_mac
         ripgrep
+        skills
         smartmontools
         tree-sitter
         tree

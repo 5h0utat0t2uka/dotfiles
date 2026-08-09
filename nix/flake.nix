@@ -28,6 +28,10 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
+    ax = {
+      url = "github:yusukebe/ax";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     herdr = {
       url = "github:ogulcancelik/herdr";
       inputs.nixpkgs.follows = "nixpkgs";
