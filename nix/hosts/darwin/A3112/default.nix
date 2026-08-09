@@ -22,6 +22,7 @@ in
       ../../../modules/home-manager/git
       ../../../modules/home-manager/zsh
       ../../../modules/home-manager/starship
+      ../../../modules/home-manager/copilot
       ../../../modules/home-manager/pass
       ../../../modules/home-manager/sops
       ../../../modules/home-manager/nixvim
