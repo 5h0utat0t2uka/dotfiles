@@ -57,7 +57,7 @@ pre-commit install --hook-type pre-commit
 ```
 
 ## 自動更新  
-[GitHub Actions]() で全てのinputを更新して `nix flake check`, `nix build` の確認を行い、エラーがなければ `flake.lock` を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
+[GitHub Actions](https://github.com/5h0utat0t2uka/dotfiles/blob/main/.github/workflows/nix-update-check.yml) で全てのinputを更新して `nix flake check`, `nix build` の確認を行い、エラーがなければ `flake.lock` を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
 ``` sh
 cd ~/.local/share/chezmoi/nix
 git pull --ff-only
@@ -190,3 +190,107 @@ sudo /run/current-system/sw/bin/darwin-rebuild --list-generations
 
 > [!IMPORTANT]
 > `Run inside shell`は無効にする
+
+## 署名
+Secure Enclave を利用した Git の署名設定  
+
+1. 新しい Mac に既存の Secure Enclave 鍵がないことを確認する  
+``` sh
+sc_auth list-ctk-identities -t ssh
+```
+
+2. 新しい Git 署名鍵を Secure Enclave に生成する  
+``` sh
+sc_auth create-ctk-identity \
+  -l git-sign \
+  -k p-256-ne \
+  -t none
+```
+
+> [!NOTE]
+> Touch ID を必須にしたい場合は `-t bio` にする
+
+3. OpenSSH 用の key handle を取り出す  
+一時ディレクトリで実行
+``` sh
+tmpdir="$(mktemp -d)"
+cd "$tmpdir"
+
+/usr/bin/ssh-keygen \
+  -w /usr/lib/ssh-keychain.dylib \
+  -K \
+  -N ""
+```
+
+以下は空のまま Enter
+``` text
+Enter PIN for authenticator:
+```
+
+5. Git 署名用の名前で配置する  
+``` sh
+mkdir -p ~/.ssh
+
+install -m 600 \
+  id_ecdsa_sk_rk \
+  ~/.ssh/id_git_sign
+
+install -m 644 \
+  id_ecdsa_sk_rk.pub \
+  ~/.ssh/id_git_sign.pub
+```
+
+``` sh
+/usr/bin/ssh-keygen -lf ~/.ssh/id_git_sign.pub
+```
+
+``` sh
+cd
+rm -rf "$tmpdir"
+```
+
+6. GitHub に新しい公開鍵を Signing Key として追加する
+GitHub の「Settings」から SSH and GPG keys > New SSH key で以下の内容を「Signing Key」として登録
+``` sh
+pbcopy < ~/.ssh/id_git_sign.pub
+```
+
+7. dotfiles の `allowed_signers` を更新する  
+現在の署名に追記する
+```text
+nix/modules/home-manager/git/allowed_signers
+```
+
+``` text
+<email> namespaces="git" OLD_PUBLIC_KEY
+<email> namespaces="git" NEW_PUBLIC_KEY
+```
+
+旧署名を残す事で、過去の commit もローカルで検証可能
+```text
+過去の commit
+└─ OLD key → ローカルで検証可能
+
+移行後の commit
+└─ NEW key → ローカルで検証可能
+```
+
+8. dotfiles に変更を追加して Nix を反映する
+``` sh
+git add nix/modules/home-manager/git/allowed_signers
+```
+``` sh
+just check
+just check-build
+just switch
+```
+
+反映後、設定内容の確認
+``` sh
+git config --global --get user.signingKey
+git config --global --get gpg.format
+git config --global --get gpg.ssh.program
+git config --global --get commit.gpgSign
+git config --global --get tag.gpgSign
+git config --global --get gpg.ssh.allowedSignersFile
+```
