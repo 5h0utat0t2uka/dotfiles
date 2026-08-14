@@ -1,4 +1,4 @@
-{ pkgs, identity, ... }:
+{ config, pkgs, identity, ... }:
 
 let
   sshSign = pkgs.writeShellScript "ssh-sign" ''
@@ -24,6 +24,7 @@ in
       user = {
         name = identity.git.user.name;
         email = identity.git.user.email;
+        gpg.ssh.allowedSignersFile = "${config.xdg.configHome}/git/allowed_signers";
       };
       core = {
         editor = "vim";
