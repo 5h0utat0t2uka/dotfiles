@@ -62,6 +62,7 @@ in
       };
     };
   };
+  xdg.configFile."git/allowed_signers".source = ./allowed_signers;
   home.packages = with pkgs; [
     delta
     ghq
