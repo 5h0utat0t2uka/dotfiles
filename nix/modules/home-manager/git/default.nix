@@ -24,11 +24,15 @@ in
       user = {
         name = identity.git.user.name;
         email = identity.git.user.email;
-        gpg.ssh.allowedSignersFile = "${config.xdg.configHome}/git/allowed_signers";
       };
       core = {
         editor = "vim";
         pager = "delta";
+      };
+      gpg = {
+        ssh = {
+          allowedSignersFile = "${config.xdg.configHome}/git/allowed_signers";
+        };
       };
       url."git@github.com:" = {
         insteadOf = "https://github.com/";
