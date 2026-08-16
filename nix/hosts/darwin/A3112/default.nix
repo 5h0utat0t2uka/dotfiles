@@ -21,6 +21,7 @@ in
       # ../../../modules/home-manager/herdr
       ../../../modules/home-manager/git
       ../../../modules/home-manager/zsh
+      ../../../modules/home-manager/mise
       ../../../modules/home-manager/starship
       ../../../modules/home-manager/copilot
       ../../../modules/home-manager/pass
