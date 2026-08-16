@@ -7,17 +7,19 @@ in
 {
   aicommits = prev.stdenvNoCC.mkDerivation rec {
     pname = "aicommits";
-    version = "4.1.0";
+    version = "4.1.1";
     src = prev.fetchFromGitHub {
       owner = "Nutlope";
       repo = "aicommits";
       rev = "v${version}";
-      hash = "sha256-a4V4tV1UHMO9r9KXLYudA2gNAo9tRdIYIqUo086V1Ws=";
+      # hash = prev.lib.fakeHash;
+      hash = "sha256-W3+nXPJm5sCBozM3ZhreD9AQql8y+L+qe34JWe8Volo=";
     };
     pnpmDeps = prev.fetchPnpmDeps {
       inherit pname version src;
       inherit pnpm;
       fetcherVersion = 3;
+      # hash = prev.lib.fakeHash;
       hash = "sha256-wDJ9unTtRX0Mwigm+zMibScyFM9oUmVYuIz5esSya/A=";
     };
     nativeBuildInputs = [
