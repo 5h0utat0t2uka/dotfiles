@@ -60,6 +60,7 @@
         nrs = "nr start";
         ll = "eza -alo --time-style iso";
         lg = "lazygit";
+        cu = "copilot-usage";
       };
     };
     shellAliases = {

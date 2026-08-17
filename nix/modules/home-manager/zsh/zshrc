@@ -370,3 +370,62 @@ fzf_nb() {
 }
 zle -N fzf_nb
 bindkey '^n' fzf_nb
+
+copilot-usage() {
+  local user="5h0utat0t2uka"
+  local limit=1500
+  local limit_display="1,500"
+  local width=20
+  local data
+  data="$(
+    gh api \
+      -H "X-GitHub-Api-Version: 2026-03-10" \
+      "/users/${user}/settings/billing/ai_credit/usage"
+  )" || return 1
+
+  local used
+  used="$(
+    jq -r '[.usageItems[].grossQuantity] | add // 0' <<< "$data"
+  )"
+  local used_display percent
+  printf -v used_display "%.0f" "$used"
+  percent="$(
+    awk -v used="$used" -v limit="$limit" \
+      'BEGIN { printf "%.0f", used / limit * 100 }'
+  )"
+  local filled
+  filled="$(
+    awk -v used="$used" -v limit="$limit" -v width="$width" '
+      BEGIN {
+        n = int((used / limit) * width + 0.5)
+        if (n > width) n = width
+        if (n < 0) n = 0
+        print n
+      }
+    '
+  )"
+  local empty=$(( width - filled ))
+  local bar="${(l:$filled::█:)}${(l:$empty::░:)}"
+  local now_epoch reset_epoch
+  now_epoch="$(date +%s)"
+  reset_epoch="$(
+    date -u \
+      -d "$(date -u '+%Y-%m-01') +1 month" \
+      '+%s'
+  )"
+  local seconds_left=$(( reset_epoch - now_epoch ))
+  local days_left=$(( (seconds_left + 86399) / 86400 ))
+  local reset_date
+  reset_date="$(
+    date -u \
+      -d "@${reset_epoch}" \
+      '+%b %-d, %Y'
+  )"
+
+  print
+  print "Copilot Usage"
+  print " Included credits: ${used_display} / ${limit_display} credits"
+  print "  ${bar} ${percent}%"
+  print
+  print "  Resets in ${days_left} days on ${reset_date}"
+}
