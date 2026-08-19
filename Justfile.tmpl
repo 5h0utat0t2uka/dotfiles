@@ -48,3 +48,9 @@ switch:
 # ガベージコレクション
 gc:
   nix-collect-garbage -d
+
+# nix-helper
+clean:
+  nh -- clean all \
+  --keep 3 \
+  --keep-since 14d
