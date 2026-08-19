@@ -50,8 +50,6 @@ in
         betterleaks
         chafa
         devbox
-        doggo
-        dust
         eza
         fd
         fzf
@@ -62,7 +60,9 @@ in
         hyperfine
         just
         jq
+        keifu
         libwebp
+        nh
         ni
         nix-output-monitor
         nmap
@@ -78,7 +78,6 @@ in
         tree
         viu
         wget
-        xh
         zbar
         zizmor
         zoxide
