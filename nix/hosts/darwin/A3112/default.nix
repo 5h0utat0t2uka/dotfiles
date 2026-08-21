@@ -67,6 +67,7 @@ in
         nix-output-monitor
         nmap
         nodejs_24
+        openssh
         opentofu
         pre-commit
         pnpm
