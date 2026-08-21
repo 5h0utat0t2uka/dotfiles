@@ -1,5 +1,11 @@
 # 更新後は chezmoi init
 
+encryption = "age"
+
+[age]
+identity = "~/.config/chezmoi/age-key.txt"
+recipient = "age1cuk0kfu86y9h763x9xq22s2vjmky4f88ewrwlaeflwfrur8awa9qraghsv"
+
 [data]
 username = "{{ .chezmoi.username }}"
 hostname = "{{ .chezmoi.hostname }}"
