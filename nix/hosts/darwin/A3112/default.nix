@@ -78,6 +78,7 @@ in
         tree
         viu
         wget
+        yubikey-manager
         zbar
         zizmor
         zoxide
