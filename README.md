@@ -36,10 +36,14 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- \
   init <repository-url>
 ```
 
-### 4. chezmoi の age identity を復旧
-chezmoi で暗号化しているファイルを復号するため iCloud に保存している暗号化済み age identity を復元する  
+### 4. chezmoi と SOPS の age identity を復旧
+chezmoi と SOPS で暗号化しているファイルを復号するため iCloud に保存している暗号化済みの age identity をそれぞれ復元する  
+chezmoi と SOPS では異なる age identity を使用し、復旧用のパスフレーズもそれぞれ別に管理する  
+
 事前に iCloud Drive の同期が完了していることを確認する  
 
+#### chezmoi
+iCloud に保存している暗号化済み identity を復号  
 ```sh
 mkdir -p "$HOME/.config/chezmoi"
 chmod 700 "$HOME/.config/chezmoi"
@@ -68,12 +72,46 @@ nix shell nixpkgs#age --command \
 age1cuk0kfu86y9h763x9xq22s2vjmky4f88ewrwlaeflwfrur8awa9qraghsv
 ```
 
-> [!IMPORTANT]
-> `~/.config/chezmoi/age-key.txt` 自体は chezmoi では管理しない  
->
-> chezmoi 自身でこの identity を管理すると、復旧時に「暗号化ファイルを復号するための鍵を、暗号化ファイルから復号する」という循環依存になるため  
-> 復旧用の `chezmoi-age-key.txt.age` は iCloud に保存し、その復旧パスフレーズは iCloud には保存せず保管する  
+#### SOPS
+iCloud に保存している暗号化済み identity を復号  
+```sh
+mkdir -p "$HOME/.config/sops/age"
+chmod 700 "$HOME/.config/sops"
+chmod 700 "$HOME/.config/sops/age"
+```
+```sh
+SOPS_BACKUP="$HOME/Library/Mobile Documents/com~apple~CloudDocs/share/sops"
 
+nix shell nixpkgs#age --command \
+  age -d \
+    -o "$HOME/.config/sops/age/keys.txt" \
+    "$SOPS_BACKUP/sops-age-key.txt.age"
+
+chmod 600 "$HOME/.config/sops/age/keys.txt"
+```
+
+> [!IMPORTANT]
+> 復号時には保管している **chezmoi 復旧用 age パスフレーズ**を入力する  
+
+> [!IMPORTANT]
+> `~/.config/chezmoi/age-key.txt` と `~/.config/sops/age/keys.txt` はそれぞれ異なる age identity として扱う  
+>
+> - `~/.config/chezmoi/age-key.txt`
+>   - chezmoi の暗号化ファイル用
+> - `~/.config/sops/age/keys.txt`
+>   - `secrets/*.yaml` などの SOPS 暗号化ファイル用
+>
+> これらの identity を暗号化対象と同じ仕組みで管理すると、復旧時に循環依存になるため identity 自体は dotfiles, chezmoi では管理せず、復旧用の暗号化ファイルは iCloud に保存する  
+>
+> ```text
+> ~/Library/Mobile Documents/com~apple~CloudDocs/share/
+> ├── chezmoi/
+> │   └── chezmoi-age-key.txt.age
+> └── sops/
+>     └── sops-age-key.txt.age
+> ```
+>
+> それぞれの復旧用 age パスフレーズは 別途管理する  
 
 ### 5. dotfiles の展開
 age identity の復旧後に dotfiles を展開する
