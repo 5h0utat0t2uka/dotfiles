@@ -1,57 +1,102 @@
 <img alt="nix-check" src="https://img.shields.io/github/actions/workflow/status/5h0utat0t2uka/dotfiles/nix-check.yml?branch=main&style=for-the-badge&label=nix-check"/> <img alt="技術者倫理 遵守済み" src="https://img.shields.io/badge/%E6%8A%80%E8%A1%93%E8%80%85%E5%80%AB%E7%90%86-%E9%81%B5%E5%AE%88%E6%B8%88%E3%81%BF-0a0a0a?style=for-the-badge&labelColor=ffffff"/>
 
-<!--<div align="center">
-  <img
-    alt="header"
-    src="https://capsule-render.vercel.app/api?type=soft&height=300&color=0:7EBAE4,100:5277C3&text=~/.dotfiles%20with%20nix%20and%20chezmoi&fontColor=e8effc&fontSize=36&desc=for%20macOS&fontAlignY=48&descAlignY=66&textBg=false&descSize=26"
-  />
-</div>
-
----
-
-<div align="center">
-  <img alt="nix" src="https://img.shields.io/badge/nix-5277C3?style=for-the-badge&logo=nixos&logoColor=white"/>  
-  <img alt="macOS" src="https://img.shields.io/badge/macOS-222222?style=for-the-badge&logo=apple&logoColor=white"/>  
-  <img alt="技術者倫理 遵守済み" src="https://img.shields.io/badge/%E6%8A%80%E8%A1%93%E8%80%85%E5%80%AB%E7%90%86-%E9%81%B5%E5%AE%88%E6%B8%88%E3%81%BF-0a0a0a?style=for-the-badge&labelColor=ffffff"/>  
-</div>-->
-
 ## 設定
-1. ホスト名の設定と`CLT`のインストールから`ssh`のキーペア生成  
+### 1. ホスト名の設定と CLT のインストール
+
+ホスト名を設定して確認する
 ```sh
-# ホスト名設定と確認
 sudo scutil --set LocalHostName <hostKey>
 sudo scutil --set ComputerName <hostKey>
 sudo scutil --set HostName <hostKey>
-scutil --get LocalHostName
 
-# CLTインストールと確認
+scutil --get LocalHostName
+```
+
+> [!IMPORTANT]
+> `hostKey` は `nix/hosts/darwin/<hostKey>` のディレクトリ名と一致させる  
+
+Command Line Tools をインストールして確認する
+```sh
 xcode-select --install
 xcode-select -p
 ```
-> [!IMPORTANT]
-> `hostKey`は`nix/hosts/darwin/<hostKey>`のフォルダ名と一致させる  
 
-2. [Determinate Nix](https://docs.determinate.systems) からインストールして確認  
+### 2. [Determinate Nix](https://docs.determinate.systems) のインストール  
 ```sh
 ❯ nix --version
-nix (Determinate Nix 3.15.1) 2.33.0
+  # nix (Determinate Nix 3.15.1) 2.33.0 など
 ```
 
-3. `chezmoi`の初期化をしてドットファイルの展開  
+
+### 3. chezmoi の初期化
+`chezmoi` をインストールし、dotfiles リポジトリを初期化、この時点では暗号化されたファイルを復号するための age identity が存在しないため `--apply` は指定しない
 ```sh
-sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin" init --apply <repository-url>
+sh -c "$(curl -fsLS get.chezmoi.io)" -- \
+  -b "$HOME/.local/bin" \
+  init <repository-url>
 ```
 
-4. セットアップ  
+### 4. chezmoi の age identity を復旧
+chezmoi で暗号化しているファイルを復号するため iCloud に保存している暗号化済み age identity を復元する  
+事前に iCloud Drive の同期が完了していることを確認する  
+
+```sh
+mkdir -p "$HOME/.config/chezmoi"
+chmod 700 "$HOME/.config/chezmoi"
+
+CHEZMOI_BACKUP="$HOME/Library/Mobile Documents/com~apple~CloudDocs/share/chezmoi"
+
+nix shell nixpkgs#age --command \
+  age -d \
+    -o "$HOME/.config/chezmoi/age-key.txt" \
+    "$CHEZMOI_BACKUP/chezmoi-age-key.txt.age"
+
+chmod 600 "$HOME/.config/chezmoi/age-key.txt"
+```
+
+> [!IMPORTANT]
+> 復号時には保管している **chezmoi 復旧用 age パスフレーズ**を入力する  
+
+復元した identity の recipient を確認
+```sh
+nix shell nixpkgs#age --command \
+  age-keygen -y "$HOME/.config/chezmoi/age-key.txt"
+```
+
+以下と一致することを確認する
+```text
+age1cuk0kfu86y9h763x9xq22s2vjmky4f88ewrwlaeflwfrur8awa9qraghsv
+```
+
+> [!IMPORTANT]
+> `~/.config/chezmoi/age-key.txt` 自体は chezmoi では管理しない  
+>
+> chezmoi 自身でこの identity を管理すると、復旧時に「暗号化ファイルを復号するための鍵を、暗号化ファイルから復号する」という循環依存になるため  
+> 復旧用の `chezmoi-age-key.txt.age` は iCloud に保存し、その復旧パスフレーズは iCloud には保存せず保管する  
+
+
+### 5. dotfiles の展開
+age identity の復旧後に dotfiles を展開する
+```sh
+"$HOME/.local/bin/chezmoi" apply
+```
+
+### 6. セットアップ
 ```sh
 cd ~/.local/share/chezmoi/scripts
-# 確認
+```
+
+実行内容を確認
+```sh
 ./setup.sh --dry-run
-# 実行
+```
+問題がなければ実行
+```sh
 ./setup.sh
 ```
-``` sh
-# pre-commit 
+
+### 7. pre-commit の設定
+```sh
 pre-commit install
 pre-commit install --hook-type pre-commit
 ```
