@@ -1,20 +1,20 @@
 { config, pkgs, identity, ... }:
 
-let
-  sshSign = pkgs.writeShellScript "ssh-sign" ''
-    export SSH_SK_PROVIDER=/usr/lib/ssh-keychain.dylib
-    exec /usr/bin/ssh-keygen "$@"
-  '';
-in
+# let
+#   sshSign = pkgs.writeShellScript "ssh-sign" ''
+#     export SSH_SK_PROVIDER=/usr/lib/ssh-keychain.dylib
+#     exec /usr/bin/ssh-keygen "$@"
+#   '';
+# in
 
 {
   programs.git = {
     enable = true;
     signing = {
-      key = "${identity.homeDirectory}/.ssh/id_git_sign";
+      key = "${config.home.homeDirectory}/.ssh/id_ed25519_sk_git_sign_primary";
       format = "ssh";
       signByDefault = true;
-      signer = "${sshSign}";
+      # signer = "${sshSign}";
     };
     ignores = [
       ".DS_Store"
