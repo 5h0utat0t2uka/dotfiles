@@ -61,6 +61,7 @@ in
         hyperfine
         just
         jq
+        keepassxc
         keifu
         libwebp
         nh
