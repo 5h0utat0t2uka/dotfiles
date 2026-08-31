@@ -1,35 +1,57 @@
-{ pkgs, config, lib, ... }:
+# { pkgs, config, lib, ... }:
 
-let
-  aicommits = pkgs.writeShellScriptBin "aicommits" ''
-    export OPENAI_API_KEY="$(cat ${config.sops.secrets.openai_api_key.path})"
-    exec ${pkgs.aicommits}/bin/aicommits "$@"
-  '';
-  aic = pkgs.writeShellScriptBin "aic" ''
-    export OPENAI_API_KEY="$(cat ${config.sops.secrets.openai_api_key.path})"
-    exec ${pkgs.aicommits}/bin/aic "$@"
-  '';
-in
+# let
+#   aicommits = pkgs.writeShellScriptBin "aicommits" ''
+#     export OPENAI_API_KEY="$(cat ${config.sops.secrets.openai_api_key.path})"
+#     exec ${pkgs.aicommits}/bin/aicommits "$@"
+#   '';
+#   aic = pkgs.writeShellScriptBin "aic" ''
+#     export OPENAI_API_KEY="$(cat ${config.sops.secrets.openai_api_key.path})"
+#     exec ${pkgs.aicommits}/bin/aic "$@"
+#   '';
+# in
+# {
+#   home.packages = [
+#     aicommits
+#     aic
+#   ];
+
+#   home.activation.writeAicommitsConfig =
+#     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+#       umask 077
+#       cat > "$HOME/.aicommits" <<EOF
+# provider=openai
+# OPENAI_API_KEY=$(cat ${config.sops.secrets.openai_api_key.path})
+# OPENAI_MODEL=gpt-4o-mini
+# type=conventional
+# locale=en
+# generate=1
+# timeout=60000
+# EOF
+#     '';
+#   sops.secrets.openai_api_key = {
+#     sopsFile = ../../../../secrets/darwin.yaml;
+#   };
+# }
+{ pkgs, config, ... }:
+
 {
   home.packages = [
-    aicommits
-    aic
+    pkgs.aicommits
   ];
-
-  home.activation.writeAicommitsConfig =
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      umask 077
-      cat > "$HOME/.aicommits" <<EOF
-provider=openai
-OPENAI_API_KEY=$(cat ${config.sops.secrets.openai_api_key.path})
-OPENAI_MODEL=gpt-4o-mini
-type=conventional
-locale=en
-generate=1
-timeout=60000
-EOF
-    '';
   sops.secrets.openai_api_key = {
     sopsFile = ../../../../secrets/darwin.yaml;
+  };
+  sops.templates.aicommits = {
+    path = "${config.home.homeDirectory}/.aicommits";
+    mode = "0600";
+    content = ''
+      OPENAI_API_KEY=${config.sops.placeholder.openai_api_key}
+      OPENAI_MODEL=gpt-4o-mini
+      type=conventional
+      locale=en
+      generate=1
+      timeout=60000
+    '';
   };
 }
