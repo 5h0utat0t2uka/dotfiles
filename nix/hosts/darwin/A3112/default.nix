@@ -24,6 +24,7 @@ in
       ../../../modules/home-manager/mise
       ../../../modules/home-manager/starship
       ../../../modules/home-manager/copilot
+      ../../../modules/home-manager/gnupg
       ../../../modules/home-manager/passage
       ../../../modules/home-manager/pass
       ../../../modules/home-manager/sops
@@ -57,7 +58,7 @@ in
         gh
         gitleaks
         gifski
-        gnupg
+        # gnupg
         hyperfine
         just
         jq
