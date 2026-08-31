@@ -1,4 +1,6 @@
 README.md
+docs
+docs/**
 /flake.nix
 /flake.lock
 /nix/**
