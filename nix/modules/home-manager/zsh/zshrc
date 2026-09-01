@@ -251,6 +251,14 @@ dff() {
   fi
 }
 
+pwg() {
+  # password generator
+  # usage: pwg [length]
+  local len=${1:-20}
+  len=${len#-}
+  LC_ALL=C tr -dc 'A-Za-z0-9!@#$%^&*()_+=-' < /dev/urandom | head -c "$len"; echo
+}
+
 update_zo_opts() {
   export _ZO_FZF_OPTS="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt) ${(j: :)_ZO_ADDITIONAL_OPTS}"
 }
