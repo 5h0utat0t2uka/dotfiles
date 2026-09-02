@@ -43,3 +43,12 @@ macos-auto-secure-input = true
 desktop-notifications = true
 quit-after-last-window-closed = true
 resize-overlay = never
+# keybinds
+# Ctrl+' → s : package.json scripts
+keybind = ctrl+'>s=esc:xs
+# Ctrl+' → n : nb
+keybind = ctrl+'>n=esc:xn
+# Ctrl+' → g : ghq
+keybind = ctrl+'>g=esc:xg
+# Ctrl+' → f : find
+keybind = ctrl+'>f=esc:xf
