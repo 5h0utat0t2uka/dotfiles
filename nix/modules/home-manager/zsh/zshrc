@@ -382,13 +382,14 @@ bindkey '\exn' fzf_nb
 fzf_script() {
   # package.json の scripts を検索・実行
   setopt localoptions pipefail
-  zle -I
 
   if [[ ! -f package.json ]]; then
-    zle -M "package.json not found"
-    zle -R
-    return 1
+    zle -I
+    print -r -- "package.json not found"
+    return 0
   fi
+
+  zle -I
 
   local package_manager
   case "$(jq -r '.packageManager // ""' package.json)" in
