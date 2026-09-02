@@ -52,3 +52,6 @@ keybind = ctrl+'>n=esc:xn
 keybind = ctrl+'>g=esc:xg
 # Ctrl+' → f : find
 keybind = ctrl+'>f=esc:xf
+# Ctrl+' → r : history
+keybind = ctrl+'>r=esc:xr
+

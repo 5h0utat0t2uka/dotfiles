@@ -296,7 +296,7 @@ fzf_history() {
   zle redisplay
 }
 zle -N fzf_history
-bindkey '^Xr' fzf_history
+bindkey '\exr' fzf_history
 
 fzf_find() {
   # ^+F でファイル検索
@@ -328,7 +328,7 @@ fzf_find() {
   zle accept-line
 }
 zle -N fzf_find
-bindkey '^Xf' fzf_find
+bindkey '\exf' fzf_find
 
 fzf_ghq() {
   # ^+G でリポジトリ検索
@@ -357,7 +357,7 @@ fzf_ghq() {
   zle accept-line
 }
 zle -N fzf_ghq
-bindkey '^Xg' fzf_ghq
+bindkey '\exg' fzf_ghq
 
 fzf_nb() {
   setopt localoptions pipefail
@@ -377,7 +377,7 @@ fzf_nb() {
   zle accept-line
 }
 zle -N fzf_nb
-bindkey '^Xn' fzf_nb
+bindkey '\exn' fzf_nb
 
 fzf_script() {
   # package.json の scripts を検索・実行
@@ -437,7 +437,7 @@ fzf_script() {
   zle accept-line
 }
 zle -N fzf_script
-bindkey '^Xs' fzf_script
+bindkey '\exs' fzf_script
 
 copilot-usage() {
   local user="5h0utat0t2uka"
