@@ -81,6 +81,7 @@ in
         tree
         viu
         wget
+        xz
         yubikey-manager
         zbar
         zizmor
