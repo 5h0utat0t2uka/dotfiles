@@ -28,7 +28,7 @@
       { name = "claude"; greedy = true; }
       { name = "ghostty"; greedy = false; }
       { name = "karabiner-elements"; greedy = false; }
-      { name = "ollama-app"; greedy = true; }
+      # { name = "ollama-app"; greedy = true; }
       { name = "zed"; greedy = true; }
     ];
   };
