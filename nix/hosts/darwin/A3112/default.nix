@@ -47,7 +47,7 @@ in
       username = username;
       homeDirectory = homeDirectory;
       packages = with pkgs; [
-        inputs.ax.packages.${pkgs.system}.default
+        inputs.ax.packages.${pkgs.stdenv.hostPlatform.system}.default
         betterleaks
         chafa
         chezmoi

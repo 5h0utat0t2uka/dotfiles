@@ -189,13 +189,13 @@
       "snippets/html.json".source = ./snippets/html.json;
     };
 
-    extraPackages = lib.optionals pkgs.stdenv.isDarwin [
+    extraPackages = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
       # for macOS IME
       pkgs.macism
       # vscode-langservers-extracted overlays causes some issues on
       pkgs.vscode-langservers-extracted
     ];
-    extraConfigLua = lib.optionalString pkgs.stdenv.isDarwin ''
+    extraConfigLua = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
       local english_im = vim.env.NVIM_ENGLISH_IM or "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
       local function switch_ime_to_english()
         if vim.fn.executable("macism") ~= 1 then
