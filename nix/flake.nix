@@ -192,7 +192,15 @@
           overlays = [ vscodeLangserversOverlay ];
         };
       in
-      { inherit (pkgs) vscode-langservers-extracted; }
+      {
+        inherit (pkgs) vscode-langservers-extracted;
+        # Initial setup uses the same locked nixpkgs as the system configuration.
+        bootstrap-tools = pkgs.buildEnv {
+          name = "dotfiles-bootstrap-tools";
+          paths = with pkgs; [ age chezmoi coreutils jq sops ];
+          pathsToLink = [ "/bin" ];
+        };
+      }
     );
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
   };

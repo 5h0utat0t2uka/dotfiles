@@ -50,6 +50,7 @@ in
         inputs.ax.packages.${pkgs.system}.default
         betterleaks
         chafa
+        chezmoi
         devbox
         eza
         fd

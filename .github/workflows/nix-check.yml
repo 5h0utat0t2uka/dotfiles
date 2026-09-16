@@ -6,11 +6,17 @@ on:
     branches: [main]
     paths:
       - 'nix/**'
+      - 'scripts/**'
+      - '.chezmoi.toml.tmpl'
+      - '.sops.yaml'
       - '.github/workflows/nix-check.yml'
   push:
     branches: [main]
     paths:
       # - 'nix/**'
+      - 'scripts/**'
+      - '.chezmoi.toml.tmpl'
+      - '.sops.yaml'
       - '.github/workflows/nix-check.yml'
 
 concurrency:
@@ -69,3 +75,11 @@ jobs:
             echo "==> evaluating $hn"
             nix eval ".#darwinConfigurations.${hn}.config.system.build.toplevel" >/dev/null
           done
+
+      - name: Test bootstrap with disposable identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          /bin/bash -n scripts/setup.sh scripts/tests/setup-test.sh
+          bootstrap_tools="$(nix build --no-update-lock-file --no-link --print-out-paths ./nix#bootstrap-tools)"
+          /bin/bash scripts/tests/setup-test.sh "$bootstrap_tools"
