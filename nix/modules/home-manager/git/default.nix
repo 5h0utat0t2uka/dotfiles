@@ -100,7 +100,7 @@ in
       alias = {
         work = "!f() { test -n \"$1\" || { echo \"Usage: git work <branch-name>\" >&2; return 1; }; git fetch --prune origin && git switch -c \"$1\" origin/main; }; f";
         done = "!f() { git switch main && git pull --ff-only --prune origin main; }; f";
-        sync = "!git fetch origin && git switch dev && git pull --ff-only origin dev && git merge origin/main && git push origin dev";
+        sync = "!f() { git fetch --prune origin && git switch dev && git pull --ff-only origin dev && git merge --ff-only origin/main && git push origin dev; }; f";
       };
       interactive = { diffFilter = "delta --color-only"; };
       merge = { conflictstyle = "diff3"; };
