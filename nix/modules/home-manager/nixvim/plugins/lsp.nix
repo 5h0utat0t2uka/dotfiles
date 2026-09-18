@@ -35,7 +35,7 @@
         };
       };
 
-      tofu_ls = {
+      terraformls = {
         enable = true;
       };
 
@@ -101,13 +101,6 @@
   '';
 
   extraConfigLua = ''
-    vim.filetype.add({
-      extension = {
-        tofu = "opentofu",
-        tfvars = "opentofu-vars",
-      },
-    })
-
     pcall(vim.lsp.enable, "copilot")
     vim.lsp.inline_completion.enable(true)
     vim.keymap.set("i", "<M-CR>", function()

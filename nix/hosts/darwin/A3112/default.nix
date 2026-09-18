@@ -71,13 +71,15 @@ in
         nmap
         nodejs_24
         openssh
-        opentofu
+        # opentofu
         pre-commit
         pnpm
         pinentry_mac
         ripgrep
         skills
         smartmontools
+        terraform
+        terraform-ls
         tree-sitter
         tree
         viu
@@ -90,7 +92,7 @@ in
         nixd
         nil
         lua-language-server
-        tofu-ls
+        # tofu-ls
         # vscode-langservers-extracted
         copilot-language-server
       ];

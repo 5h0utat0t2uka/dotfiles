@@ -202,6 +202,16 @@
         };
       }
     );
+    devShells = forAllSystems (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
+        default = pkgs.mkShellNoCC {
+          packages = with pkgs; [ pre-commit betterleaks ];
+        };
+      }
+    );
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
   };
 }

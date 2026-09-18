@@ -11,3 +11,6 @@ result
 .git/
 .github/
 .DS_Store
+.envrc
+.direnv
+.direnv/**

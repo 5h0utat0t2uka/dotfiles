@@ -4,6 +4,31 @@
 
 以下は既存環境の更新・保守手順です。
 
+## コミット用の開発環境
+
+プロジェクトルートの `.envrc` が `nix/flake.nix` の開発用シェルを読み込みます。
+`pre-commit` と `betterleaks` は `nix/flake.lock` で固定されたものを使います。
+コミットのために `nix/` へ移動する必要はありません。
+
+```sh
+cd ~/.local/share/chezmoi
+direnv allow
+pre-commit run --all-files --show-diff-on-failure
+```
+
+初回と `.envrc` の変更時には、内容を確認してから `direnv allow` を実行します。
+環境の読み込み時に `pre-commit install` を実行し、フックのNixストア参照を更新します。
+flakeの評価に失敗した場合は古い環境へフォールバックせず停止します。
+`darwin-rebuild switch` は不要です。
+
+nix-direnvは開発環境をGCから保護しますが、`.direnv/` やそのGC rootを削除した場合は再構築が必要です。
+クリーンアップ後にフックの参照切れが発生したら、ルートで `direnv reload` を実行し、
+次のプロンプトで環境の読み込みが成功したことを確認してください。
+GUIからコミットする場合も、初回・lock更新後には先にターミナルで環境を読み込んでください。
+
+参考: [nix-direnv](https://github.com/nix-community/nix-direnv#flakes-support)、
+[pre-commit](https://pre-commit.com/#usage)。
+
 ## 自動更新  
 [GitHub Actions](https://github.com/5h0utat0t2uka/dotfiles/blob/main/.github/workflows/nix-update-check.yml) で全てのinputを更新して `nix flake check`, `nix build` の確認を行い、エラーがなければ `flake.lock` を更新してPRを作成するので、マージ後にローカルにで取り込んで更新する  
 ``` sh

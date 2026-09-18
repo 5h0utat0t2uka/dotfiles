@@ -29,7 +29,6 @@
       ./plugins/gitsigns.nix
       ./plugins/hlchunk.nix
       ./plugins/key-menu.nix
-      # ./plugins/lspconfig.nix
       ./plugins/lsp.nix
       ./plugins/lspsaga.nix
       ./plugins/lualine.nix
