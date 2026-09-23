@@ -10,6 +10,21 @@
   "edit_predictions": {
     "provider": "copilot"
   },
+  "auto_install_extensions": {
+    "arduino": true,
+    "astro": true,
+    "comment": true,
+    "dockerfile": true,
+    "emmet": true,
+    "git-firefly": true,
+    "html": true,
+    "just": true,
+    "lua": true,
+    "make": true,
+    "nix": true,
+    "toml": true,
+    "terraform": true
+  },
   "edit_predictions_disabled_in": ["comment"],
   "theme_overrides": {
     "Nord-Custom": {
@@ -96,8 +111,8 @@
   "diagnostics": {
     "include_warnings": true,
     "inline": {
-      "enabled": false,
-    },
+      "enabled": false
+    }
   },
   "format_on_save": "off",
   "ui_font_size": 16,
