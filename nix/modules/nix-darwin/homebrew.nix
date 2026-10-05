@@ -23,6 +23,7 @@
 
     # casks = map (name: { inherit name; greedy = true; }) [];
     casks = [
+      { name = "arduino-ide"; greedy = true; }
       { name = "chatgpt"; greedy = true; }
       # { name = "codex-app"; greedy = true; }
       { name = "claude"; greedy = true; }
