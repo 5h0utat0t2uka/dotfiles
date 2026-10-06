@@ -80,7 +80,8 @@
         extraOptions = {
           init_options = {
             typescript = {
-              tsdk = "${pkgs.typescript}/lib/node_modules/typescript/lib";
+              # Astro requires the JavaScript SDK, which TypeScript 7 does not provide.
+              tsdk = "${pkgs.typescript_5}/lib/node_modules/typescript/lib";
             };
           };
         };

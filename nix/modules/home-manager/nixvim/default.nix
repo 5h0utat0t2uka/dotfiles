@@ -36,7 +36,7 @@
       ./plugins/noice.nix
       ./plugins/oil.nix
       ./plugins/scrollbar.nix
-      ./plugins/smear-cursor.nix
+      # ./plugins/smear-cursor.nix
       ./plugins/telescope.nix
       ./plugins/treesitter.nix
       ./plugins/todo-comments.nix
