@@ -62,7 +62,7 @@ in
         hyperfine
         just
         jq
-        keepassxc
+        # keepassxc
         keifu
         libwebp
         nh
