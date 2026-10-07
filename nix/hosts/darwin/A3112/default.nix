@@ -36,7 +36,7 @@ in
       ../../../modules/home-manager/jqp
       ../../../modules/home-manager/bat
       ../../../modules/home-manager/lf
-      ../../../modules/home-manager/nb
+      # ../../../modules/home-manager/nb
       ../../../modules/home-manager/zk
     ];
     manual = {

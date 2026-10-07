@@ -359,25 +359,25 @@ fzf_ghq() {
 zle -N fzf_ghq
 bindkey '\exg' fzf_ghq
 
-fzf_nb() {
-  setopt localoptions pipefail
-  zle -I
-  local selected
-  selected=$(
-    nb ls --no-color | grep -E "^\[[0-9]+\]" | \
-    FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt)" \
-    $(fzf_command) \
-    --query "$LBUFFER" \
-    --prompt="❯${NBSP}" \
-    --preview 'CLICOLOR_FORCE=1 COLORTERM=truecolor glow -s dark <(nb show $(echo {} | tr -d "[]" | awk "{print \$1}") --no-color)'
-  )
-  [[ -z "$selected" ]] && { zle -R; return 0; }
-  local note_id=$(echo "$selected" | tr -d '[]' | awk '{print $1}')
-  BUFFER="nb edit $note_id"
-  zle accept-line
-}
-zle -N fzf_nb
-bindkey '\exn' fzf_nb
+# fzf_nb() {
+#   setopt localoptions pipefail
+#   zle -I
+#   local selected
+#   selected=$(
+#     nb ls --no-color | grep -E "^\[[0-9]+\]" | \
+#     FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt)" \
+#     $(fzf_command) \
+#     --query "$LBUFFER" \
+#     --prompt="❯${NBSP}" \
+#     --preview 'CLICOLOR_FORCE=1 COLORTERM=truecolor glow -s dark <(nb show $(echo {} | tr -d "[]" | awk "{print \$1}") --no-color)'
+#   )
+#   [[ -z "$selected" ]] && { zle -R; return 0; }
+#   local note_id=$(echo "$selected" | tr -d '[]' | awk '{print $1}')
+#   BUFFER="nb edit $note_id"
+#   zle accept-line
+# }
+# zle -N fzf_nb
+# bindkey '\exn' fzf_nb
 
 fzf_zk() {
   local query="${1-}"
@@ -402,7 +402,7 @@ fzf_zk() {
   return $result
 }
 zle -N fzf_zk
-bindkey '\exk' fzf_zk
+bindkey '\exz' fzf_zk
 
 fzf_script() {
   # package.json の scripts を検索・実行
