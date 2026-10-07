@@ -48,8 +48,8 @@ resize-overlay = never
 keybind = ctrl+'>s=esc:xs
 # Ctrl+' → n : nb
 keybind = ctrl+'>n=esc:xn
-# Ctrl+' → k : zk
-keybind = ctrl+'>k=esc:xk
+# Ctrl+' → z : zk
+keybind = ctrl+'>z=esc:xz
 # Ctrl+' → g : ghq
 keybind = ctrl+'>g=esc:xg
 # Ctrl+' → f : find

@@ -395,7 +395,8 @@ fzf_zk() {
   fi
   # 検索語を fzf のオプション文字列に安全に渡す。
   opts+=" --query ${(qq)query}"
-  FZF_DEFAULT_OPTS="$opts" zk edit --interactive --sort modified || result=$?
+  # ZLE は標準入力を /dev/null にするため、zk の対話判定用に端末へ接続する。
+  FZF_DEFAULT_OPTS="$opts" zk edit --interactive --sort modified < /dev/tty || result=$?
 
   (( in_zle )) && zle reset-prompt
   return $result
