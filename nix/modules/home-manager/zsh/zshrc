@@ -379,6 +379,30 @@ fzf_nb() {
 zle -N fzf_nb
 bindkey '\exn' fzf_nb
 
+fzf_zk() {
+  local query="${1-}"
+  local -i in_zle=0 result=0
+  if zle; then
+    in_zle=1
+    query="$LBUFFER"
+    zle -I
+  fi
+
+  local opts="${(j: :)FZF_BASE_OPTS} $(fzf_preview_window_opt),wrap"
+  # zk は fzf を直接起動するため、tmux 内では fzf 標準の popup を使う。
+  if [[ -n ${TMUX-} ]]; then
+    opts+=" --tmux=center,80%,70% --margin=0,1"
+  fi
+  # 検索語を fzf のオプション文字列に安全に渡す。
+  opts+=" --query ${(qq)query}"
+  FZF_DEFAULT_OPTS="$opts" zk edit --interactive --sort modified || result=$?
+
+  (( in_zle )) && zle reset-prompt
+  return $result
+}
+zle -N fzf_zk
+bindkey '\exk' fzf_zk
+
 fzf_script() {
   # package.json の scripts を検索・実行
   setopt localoptions pipefail

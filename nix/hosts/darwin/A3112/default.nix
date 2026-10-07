@@ -37,6 +37,7 @@ in
       ../../../modules/home-manager/bat
       ../../../modules/home-manager/lf
       ../../../modules/home-manager/nb
+      ../../../modules/home-manager/zk
     ];
     manual = {
       # FIXME: issue: problem with home-manager manual (https://github.com/nix-community/home-manager/issues/7935)
