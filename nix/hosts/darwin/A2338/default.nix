@@ -1,0 +1,102 @@
+{ inputs, pkgs, identity, ... }:
+
+let
+  username = identity.username;
+  homeDirectory = identity.homeDirectory;
+in
+
+{
+  imports = [
+    ../../../modules/nix-darwin/system.nix
+    ../../../modules/nix-darwin/shell.nix
+    ../../../modules/nix-darwin/homebrew.nix
+    ../../../modules/nix-darwin/launchd.nix
+  ];
+
+  home-manager.users.${username} = {
+    imports = [
+      inputs.sops-nix.homeManagerModules.sops
+      # ../../../modules/home-manager/wezterm
+      ../../../modules/home-manager/tmux
+      ../../../modules/home-manager/git
+      ../../../modules/home-manager/zsh
+      ../../../modules/home-manager/mise
+      ../../../modules/home-manager/starship
+      ../../../modules/home-manager/copilot
+      ../../../modules/home-manager/gnupg
+      ../../../modules/home-manager/passage
+      ../../../modules/home-manager/pass
+      ../../../modules/home-manager/sops
+      ../../../modules/home-manager/nixvim
+      ../../../modules/home-manager/direnv
+      ../../../modules/home-manager/lazygit
+      ../../../modules/home-manager/aicommits
+      ../../../modules/home-manager/aerospace
+      ../../../modules/home-manager/glow
+      ../../../modules/home-manager/jqp
+      ../../../modules/home-manager/bat
+      ../../../modules/home-manager/lf
+      # ../../../modules/home-manager/nb
+      ../../../modules/home-manager/zk
+    ];
+    manual = {
+      # FIXME: issue: problem with home-manager manual (https://github.com/nix-community/home-manager/issues/7935)
+      manpages.enable = false;
+    };
+    home = {
+      stateVersion = "25.11";
+      username = username;
+      homeDirectory = homeDirectory;
+      packages = with pkgs; [
+        inputs.ax.packages.${pkgs.stdenv.hostPlatform.system}.default
+        betterleaks
+        chafa
+        chezmoi
+        devbox
+        eza
+        fd
+        fzf
+        gh
+        gitleaks
+        gifski
+        # gnupg
+        hyperfine
+        just
+        jq
+        # keepassxc
+        keifu
+        libwebp
+        nh
+        ni
+        nix-output-monitor
+        nmap
+        nodejs_24
+        openssh
+        # opentofu
+        pre-commit
+        pnpm
+        pinentry_mac
+        ripgrep
+        skills
+        smartmontools
+        terraform
+        terraform-ls
+        tree-sitter
+        tree
+        viu
+        wget
+        xz
+        yubikey-manager
+        zbar
+        zizmor
+        zoxide
+        nixd
+        nil
+        lua-language-server
+        # tofu-ls
+        # vscode-langservers-extracted
+        copilot-language-server
+      ];
+    };
+  };
+}
