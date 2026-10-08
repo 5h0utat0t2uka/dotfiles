@@ -29,8 +29,17 @@ chmod 700 "$TEST_ROOT/mock-bin/age"
 
 run_case() {
   local name="$1" body="$2" expected="${3:-0}" result=0
+  local case_home="${4:-}"
+  local case_environment=(/usr/bin/env)
   mkdir "$TEST_ROOT/$name"
-  /bin/bash -c '
+  if [[ -n "$case_home" ]]; then
+    mkdir -p "$case_home"
+    case_environment=(/usr/bin/env "HOME=$case_home"
+      "XDG_CONFIG_HOME=$case_home/.config" "XDG_DATA_HOME=$case_home/.local/share"
+      "XDG_CACHE_HOME=$case_home/.cache" "XDG_STATE_HOME=$case_home/.local/state"
+      GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1)
+  fi
+  "${case_environment[@]}" /bin/bash -c '
     source "$REPO/scripts/setup.sh"
     WORK_DIR="$TEST_ROOT/$1/work"
     mkdir "$WORK_DIR"
@@ -168,29 +177,134 @@ run_case sops_lazy_tree_path '
   validate_decryption
 '
 
-# Exercise chezmoi init with a missing config and missing identity. No real HOME writes.
-mkdir "$TEST_ROOT/destination"
-sed "s|~/.config/chezmoi/age-key.txt|$TEST_ROOT/missing-identity.txt|" \
-  "$REPO/.chezmoi.toml.tmpl" > "$TEST_ROOT/chezmoi-source/.chezmoi.toml.tmpl"
-printf 'synthetic secret\n' | "$TOOLS_ROOT/bin/age" -r "$RECIPIENT" > "$TEST_ROOT/chezmoi-source/encrypted_private_test.age"
+# Use a disposable HOME so normal chezmoi commands exercise the default state
+# location, with no --config/--persistent-state flags and no real user data.
+set_chezmoi_test_paths() {
+  REPO_DIR="$HOME/.local/share/chezmoi"
+  CHEZMOI_CONFIG="$HOME/.config/chezmoi/chezmoi.toml"
+  # shellcheck disable=SC2034 # Used by the sourced setup.sh functions.
+  CHEZMOI_KEY="$HOME/.config/chezmoi/age-key.txt"
+}
+
+prepare_chezmoi_fixture() {
+  set_chezmoi_test_paths
+  mkdir -p "$REPO_DIR/private_dot_ssh" "${CHEZMOI_CONFIG%/*}"
+  sed "s/^recipient = .*/recipient = \"$RECIPIENT\"/" \
+    "$REPO/.chezmoi.toml.tmpl" > "$REPO_DIR/.chezmoi.toml.tmpl"
+  printf 'Host test.example\n  HostName 192.0.2.1\n# synthetic secret\n' \
+    | "$TOOLS/age" -r "$RECIPIENT" > "$REPO_DIR/private_dot_ssh/encrypted_private_config.age"
+  printf 'synthetic secret key handle\n' \
+    | "$TOOLS/age" -r "$RECIPIENT" > "$REPO_DIR/private_dot_ssh/encrypted_private_id_ed25519_sk_test.age"
+  printf '%s\n' '#!/bin/sh' 'printf "ran\n" >> "$HOME/bootstrap-runs"' \
+    > "$REPO_DIR/run_once_before_test.sh"
+  git -C "$REPO_DIR" init -q
+  git -C "$REPO_DIR" add .
+  git -C "$REPO_DIR" -c user.name=bootstrap-test -c user.email=test@example.invalid \
+    -c commit.gpgsign=false commit -qm fixture
+  # shellcheck disable=SC2034 # Used by assert_clean_source in setup.sh.
+  SOURCE_REV="$(git -C "$REPO_DIR" rev-parse HEAD)"
+}
+export -f set_chezmoi_test_paths prepare_chezmoi_fixture
+
 run_case init_without_identity '
-  REPO_DIR="$TEST_ROOT/chezmoi-source"
-  "$TOOLS/chezmoi" --source "$REPO_DIR" --destination "$TEST_ROOT/destination" \
-    --config "$WORK_DIR/config.toml" --cache "$WORK_DIR/cache" \
-    --persistent-state "$WORK_DIR/state.boltdb" init
-  "$TOOLS/chezmoi" --source "$REPO_DIR" --destination "$TEST_ROOT/destination" \
-    --config "$WORK_DIR/config.toml" --cache "$WORK_DIR/cache" \
-    --persistent-state "$WORK_DIR/state.boltdb" dump-config --format json \
-    | "$TOOLS/jq" '\''.git.autocommit = false | .git.autopush = false | .git.autoadd = false'\'' > "$WORK_DIR/runtime.json"
-  "$TOOLS/chezmoi" --config "$WORK_DIR/runtime.json" dump-config --format json \
-    | "$TOOLS/jq" -e '\''.git.autocommit == false and .git.autopush == false'\'' >/dev/null
-  cp "$TEST_ROOT/key.txt" "$TEST_ROOT/missing-identity.txt"
-  "$TOOLS/chezmoi" --config "$WORK_DIR/runtime.json" status
-  "$TOOLS/chezmoi" --config "$WORK_DIR/runtime.json" apply
-  [[ "$(cat "$TEST_ROOT/destination/test")" == "synthetic secret" ]]
-  [[ "$(stat -f %Lp "$TEST_ROOT/destination/test")" == 600 ]]
-  [[ -z "$("$TOOLS/chezmoi" --config "$WORK_DIR/runtime.json" status)" ]]
-'
+  prepare_chezmoi_fixture
+  validate_chezmoi_configuration
+  [[ ! -e "$CHEZMOI_CONFIG" && ! -e "$CHEZMOI_KEY" && ! -e "$HOME/.ssh" ]]
+  state_path="$("$TOOLS/jq" -er .persistentState "$WORK_DIR/chezmoi-runtime.json")"
+  [[ "$state_path" == "$HOME/"* && ! -e "$state_path" ]]
+  "$TOOLS/jq" -e --arg home "$HOME/" '\''
+    (.cacheDir | startswith($home)) and
+    .git.autocommit == false and .git.autopush == false and .git.autoadd == false
+    and .warnings.configFileTemplateHasChanged == true
+  '\'' "$WORK_DIR/chezmoi-runtime.json" >/dev/null
+  assert_clean_source
+' 0 "$TEST_ROOT/init_without_identity/home"
+
+for scenario in fresh existing; do
+  run_case "chezmoi_${scenario}_apply" '
+    prepare_chezmoi_fixture
+    validate_chezmoi_configuration
+    cp "$TEST_ROOT/key.txt" "$CHEZMOI_KEY"
+    if [[ "$1" == chezmoi_existing_apply ]]; then
+      # Simulate old setup: config installed, but no normal initialization record.
+      install -m 600 "$WORK_DIR/chezmoi.toml" "$CHEZMOI_CONFIG"
+      config_inode="$(stat -f %i "$CHEZMOI_CONFIG")"
+    fi
+    apply_chezmoi_configuration
+    runtime_state="$("$TOOLS/jq" -er .persistentState "$WORK_DIR/chezmoi-runtime.json")"
+    effective_state="$(cm --config "$WORK_DIR/chezmoi-runtime.json" dump-config --format json | "$TOOLS/jq" -er .persistentState)"
+    normal_state="$("$TOOLS/chezmoi" dump-config --format json | "$TOOLS/jq" -er \
+      --arg state "${CHEZMOI_CONFIG%/*}/chezmoistate.boltdb" '\''
+        if .persistentState == "" then $state else .persistentState end
+      '\'')"
+    [[ "$runtime_state" == "$normal_state" ]] || die "State path mismatch: runtime=$runtime_state normal=$normal_state"
+    [[ "$effective_state" == "$normal_state" ]] || die "Effective state path mismatch: effective=$effective_state normal=$normal_state"
+    [[ -f "$normal_state" ]] || die "Normal state file was not created: $normal_state"
+    cm --config "$WORK_DIR/chezmoi-runtime.json" state dump > "$WORK_DIR/runtime-state.json"
+    "$TOOLS/chezmoi" state dump > "$WORK_DIR/normal-state.json"
+    cmp -s "$WORK_DIR/runtime-state.json" "$WORK_DIR/normal-state.json" || die "State contents differ between normal and bootstrap commands."
+    "$TOOLS/chezmoi" verify "$HOME/.ssh/config" 2> "$WORK_DIR/normal-verify-errors"
+    [[ ! -s "$WORK_DIR/normal-verify-errors" ]] || die "Normal verify warned before workdir cleanup."
+    cmp -s "$CHEZMOI_CONFIG" "$WORK_DIR/chezmoi.toml"
+    [[ "$(stat -f %Lp "$CHEZMOI_CONFIG")" == 600 ]]
+    [[ "$(stat -f %Lp "$HOME/.ssh")" == 700 ]]
+    [[ "$(stat -f %Lp "$HOME/.ssh/config")" == 600 ]]
+    [[ "$(stat -f %Lp "$HOME/.ssh/id_ed25519_sk_test")" == 600 ]]
+    printf "Host test.example\n  HostName 192.0.2.1\n# synthetic secret\n" | cmp -s - "$HOME/.ssh/config"
+    [[ "$(cat "$HOME/.ssh/id_ed25519_sk_test")" == "synthetic secret key handle" ]]
+    [[ "$(cat "$HOME/bootstrap-runs")" == ran ]]
+    if [[ -n "${config_inode:-}" ]]; then
+      [[ "$(stat -f %i "$CHEZMOI_CONFIG")" == "$config_inode" ]]
+    fi
+    assert_clean_source
+  ' 0 "$TEST_ROOT/chezmoi_${scenario}_apply/home"
+  run_case "chezmoi_${scenario}_normal_commands" '
+    fixture="${1%_normal_commands}_apply"
+    set_chezmoi_test_paths
+    # The setup workdir has already been removed by the production cleanup trap.
+    [[ ! -e "$TEST_ROOT/$fixture/work" ]]
+    "$TOOLS/chezmoi" verify "$HOME/.ssh/config" "$HOME/.ssh/id_ed25519_sk_test"
+    [[ -z "$("$TOOLS/chezmoi" status)" ]]
+    "$TOOLS/chezmoi" --no-tty --error-on-conflict apply
+    [[ "$(cat "$HOME/bootstrap-runs")" == ran ]]
+    # A clean target can be updated without a conflict only if apply history survived.
+    printf "Host test.example\n  HostName 192.0.2.2\n# synthetic secret\n" \
+      | "$TOOLS/age" -r "$RECIPIENT" > "$REPO_DIR/private_dot_ssh/encrypted_private_config.age"
+    validate_chezmoi_configuration
+    cm --config "$WORK_DIR/chezmoi-runtime.json" --no-tty --error-on-conflict apply "$HOME/.ssh/config"
+    printf "Host test.example\n  HostName 192.0.2.2\n# synthetic secret\n" | cmp -s - "$HOME/.ssh/config"
+    apply_chezmoi_configuration
+    [[ "$(cat "$HOME/bootstrap-runs")" == ran ]]
+  ' 0 "$TEST_ROOT/chezmoi_${scenario}_apply/home"
+  if grep -q 'config file template has changed' "$TEST_ROOT/chezmoi_${scenario}_apply/output" \
+    "$TEST_ROOT/chezmoi_${scenario}_normal_commands/output"; then
+    fail "chezmoi $scenario setup did not preserve the initialization record"
+  fi
+done
+
+run_case chezmoi_config_changed '
+  prepare_chezmoi_fixture
+  validate_chezmoi_configuration
+  cp "$WORK_DIR/chezmoi.toml" "$CHEZMOI_CONFIG"
+  printf "\n# user edit\n" >> "$CHEZMOI_CONFIG"
+  apply_chezmoi_configuration
+' 1 "$TEST_ROOT/chezmoi_config_changed/home"
+grep -q '# user edit' "$TEST_ROOT/chezmoi_config_changed/home/.config/chezmoi/chezmoi.toml" || fail 'existing config was overwritten'
+[[ ! -e "$TEST_ROOT/chezmoi_config_changed/home/.ssh" ]] || fail 'files applied despite config conflict'
+
+run_case chezmoi_target_conflict '
+  set_chezmoi_test_paths
+  printf "# local synthetic secret\n" > "$HOME/.ssh/config"
+  "$TOOLS/chezmoi" --no-tty --error-on-conflict apply "$HOME/.ssh/config"
+' 1 "$TEST_ROOT/chezmoi_fresh_apply/home"
+grep -q '^# local synthetic secret$' "$TEST_ROOT/chezmoi_fresh_apply/home/.ssh/config" || fail 'target conflict was overwritten'
+
+run_case chezmoi_template_change_warns '
+  set_chezmoi_test_paths
+  printf "\n# later template change\n" >> "$REPO_DIR/.chezmoi.toml.tmpl"
+  "$TOOLS/chezmoi" verify "$HOME/.ssh/config"
+' 0 "$TEST_ROOT/chezmoi_existing_apply/home"
+grep -q 'config file template has changed' "$TEST_ROOT/chezmoi_template_change_warns/output" || fail 'template warnings were suppressed'
 
 run_case arguments_invalid 'parse_args --check --apply' 1
 run_case backup_missing_argument 'parse_args --chezmoi-backup' 1

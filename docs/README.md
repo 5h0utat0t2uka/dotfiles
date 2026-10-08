@@ -1,6 +1,7 @@
 ## 新しいMacのセットアップ
 
 初期導入・age identityの復旧・chezmoiとNixの適用は、[セットアップ手順](setup.md)を参照してください。
+完了後のpass/password-storeとGPGの移行は、同文書の[復旧・移行手順](setup.md#pass-recovery)を参照してください。既存YubiKeyを使う通常移行と、全YubiKey喪失時の緊急復旧を区別しています。
 
 以下は既存環境の更新・保守手順です。
 

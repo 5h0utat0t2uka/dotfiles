@@ -191,11 +191,27 @@ validate_configuration() {
     and .nixEnabled == false and .ageKey == $key
   ' "$WORK_DIR/config.json" >/dev/null || die "Evaluated configuration does not match this machine or SOPS key path."
 
-  # Generate the template in isolation; do not overwrite an existing config.
-  cm --config "$WORK_DIR/chezmoi.toml" init
+  validate_chezmoi_configuration
+  # .sops.yaml is the source of truth for the current single-recipient policy.
+  SOPS_RECIPIENT="$(/usr/bin/sed -n 's/^[[:space:]]*-[[:space:]]*\(age1[0-9a-z]*\)[[:space:]]*$/\1/p' "$REPO_DIR/.sops.yaml")"
+  [[ "$SOPS_RECIPIENT" =~ ^age1[0-9a-z]+$ ]] || die "Expected exactly one native age recipient in .sops.yaml."
+  [[ "$SOPS_RECIPIENT" != "$CHEZMOI_RECIPIENT" ]] || die "chezmoi and SOPS must use separate identities."
+  check_etc_conflicts
+  log "Homebrew activation policy: $("$TOOLS/jq" -c '{autoUpdate: .homebrew.autoUpdate, upgrade: .homebrew.upgrade, cleanup: .homebrew.cleanup}' "$WORK_DIR/config.json")"
+}
+
+validate_chezmoi_configuration() {
+  # Preview init must not write the user's config or persistent state.
+  cm_preview --config "$WORK_DIR/chezmoi.toml" init
+  # dump-config does not initialize or write the persistent-state database.
   cm --config "$WORK_DIR/chezmoi.toml" dump-config --format json > "$WORK_DIR/chezmoi.json"
-  # Disable Git automation only for this invocation; keep the user's template.
-  "$TOOLS/jq" '.git.autocommit = false | .git.autopush = false | .git.autoadd = false' \
+  # An empty persistentState means "next to the active config file". Pin that
+  # default to the real config directory before using the temporary JSON config.
+  # Disable Git automation only for setup; keep the user's template unchanged.
+  "$TOOLS/jq" --arg state "${CHEZMOI_CONFIG%/*}/chezmoistate.boltdb" '
+    .persistentState = (if .persistentState == "" then $state else .persistentState end)
+    | .git.autocommit = false | .git.autopush = false | .git.autoadd = false
+  ' \
     "$WORK_DIR/chezmoi.json" > "$WORK_DIR/chezmoi-runtime.json"
   CHEZMOI_RECIPIENT="$("$TOOLS/jq" -er '.age.recipient' "$WORK_DIR/chezmoi.json")"
   [[ "$CHEZMOI_RECIPIENT" =~ ^age1[0-9a-z]+$ ]] || die "Expected one native age recipient in the chezmoi template."
@@ -206,18 +222,15 @@ validate_configuration() {
     /usr/bin/cmp -s "$CHEZMOI_CONFIG" "$WORK_DIR/chezmoi.toml" ||
       die "Existing chezmoi.toml differs from the repository template. Review and run chezmoi init manually, then retry."
   fi
-  # .sops.yaml is the source of truth for the current single-recipient policy.
-  SOPS_RECIPIENT="$(/usr/bin/sed -n 's/^[[:space:]]*-[[:space:]]*\(age1[0-9a-z]*\)[[:space:]]*$/\1/p' "$REPO_DIR/.sops.yaml")"
-  [[ "$SOPS_RECIPIENT" =~ ^age1[0-9a-z]+$ ]] || die "Expected exactly one native age recipient in .sops.yaml."
-  [[ "$SOPS_RECIPIENT" != "$CHEZMOI_RECIPIENT" ]] || die "chezmoi and SOPS must use separate identities."
-  check_etc_conflicts
-  log "Homebrew activation policy: $("$TOOLS/jq" -c '{autoUpdate: .homebrew.autoUpdate, upgrade: .homebrew.upgrade, cleanup: .homebrew.cleanup}' "$WORK_DIR/config.json")"
 }
 
 cm() {
   "$TOOLS/chezmoi" --source "$REPO_DIR" --destination "$HOME" \
-    --cache "$WORK_DIR/chezmoi-cache" --persistent-state "$WORK_DIR/chezmoi-state.boltdb" \
     --no-pager --color=false "$@"
+}
+
+cm_preview() {
+  cm --cache "$WORK_DIR/chezmoi-cache" --persistent-state "$WORK_DIR/chezmoi-state.boltdb" "$@"
 }
 
 check_etc_conflicts() {
@@ -303,9 +316,21 @@ apply_configuration() {
   [[ -x "$SYSTEM_PATH/sw/bin/darwin-rebuild" ]] || die "Built system has no darwin-rebuild."
   assert_clean_source
 
+  apply_chezmoi_configuration
+
+  STAGE=activation
+  assert_clean_source
+  log "Applying nix-darwin. Homebrew may upgrade/remove apps according to the policy shown above."
+  /usr/bin/sudo "$SYSTEM_PATH/sw/bin/darwin-rebuild" switch --no-update-lock-file --flake "$FLAKE_DIR#$HOST_KEY"
+}
+
+apply_chezmoi_configuration() {
   STAGE=chezmoi
   check_path "$CHEZMOI_CONFIG"
-  if [[ ! -e "$CHEZMOI_CONFIG" ]]; then
+  if [[ -e "$CHEZMOI_CONFIG" ]]; then
+    /usr/bin/cmp -s "$CHEZMOI_CONFIG" "$WORK_DIR/chezmoi.toml" ||
+      die "chezmoi config changed during setup (not overwritten)."
+  else
     /bin/mkdir -p "${CHEZMOI_CONFIG%/*}"
     IDENTITY_TEMP="$(/usr/bin/mktemp "${CHEZMOI_CONFIG%/*}/.setup-config.XXXXXXXX")"
     /usr/bin/install -m 600 "$WORK_DIR/chezmoi.toml" "$IDENTITY_TEMP"
@@ -313,15 +338,16 @@ apply_configuration() {
     /bin/rm "$IDENTITY_TEMP"
     IDENTITY_TEMP=
   fi
+  # Register the template with the normal persistent state using chezmoi's
+  # supported init command. Render into the workdir to avoid overwriting an
+  # existing config; the validated config above was installed without clobbering.
+  cm --config "$WORK_DIR/chezmoi-runtime.json" init --config-path "$WORK_DIR/chezmoi-initialized.toml"
+  /usr/bin/cmp -s "$CHEZMOI_CONFIG" "$WORK_DIR/chezmoi-initialized.toml" ||
+    die "chezmoi init produced a different config. Review before retrying."
   log "chezmoi changes (paths only; no decrypted diff):"
   cm --config "$WORK_DIR/chezmoi-runtime.json" status
-  # Keep chezmoi's conflict prompts. Do not use --force or --verbose.
+  # Keep normal apply history and conflict prompts. Do not use --force or --verbose.
   cm --config "$WORK_DIR/chezmoi-runtime.json" apply
-
-  STAGE=activation
-  assert_clean_source
-  log "Applying nix-darwin. Homebrew may upgrade/remove apps according to the policy shown above."
-  /usr/bin/sudo "$SYSTEM_PATH/sw/bin/darwin-rebuild" switch --no-update-lock-file --flake "$FLAKE_DIR#$HOST_KEY"
 }
 
 verify_result() {
