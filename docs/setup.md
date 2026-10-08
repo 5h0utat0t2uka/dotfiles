@@ -91,6 +91,7 @@ identityは `0600`、復旧先ディレクトリは `0700` で作成する。rec
 エラーには失敗した段階が表示される。失敗原因を解消し、同じコマンドを再実行する。セットアップ全体はトランザクションではなく、既に復旧したidentityや適用済み設定は残る。自動ロールバックはしない。
 - `/etc` の衝突: 表示された対象を確認して手動でバックアップする。スクリプトは既存設定を自動移動しない。通常のmacOSファイルはnix-darwinが持つ許可ハッシュで判定する。
 - chezmoi設定の不一致: 現在の `chezmoi.toml` とテンプレートの差を確認し、必要なら手動で `chezmoi init` を実行する。既存設定を黙って上書きしない。
+- SOPS入力ファイルの確認失敗: `SOPS input is missing...` は鍵ではなく、表示された暗号化ファイルの参照先の問題。通常の復号失敗とは分けて表示する。復号失敗時もファイルパスと終了コードのみ表示し、入力内容を含み得る生のエラー出力は表示しない。
 - SOPS生成物の確認失敗: `~/Library/Logs/SopsNix` をローカルで確認する。ログや秘密情報を公開しない。
 - 強制終了後のロック: 実行中のsetupプロセスがないことを確認して、空の `.git/dotfiles-setup.lock` を `rmdir` で削除する。通常の終了・エラー・INT/TERMでは自動解除される。
 - SIGKILLや電源断では一時データの削除処理が実行されない。identityディレクトリの `.setup-age.*`・`.setup-config.*` とOS一時ディレクトリの `dotfiles-setup.*` をローカルで確認する。削除はSSD上の完全消去を保証しない。
@@ -98,7 +99,7 @@ identityは `0600`、復旧先ディレクトリは `0700` で作成する。rec
 pass/password-store・passageの復旧とYubiKeyの署名・認証確認は別の工程。`restore-pass.sh` はこの変更には含まない。
 
 ## 検証
-`scripts/tests/setup-test.sh` は実際の秘密鍵やmacOS設定を使わず、一時データで復旧・失敗時の動作を検証する。macOSの `/bin/bash` と、flakeで固定したbootstrap-toolsが必要。
+`scripts/tests/setup-test.sh` は実際の秘密鍵やmacOS設定を使わず、一時データで復旧・失敗時の動作を検証する。macOSの `/bin/bash`、Determinate Nixと、flakeで固定したbootstrap-toolsが必要。lazy treesを有効にした最小flakeから暗号化ファイルを取得し、実ファイルとして読み取って復号できることも検証する。テスト用秘密鍵はNixストアへコピーしない。
 
 ```sh
 nix build --no-update-lock-file --no-link --print-out-paths ./nix#bootstrap-tools

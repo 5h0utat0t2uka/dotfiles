@@ -43,7 +43,7 @@ run_case() {
     fail "$name exited $result, expected $expected"
   }
   [[ ! -e "$TEST_ROOT/$name/work" ]] || fail "$name left its work directory"
-  if grep -q 'AGE-SECRET-KEY-' "$TEST_ROOT/$name/output"; then fail "$name printed a private key"; fi
+  if grep -qE 'AGE-SECRET-KEY-|synthetic secret' "$TEST_ROOT/$name/output"; then fail "$name printed a secret"; fi
   ok "$name"
 }
 
@@ -116,6 +116,57 @@ run_case sops_wrong_key '
   "$TOOLS/jq" -n --arg file "$TEST_ROOT/sops.json" '\''{sopsFiles: [$file]}'\'' > "$WORK_DIR/config.json"
   validate_decryption
 ' 1
+grep -q 'SOPS decryption failed (exit ' "$TEST_ROOT/sops_wrong_key/output" || fail 'missing SOPS exit status'
+
+run_case sops_missing_file '
+  REPO_DIR="$TEST_ROOT/chezmoi-source"; SOPS_KEY="$TEST_ROOT/key.txt"
+  "$TOOLS/jq" -n --arg file "$TEST_ROOT/missing.json" '\''{sopsFiles: [$file]}'\'' > "$WORK_DIR/config.json"
+  validate_decryption
+' 1
+grep -q 'SOPS input is missing, not a regular file, or unreadable:' "$TEST_ROOT/sops_missing_file/output" || fail 'missing SOPS path diagnostic'
+
+# Use the production projection with a minimal flake and lazy trees enabled.
+# Only ciphertext and the flake are Git-tracked/copied to the Nix store.
+mkdir "$TEST_ROOT/sops-flake"
+cp "$TEST_ROOT/sops.json" "$TEST_ROOT/sops-flake/secrets.json"
+cat > "$TEST_ROOT/sops-flake/flake.nix" <<'NIX'
+{
+  outputs = { self }: {
+    darwinConfigurations.test.config = {
+      system.primaryUser = "test";
+      nixpkgs.hostPlatform.system = "aarch64-darwin";
+      users.users.test = { home = "/Users/test"; shell = "/bin/zsh"; };
+      nix.enable = false;
+      home-manager.users.test.sops = {
+        age.keyFile = "/Users/test/.config/sops/age/keys.txt";
+        secrets.test = {
+          sopsFile = ./secrets.json;
+          path = "/Users/test/.config/test-secret";
+          mode = "0400";
+        };
+        templates = {};
+      };
+      environment.etc = {};
+      homebrew.onActivation = { autoUpdate = false; upgrade = false; cleanup = "none"; };
+    };
+  };
+}
+NIX
+git -C "$TEST_ROOT/sops-flake" init -q
+git -C "$TEST_ROOT/sops-flake" add flake.nix secrets.json
+run_case sops_lazy_tree_path '
+  nix_with_lazy_trees() {
+    /nix/var/nix/profiles/default/bin/nix --option lazy-trees true "$@"
+  }
+  NIX=nix_with_lazy_trees
+  FLAKE_DIR="$TEST_ROOT/sops-flake"; HOST_KEY=test
+  REPO_DIR="$TEST_ROOT/sops-flake"; SOPS_KEY="$TEST_ROOT/key.txt"
+  evaluate_host_configuration
+  encrypted_path="$("$TOOLS/jq" -er '\''.sopsFiles[0]'\'' "$WORK_DIR/config.json")"
+  [[ "$encrypted_path" == /nix/store/* && -f "$encrypted_path" && -r "$encrypted_path" ]]
+  cmp -s "$encrypted_path" "$TEST_ROOT/sops.json"
+  validate_decryption
+'
 
 # Exercise chezmoi init with a missing config and missing identity. No real HOME writes.
 mkdir "$TEST_ROOT/destination"

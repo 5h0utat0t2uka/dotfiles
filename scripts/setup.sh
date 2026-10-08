@@ -159,20 +159,16 @@ prepare_workdir() {
   export PATH="$TOOLS:$PATH"
 }
 
-validate_configuration() {
-  STAGE=configuration
-  "$NIX" eval --json --file "$FLAKE_DIR/hosts/darwin/$HOST_KEY/identity.nix" > "$WORK_DIR/identity.json"
-  "$TOOLS/jq" -e --arg user "$USER_NAME" --arg host "$HOST_KEY" --arg home "$HOME" --arg flake "$FLAKE_DIR" '
-    .username == $user and .hostname == $host and .system == "aarch64-darwin"
-    and .homeDirectory == $home and .flakeRoot == $flake
-  ' "$WORK_DIR/identity.json" >/dev/null || die "identity.nix does not match this user, host, home or flake directory."
+evaluate_host_configuration() {
   "$NIX" eval --no-update-lock-file --json "$FLAKE_DIR#darwinConfigurations.$HOST_KEY.config" --apply '
     c: let u = c.system.primaryUser; h = c.home-manager.users.${u}; in {
       user = u; system = c.nixpkgs.hostPlatform.system; home = c.users.users.${u}.home;
       nixEnabled = c.nix.enable;
       shell = toString c.users.users.${u}.shell;
       ageKey = h.sops.age.keyFile;
-      sopsFiles = builtins.attrValues (builtins.mapAttrs (_: s: toString s.sopsFile) h.sops.secrets);
+      # Interpolation copies path values to the store. toString can return
+      # virtual paths that external programs cannot read with lazy trees.
+      sopsFiles = builtins.attrValues (builtins.mapAttrs (_: s: "${s.sopsFile}") h.sops.secrets);
       sopsOutputs = (builtins.map (s: { inherit (s) path mode; }) (builtins.attrValues h.sops.secrets))
         ++ (builtins.map (s: { inherit (s) path mode; }) (builtins.attrValues h.sops.templates));
       etc = builtins.map (f: { inherit (f) target knownSha256Hashes; })
@@ -180,6 +176,16 @@ validate_configuration() {
       homebrew = { inherit (c.homebrew.onActivation) autoUpdate upgrade cleanup; };
     }
   ' > "$WORK_DIR/config.json"
+}
+
+validate_configuration() {
+  STAGE=configuration
+  "$NIX" eval --json --file "$FLAKE_DIR/hosts/darwin/$HOST_KEY/identity.nix" > "$WORK_DIR/identity.json"
+  "$TOOLS/jq" -e --arg user "$USER_NAME" --arg host "$HOST_KEY" --arg home "$HOME" --arg flake "$FLAKE_DIR" '
+    .username == $user and .hostname == $host and .system == "aarch64-darwin"
+    and .homeDirectory == $home and .flakeRoot == $flake
+  ' "$WORK_DIR/identity.json" >/dev/null || die "identity.nix does not match this user, host, home or flake directory."
+  evaluate_host_configuration
   "$TOOLS/jq" -e --arg user "$USER_NAME" --arg home "$HOME" --arg key "$SOPS_KEY" '
     .user == $user and .home == $home and .system == "aarch64-darwin"
     and .nixEnabled == false and .ageKey == $key
@@ -263,7 +269,7 @@ recover_identity() {
 
 validate_decryption() {
   STAGE=decryption
-  local encrypted
+  local encrypted result
   /usr/bin/git -C "$REPO_DIR" ls-files -z > "$WORK_DIR/tracked-files"
   while IFS= read -r -d '' encrypted; do
     case "${encrypted##*/}" in
@@ -273,10 +279,18 @@ validate_decryption() {
   done < "$WORK_DIR/tracked-files"
   "$TOOLS/jq" -r '.sopsFiles | unique[]' "$WORK_DIR/config.json" > "$WORK_DIR/sops-files"
   while IFS= read -r encrypted; do
-    /usr/bin/env -u SOPS_AGE_KEY -u SOPS_AGE_KEY_CMD \
+    [[ -f "$encrypted" && -r "$encrypted" ]] ||
+      die "SOPS input is missing, not a regular file, or unreadable: $encrypted"
+    # Keep raw diagnostics private: parser errors may contain input data.
+    # Report the input and exit status without printing keys or plaintext.
+    if /usr/bin/env -u SOPS_AGE_KEY -u SOPS_AGE_KEY_CMD \
       XDG_CONFIG_HOME="$WORK_DIR/sops-config" GNUPGHOME="$WORK_DIR/sops-gnupg" \
-      SOPS_AGE_KEY_FILE="$SOPS_KEY" "$TOOLS/sops" decrypt "$encrypted" >/dev/null 2>&1 ||
-      die "SOPS decryption failed. Check the restored identity and secrets configuration."
+      SOPS_AGE_KEY_FILE="$SOPS_KEY" "$TOOLS/sops" decrypt "$encrypted" >/dev/null 2>&1; then
+      continue
+    else
+      result=$?
+      die "SOPS decryption failed (exit $result): $encrypted. Check the restored identity and secrets configuration."
+    fi
   done < "$WORK_DIR/sops-files"
 }
 
