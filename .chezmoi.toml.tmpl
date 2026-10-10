@@ -1,6 +1,8 @@
 # 更新後は chezmoi init
 
 encryption = "age"
+# setup.sh と通常のシェルで同じ権限にする。private_ は引き続き 600/700。
+umask = 0o022
 
 [age]
 identity = "~/.config/chezmoi/age-key.txt"

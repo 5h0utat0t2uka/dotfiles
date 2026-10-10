@@ -5,6 +5,7 @@
 # shellcheck disable=SC2016
 set +x
 set -Eeuo pipefail
+# Protect recovery files; chezmoi target permissions use the template's umask.
 umask 077
 
 STAGE=arguments
@@ -224,10 +225,13 @@ validate_chezmoi_configuration() {
   fi
 }
 
-cm() {
+cm() (
+  # New directories also inherit the process umask. Match the template without
+  # relaxing the parent shell's recovery-file permissions. private_ stays private.
+  umask 022
   "$TOOLS/chezmoi" --source "$REPO_DIR" --destination "$HOME" \
     --no-pager --color=false "$@"
-}
+)
 
 cm_preview() {
   cm --cache "$WORK_DIR/chezmoi-cache" --persistent-state "$WORK_DIR/chezmoi-state.boltdb" "$@"
@@ -359,6 +363,9 @@ verify_result() {
   [[ "$(/opt/homebrew/bin/brew --prefix)" == /opt/homebrew ]] || die "Homebrew is unavailable at its expected prefix."
   status="$(cm --config "$WORK_DIR/chezmoi-runtime.json" status)"
   [[ -z "$status" ]] || die "chezmoi still reports differences. Run chezmoi status to inspect paths."
+  # status alone does not report all permission-only differences.
+  cm --config "$WORK_DIR/chezmoi-runtime.json" verify ||
+    die "chezmoi verification failed. Review chezmoi diff locally, including permissions."
 
   # SOPS is a RunAtLoad LaunchAgent; bootstrap can return before it finishes.
   "$TOOLS/jq" -r '.sopsOutputs[] | [.path, .mode] | @tsv' "$WORK_DIR/config.json" > "$WORK_DIR/sops-outputs"

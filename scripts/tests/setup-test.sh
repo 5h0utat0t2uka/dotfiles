@@ -188,13 +188,15 @@ set_chezmoi_test_paths() {
 
 prepare_chezmoi_fixture() {
   set_chezmoi_test_paths
-  mkdir -p "$REPO_DIR/private_dot_ssh" "${CHEZMOI_CONFIG%/*}"
+  mkdir -p "$REPO_DIR/private_dot_ssh" "$REPO_DIR/dot_config/ghostty" "${CHEZMOI_CONFIG%/*}"
   sed "s/^recipient = .*/recipient = \"$RECIPIENT\"/" \
     "$REPO/.chezmoi.toml.tmpl" > "$REPO_DIR/.chezmoi.toml.tmpl"
   printf 'Host test.example\n  HostName 192.0.2.1\n# synthetic secret\n' \
     | "$TOOLS/age" -r "$RECIPIENT" > "$REPO_DIR/private_dot_ssh/encrypted_private_config.age"
   printf 'synthetic secret key handle\n' \
     | "$TOOLS/age" -r "$RECIPIENT" > "$REPO_DIR/private_dot_ssh/encrypted_private_id_ed25519_sk_test.age"
+  printf '# synthetic public key placeholder\n' > "$REPO_DIR/private_dot_ssh/id_ed25519_sk_test.pub"
+  printf 'font-size = 14\n' > "$REPO_DIR/dot_config/ghostty/config.ghostty"
   printf '%s\n' '#!/bin/sh' 'printf "ran\n" >> "$HOME/bootstrap-runs"' \
     > "$REPO_DIR/run_once_before_test.sh"
   git -C "$REPO_DIR" init -q
@@ -216,6 +218,7 @@ run_case init_without_identity '
     (.cacheDir | startswith($home)) and
     .git.autocommit == false and .git.autopush == false and .git.autoadd == false
     and .warnings.configFileTemplateHasChanged == true
+    and .umask == 18
   '\'' "$WORK_DIR/chezmoi-runtime.json" >/dev/null
   assert_clean_source
 ' 0 "$TEST_ROOT/init_without_identity/home"
@@ -231,6 +234,7 @@ for scenario in fresh existing; do
       config_inode="$(stat -f %i "$CHEZMOI_CONFIG")"
     fi
     apply_chezmoi_configuration
+    [[ "$(umask)" == 0077 ]] || die "chezmoi changed the recovery shell umask."
     runtime_state="$("$TOOLS/jq" -er .persistentState "$WORK_DIR/chezmoi-runtime.json")"
     effective_state="$(cm --config "$WORK_DIR/chezmoi-runtime.json" dump-config --format json | "$TOOLS/jq" -er .persistentState)"
     normal_state="$("$TOOLS/chezmoi" dump-config --format json | "$TOOLS/jq" -er \
@@ -263,7 +267,9 @@ for scenario in fresh existing; do
     set_chezmoi_test_paths
     # The setup workdir has already been removed by the production cleanup trap.
     [[ ! -e "$TEST_ROOT/$fixture/work" ]]
-    "$TOOLS/chezmoi" verify "$HOME/.ssh/config" "$HOME/.ssh/id_ed25519_sk_test"
+    umask 022
+    "$TOOLS/chezmoi" verify
+    [[ -z "$("$TOOLS/chezmoi" diff)" ]] || die "Normal diff is not empty."
     [[ -z "$("$TOOLS/chezmoi" status)" ]]
     "$TOOLS/chezmoi" --no-tty --error-on-conflict apply
     [[ "$(cat "$HOME/bootstrap-runs")" == ran ]]
@@ -280,7 +286,68 @@ for scenario in fresh existing; do
     "$TEST_ROOT/chezmoi_${scenario}_normal_commands/output"; then
     fail "chezmoi $scenario setup did not preserve the initialization record"
   fi
+  for mask in 022 077 002; do
+    run_case "chezmoi_${scenario}_permissions_umask_${mask}" '
+      set_chezmoi_test_paths
+      umask "${1##*_}"
+      "$TOOLS/chezmoi" verify
+      [[ -z "$("$TOOLS/chezmoi" diff)" ]]
+      "$TOOLS/chezmoi" --no-tty --error-on-conflict apply
+      [[ -z "$("$TOOLS/chezmoi" status)" ]]
+      [[ "$(stat -f %Lp "$HOME/.config")" == 755 ]]
+      [[ "$(stat -f %Lp "$HOME/.config/ghostty")" == 755 ]]
+      [[ "$(stat -f %Lp "$HOME/.config/ghostty/config.ghostty")" == 644 ]]
+      [[ "$(stat -f %Lp "$HOME/.ssh/id_ed25519_sk_test.pub")" == 644 ]]
+      [[ "$(stat -f %Lp "$HOME/.ssh")" == 700 ]]
+      [[ "$(stat -f %Lp "$HOME/.ssh/config")" == 600 ]]
+      [[ "$(stat -f %Lp "$HOME/.ssh/id_ed25519_sk_test")" == 600 ]]
+      [[ "$(stat -f %Lp "${CHEZMOI_CONFIG%/*}")" == 700 ]]
+      [[ "$(stat -f %Lp "$CHEZMOI_CONFIG")" == 600 ]]
+      [[ "$(stat -f %Lp "$CHEZMOI_KEY")" == 600 ]]
+      [[ "$(cat "$HOME/bootstrap-runs")" == ran ]]
+    ' 0 "$TEST_ROOT/chezmoi_${scenario}_apply/home"
+  done
 done
+
+run_case chezmoi_legacy_permissions_migration '
+  prepare_chezmoi_fixture
+  cp "$REPO_DIR/.chezmoi.toml.tmpl" "$WORK_DIR/new-template"
+  # Reproduce a setup made before the target umask was explicit.
+  sed "/^umask = /d" "$WORK_DIR/new-template" > "$REPO_DIR/.chezmoi.toml.tmpl"
+  cp "$TEST_ROOT/key.txt" "$CHEZMOI_KEY"
+  # Deliberately bypass cm(), which now isolates chezmoi from umask 077.
+  "$TOOLS/chezmoi" init
+  "$TOOLS/chezmoi" --no-tty --error-on-conflict apply
+  [[ "$(stat -f %Lp "$HOME/.config/ghostty")" == 700 ]]
+  [[ "$(stat -f %Lp "$HOME/.config/ghostty/config.ghostty")" == 600 ]]
+  [[ "$(stat -f %Lp "$HOME/.ssh/id_ed25519_sk_test.pub")" == 600 ]]
+
+  # Simulate pulling the updated template, then the documented repair commands.
+  cp "$WORK_DIR/new-template" "$REPO_DIR/.chezmoi.toml.tmpl"
+  umask 022
+  "$TOOLS/chezmoi" init
+  "$TOOLS/chezmoi" dump-config --format json | "$TOOLS/jq" -e ".umask == 18" >/dev/null
+  "$TOOLS/chezmoi" diff --exclude=scripts > "$WORK_DIR/permission-diff"
+  grep -q "^old mode 100600$" "$WORK_DIR/permission-diff"
+  grep -q "^new mode 100644$" "$WORK_DIR/permission-diff"
+  "$TOOLS/chezmoi" --no-tty --error-on-conflict apply --exclude=scripts
+  [[ "$(stat -f %Lp "$HOME/.config")" == 755 ]]
+  [[ "$(stat -f %Lp "$HOME/.config/ghostty")" == 755 ]]
+  [[ "$(stat -f %Lp "$HOME/.config/ghostty/config.ghostty")" == 644 ]]
+  [[ "$(stat -f %Lp "$HOME/.ssh/id_ed25519_sk_test.pub")" == 644 ]]
+  [[ "$(stat -f %Lp "$HOME/.ssh")" == 700 ]]
+  [[ "$(stat -f %Lp "$HOME/.ssh/config")" == 600 ]]
+  [[ "$(stat -f %Lp "$HOME/.ssh/id_ed25519_sk_test")" == 600 ]]
+  [[ "$(stat -f %Lp "${CHEZMOI_CONFIG%/*}")" == 700 ]]
+  [[ "$(stat -f %Lp "$CHEZMOI_CONFIG")" == 600 ]]
+  [[ "$(stat -f %Lp "$CHEZMOI_KEY")" == 600 ]]
+  [[ "$(cat "$HOME/bootstrap-runs")" == ran ]]
+  for mask in 022 077 002; do
+    umask "$mask"
+    "$TOOLS/chezmoi" verify
+    [[ -z "$("$TOOLS/chezmoi" diff)" ]]
+  done
+' 0 "$TEST_ROOT/chezmoi_legacy_permissions_migration/home"
 
 run_case chezmoi_config_changed '
   prepare_chezmoi_fixture

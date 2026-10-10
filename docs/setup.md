@@ -81,6 +81,22 @@ Finderで、次のファイルをローカルへダウンロードする。
 - SOPS関連は表示された入力パスと `~/Library/Logs/SopsNix` をローカルで確認する。秘密情報を含むログを公開しない。
 - 強制終了後は、実行中でないことを確認してからロック `.git/dotfiles-setup.lock` と残存一時ファイルを点検する。対象不明のまま削除しない。
 
+### 旧setupで作成されたファイルの権限差分を解消する
+修正をcommit・pushした後、対象Macで実行する。`setup.sh`・`darwin-rebuild` の再実行は不要。
+```sh
+git -C "$HOME/.local/share/chezmoi" pull --ff-only
+chezmoi init
+chezmoi diff --exclude=scripts
+```
+
+通常ファイルの `600 → 644`・ディレクトリの `700 → 755` だけであることを確認して進む。内容の差分や秘密鍵の権限変更があれば止める。`diff` の内容をそのまま公開しない。
+```sh
+chezmoi apply --exclude=scripts
+chezmoi diff
+```
+
+最後の差分がなければ完了。`private_` の秘密鍵・SSH設定は `600`、`.ssh` は `700` を維持する。chezmoiのumaskはテンプレートで固定し、復旧用の一時ファイルには引き続き `umask 077` を使う。[chezmoi公式: umask](https://www.chezmoi.io/reference/configuration-file/umask/)
+
 <a id="emergency-pass-recovery"></a>
 
 ## YubiKeyをすべて失った場合
