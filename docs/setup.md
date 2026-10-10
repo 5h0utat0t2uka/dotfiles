@@ -1,6 +1,5 @@
 # Macの復旧手順
 対象はApple SiliconのmacOS。新Macのデスクトップへ通常ユーザーでログインし、Terminal.appで実行する。  
-各コマンドでエラーが出たら次へ進まない。スクリプト自体には `sudo` を付けず、求められた場面だけ認証する。
 
 ## 1. 事前準備
 - 新Macのユーザー名・ホスト名に対応する `nix/hosts/darwin/<host>/identity.nix` と `default.nix` を用意し、コミットしておく。
@@ -68,13 +67,13 @@ Finderで、次のファイルをローカルへダウンロードする。
 
 ## 6. 完了を確認する
 `Setup completed. Open a new terminal.` が表示されたら完了。  
-ログインシェル変更の `chsh` コマンドが表示された場合は内容を確認して実行し、新しいターミナルを開く。  
+ここで再起動を行い、一度`karabiner-elements`を起動してキーボード関連の設定を確認する。
 
 ショートカットからシェルを実行する場合は、ショートカットアプリの「設定 → 詳細 → スクリプトの実行を許可」を有効にする。
 
 <a id="pass-recovery"></a>
 
-続いて [pass/password-storeの復旧手順](restore-pass.md)へ進む。GitHub/VPSのSSH認証・Git署名の実機確認は別途行う。  
+続いて [pass/password-storeの復旧手順](restore-pass.md)で`pass`の復号とGitHubへのSSH読み取りアクセスを確認する。
 
 ## 失敗・中断した場合
 - エラーの段階と原因を確認し、解消してから同じコマンドを再実行する。復旧済みidentityや適用済み設定は残り、自動では巻き戻らない。

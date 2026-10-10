@@ -1,6 +1,6 @@
 # pass/password-storeの復旧手順
 
-[Macの復旧](setup.md)が完了した新Macで実行する。既存YubiKeyの **PIV 9D** を使う手順で、passageは対象外。
+[Macの復旧](setup.md)が完了した新Macで実行する。既存YubiKeyの **PIV 9D** を使う。
 以降は同じzshまたはBashのターミナルで順番に実行し、エラーが出たら止める。`sudo`・実行ログの保存・`set -x` は使わない。
 
 ## 1. 準備する
@@ -61,14 +61,8 @@ pass show "${PASS_TEST_ENTRY:?既存エントリ名を設定してください}"
 ```
 
 `pass: OK` が出れば、そのエントリの復号確認は完了。成功後にスクリプトを再実行しない。
-`pass init`・秘密鍵のインポート・YubiKeyの初期化は不要。[pass公式: show / init](https://git.zx2c4.com/password-store/about/)
 
 ## 4. GitHubの同期先を設定する
-**旧Mac**または独立した記録で、password-storeのGitHub URLを確認する。dotfilesのURLではない。
-```bash
-git -C "$HOME/.password-store" remote get-url origin
-```
-
 以降は **新Mac**で実行する。
 ```bash
 git -C "$HOME/.password-store" remote -v
@@ -77,7 +71,7 @@ git -C "$HOME/.password-store" remote -v
 上の手順で復旧した場合、originは削除されている。originがない場合だけ、実際のURLへ置き換えて追加する。  
 `--origin` を指定して復旧した場合など、すでに登録されていればURLを確認し、正しければ追加不要。不一致なら上書きせず止める。
 ```bash
-git -C "$HOME/.password-store" remote add origin '確認済みのpassword-storeのGitHub URL'
+git -C "$HOME/.password-store" remote add origin git@github.com:5h0utat0t2uka/password-store.git
 ```
 
 認証用のYubiKeyを接続して確認する。コミットIDと `HEAD` が表示されれば読み取りアクセスは成功。
