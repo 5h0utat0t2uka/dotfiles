@@ -267,9 +267,11 @@ confirm_restore() {
 }
 
 validate_card_info() {
+  # scdaemon emits lowercase "piv"; its protocol help also documents "PIV".
+  # Normalize only the application name, not the expected keygrip or slot.
   /usr/bin/awk -v grip="$KEYGRIP" '
     $1 == "ERR" { bad = 1 }
-    $1 == "S" && $2 == "APPTYPE" && $3 == "PIV" { piv++ }
+    $1 == "S" && $2 == "APPTYPE" && tolower($3) == "piv" { piv++ }
     $1 == "S" && $2 == "KEYPAIRINFO" && $3 == grip && $4 == "PIV.9D" { key++ }
     END { exit (bad || piv != 1 || key != 1) }
   ' "$1" || die 'The connected card does not report the expected PIV 9D key.'

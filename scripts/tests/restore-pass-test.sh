@@ -108,7 +108,8 @@ mock_card_tools() {
   # shellcheck disable=SC2329
   AGENT() {
     case "$3" in
-      'SCD LEARN --force') printf 'S APPTYPE PIV\nS KEYPAIRINFO %s PIV.9D - -\nOK\n' "$KEYGRIP" ;;
+      # Match the actual scdaemon response, including lowercase APPTYPE.
+      'SCD LEARN --force') printf 'S APPTYPE piv\nS KEYPAIRINFO %s PIV.9D e\nOK\n' "$KEYGRIP" ;;
       'READKEY --card --no-data PIV.9D') printf 'OK\n' ;;
       KEYINFO*) printf 'S KEYINFO %s %s card-serial PIV.9D - - -\nOK\n' "$KEYGRIP" "${MOCK_KEY_TYPE:-T}" ;;
       *) return 1 ;;
@@ -161,8 +162,38 @@ run_case existing_store 'mkdir "$TARGET"; printf original > "$TARGET/sentinel"; 
 [[ "$(< "$LAST_CASE_HOME/.password-store/sentinel")" == original ]] || fail 'existing store changed'
 run_case dangling_destination 'ln -s "$HOME/absent" "$TARGET"; require_new_store' 1
 run_case cancelled 'validate_public_key; confirm_restore <<< no' 1
-run_case card_mismatch 'printf "S APPTYPE OpenPGP\nOK\n" > "$WORK_DIR/card"; validate_card_info "$WORK_DIR/card"' 1
-run_case card_assuan_error 'printf "ERR 1\nOK\n" > "$WORK_DIR/card"; validate_card_info "$WORK_DIR/card"' 1
+run_case card_lowercase_piv '
+  printf "S APPTYPE piv\nS KEYPAIRINFO %s PIV.9D e\nOK\n" "$KEYGRIP" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+'
+run_case card_uppercase_piv '
+  printf "S APPTYPE PIV\nS KEYPAIRINFO %s PIV.9D e\nOK\n" "$KEYGRIP" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+'
+run_case card_wrong_grip '
+  printf "S APPTYPE piv\nS KEYPAIRINFO AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA PIV.9D e\nOK\n" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+' 1 'expected PIV 9D key'
+run_case card_missing_apptype '
+  printf "S KEYPAIRINFO %s PIV.9D e\nOK\n" "$KEYGRIP" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+' 1 'expected PIV 9D key'
+run_case card_duplicate_apptype '
+  printf "S APPTYPE piv\nS APPTYPE PIV\nS KEYPAIRINFO %s PIV.9D e\nOK\n" "$KEYGRIP" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+' 1 'expected PIV 9D key'
+run_case card_duplicate_key '
+  printf "S APPTYPE piv\nS KEYPAIRINFO %s PIV.9D e\nS KEYPAIRINFO %s PIV.9D e\nOK\n" "$KEYGRIP" "$KEYGRIP" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+' 1 'expected PIV 9D key'
+run_case card_mismatch '
+  printf "S APPTYPE openpgp\nS KEYPAIRINFO %s PIV.9D e\nOK\n" "$KEYGRIP" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+' 1 'expected PIV 9D key'
+run_case card_assuan_error '
+  printf "S APPTYPE piv\nS KEYPAIRINFO %s PIV.9D e\nERR 1\n" "$KEYGRIP" > "$WORK_DIR/card"
+  validate_card_info "$WORK_DIR/card"
+' 1 'expected PIV 9D key'
 run_case software_key_rejected '
   validate_public_key
   mock_card_tools; MOCK_KEY_TYPE=D
@@ -234,7 +265,7 @@ run_case symlink_ancestor '
   TARGET="$HOME/link/store"; require_new_store
 ' 1 'Symlink in a sensitive'
 run_case card_wrong_slot '
-  printf "S APPTYPE PIV\nS KEYPAIRINFO %s PIV.82 - -\nOK\n" "$KEYGRIP" > "$WORK_DIR/card"
+  printf "S APPTYPE piv\nS KEYPAIRINFO %s PIV.82 e\nOK\n" "$KEYGRIP" > "$WORK_DIR/card"
   validate_card_info "$WORK_DIR/card"
 ' 1 'expected PIV 9D key'
 run_case shadow_wrong_slot '
