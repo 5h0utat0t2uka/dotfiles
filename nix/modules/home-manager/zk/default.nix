@@ -5,6 +5,7 @@
     enable = true;
     settings = {
       notebook.dir = "${config.home.homeDirectory}/Development/repositories/github.com/5h0utat0t2uka/notebook";
+      note.filename = "{{slug title}}";
       tool = {
         editor = "nvim";
         fzf-preview = ''GLOW_PAGER=false CLICOLOR_FORCE=1 COLORTERM=truecolor ${pkgs.glow}/bin/glow --style dark --width "$FZF_PREVIEW_COLUMNS" {-1}'';
