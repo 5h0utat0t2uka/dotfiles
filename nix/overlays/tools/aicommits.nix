@@ -7,13 +7,13 @@ in
 {
   aicommits = prev.stdenvNoCC.mkDerivation rec {
     pname = "aicommits";
-    version = "4.2.0";
+    version = "4.2.2";
     src = prev.fetchFromGitHub {
       owner = "Nutlope";
       repo = "aicommits";
       rev = "v${version}";
       # hash = prev.lib.fakeHash;
-      hash = "sha256-lK8lgCkQjv0Zip9BDL2x5jemvw1GhE6ivnsfJtJE8lI=";
+      hash = "sha256-BOZe5tpdN23HoXTqpG2tmz+Q9rIVYWTQ3nkskKYVpJk=";
     };
     pnpmDeps = prev.fetchPnpmDeps {
       inherit pname version src;
