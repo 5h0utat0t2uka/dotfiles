@@ -18,7 +18,7 @@
     taps = builtins.attrNames config.nix-homebrew.taps;
     brews = [
       "termscp"
-      "quien"
+      # "quien"
     ];
 
     # casks = map (name: { inherit name; greedy = true; }) [];

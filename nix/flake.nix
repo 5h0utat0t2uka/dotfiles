@@ -95,7 +95,7 @@
             "https://5h0uta.cachix.org"
           ];
           extra-trusted-public-keys = [
-            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSeBo="
+            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
             "5h0uta.cachix.org-1:YrFB/6azmFXnXmmosBRBwB3lEKBpUq7Hn+tJvzTqtGc="
           ];
         };
