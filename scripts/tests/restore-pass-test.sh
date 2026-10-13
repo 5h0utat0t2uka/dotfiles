@@ -230,7 +230,7 @@ run_case complete_simulated_restore '
 run_case failed_decrypt_not_installed '
   validate_store; validate_public_key; mock_card_tools; restore_gpg
   verify_store
-' 1 'Entry decryption failed'
+' 1 'pass show failed'
 [[ ! -e "$LAST_CASE_HOME/.password-store" ]] || fail 'failed decryption installed a store'
 run_case installation_collision 'validate_store; mkdir "$TARGET"; printf original > "$TARGET/sentinel"; install_store' 1
 [[ "$(< "$LAST_CASE_HOME/.password-store/sentinel")" == original ]] || fail 'collision changed store'
@@ -288,6 +288,24 @@ run_case pass_failure '
   verify_store
 ' 1 'pass show failed'
 [[ ! -e "$LAST_CASE_HOME/.password-store" ]] || fail 'failed pass installed a store'
+
+# A successful exit alone does not prove that pass used the expected key.
+run_case pass_missing_key_status '
+  validate_store; validate_public_key
+  printf "#!/bin/sh\nprintf synthetic-pass-secret\nexit 0\n" > "$WORK_DIR/bad-pass"
+  chmod 700 "$WORK_DIR/bad-pass"; PASS="$WORK_DIR/bad-pass"
+  verify_store
+' 1 'Decryption did not confirm'
+[[ ! -e "$LAST_CASE_HOME/.password-store" ]] || fail 'unverified pass installed a store'
+
+run_case pass_wrong_key_status '
+  validate_store; validate_public_key
+  printf "#!/bin/sh\nprintf '\''[GNUPG:] DECRYPTION_KEY %s %s u\\n[GNUPG:] DECRYPTION_OKAY\\n'\'' >&3\n" \
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "$PRIMARY_FPR" > "$WORK_DIR/bad-pass"
+  chmod 700 "$WORK_DIR/bad-pass"; PASS="$WORK_DIR/bad-pass"
+  verify_store
+' 1 'Decryption did not confirm'
+[[ ! -e "$LAST_CASE_HOME/.password-store" ]] || fail 'wrong key pass installed a store'
 
 # A full --check entry-point run must neither initialize GPG nor create a lock.
 CHECK_HOME="$TEST_ROOT/check-home"

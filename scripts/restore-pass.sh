@@ -329,11 +329,12 @@ validate_decryption_status() {
 verify_store() {
   STAGE=decryption
   log 'Verifying the selected entry. Use the existing PIV PIN/Touch when requested; do not guess PINs.'
-  user_gpg --status-fd 3 --decrypt "$STORE/$TEST_ENTRY.gpg" 3> "$WORK_DIR/decryption-status" > /dev/null 2> "$WORK_DIR/errors" || die 'Entry decryption failed; no PIN retries were attempted by this script.'
-  validate_decryption_status "$WORK_DIR/decryption-status"
+  # Check pass itself and the key it used in one decryption. Keep status separate
+  # from plaintext; neither stream is printed or copied into the installed store.
   /usr/bin/env GNUPGHOME="$GPG_HOME" PASSWORD_STORE_DIR="$STORE" \
-    PASSWORD_STORE_ENABLE_EXTENSIONS=false PASSWORD_STORE_GPG_OPTS=--no-options \
-    "$PASS" show "$TEST_ENTRY" > /dev/null 2> "$WORK_DIR/errors" || die 'pass show failed; the store was not installed.'
+    PASSWORD_STORE_ENABLE_EXTENSIONS=false PASSWORD_STORE_GPG_OPTS='--no-options --status-fd=3' \
+    "$PASS" show "$TEST_ENTRY" 3> "$WORK_DIR/decryption-status" > /dev/null 2> "$WORK_DIR/errors" || die 'pass show failed; the store was not installed. No PIN retries were attempted by this script.'
+  validate_decryption_status "$WORK_DIR/decryption-status"
   STAGE=roundtrip
   printf 'pass restore test\n' > "$WORK_DIR/test.txt"
   user_gpg --batch --trust-model pgp --encrypt --recipient "$ENCRYPTION_FPR!" \

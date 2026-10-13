@@ -212,14 +212,13 @@ run_case init_without_identity '
   prepare_chezmoi_fixture
   validate_chezmoi_configuration
   [[ ! -e "$CHEZMOI_CONFIG" && ! -e "$CHEZMOI_KEY" && ! -e "$HOME/.ssh" ]]
-  state_path="$("$TOOLS/jq" -er .persistentState "$WORK_DIR/chezmoi-runtime.json")"
-  [[ "$state_path" == "$HOME/"* && ! -e "$state_path" ]]
+  [[ ! -e "${CHEZMOI_CONFIG%/*}/chezmoistate.boltdb" ]]
   "$TOOLS/jq" -e --arg home "$HOME/" '\''
     (.cacheDir | startswith($home)) and
-    .git.autocommit == false and .git.autopush == false and .git.autoadd == false
+    .git.autocommit == true and .git.autopush == false and .git.autoadd == false
     and .warnings.configFileTemplateHasChanged == true
     and .umask == 18
-  '\'' "$WORK_DIR/chezmoi-runtime.json" >/dev/null
+  '\'' "$WORK_DIR/chezmoi.json" >/dev/null
   assert_clean_source
 ' 0 "$TEST_ROOT/init_without_identity/home"
 
@@ -235,16 +234,17 @@ for scenario in fresh existing; do
     fi
     apply_chezmoi_configuration
     [[ "$(umask)" == 0077 ]] || die "chezmoi changed the recovery shell umask."
-    runtime_state="$("$TOOLS/jq" -er .persistentState "$WORK_DIR/chezmoi-runtime.json")"
-    effective_state="$(cm --config "$WORK_DIR/chezmoi-runtime.json" dump-config --format json | "$TOOLS/jq" -er .persistentState)"
+    effective_state="$(cm --config "$CHEZMOI_CONFIG" dump-config --format json | "$TOOLS/jq" -er \
+      --arg state "${CHEZMOI_CONFIG%/*}/chezmoistate.boltdb" '\''
+        if .persistentState == "" then $state else .persistentState end
+      '\'')"
     normal_state="$("$TOOLS/chezmoi" dump-config --format json | "$TOOLS/jq" -er \
       --arg state "${CHEZMOI_CONFIG%/*}/chezmoistate.boltdb" '\''
         if .persistentState == "" then $state else .persistentState end
       '\'')"
-    [[ "$runtime_state" == "$normal_state" ]] || die "State path mismatch: runtime=$runtime_state normal=$normal_state"
     [[ "$effective_state" == "$normal_state" ]] || die "Effective state path mismatch: effective=$effective_state normal=$normal_state"
     [[ -f "$normal_state" ]] || die "Normal state file was not created: $normal_state"
-    cm --config "$WORK_DIR/chezmoi-runtime.json" state dump > "$WORK_DIR/runtime-state.json"
+    cm --config "$CHEZMOI_CONFIG" state dump > "$WORK_DIR/runtime-state.json"
     "$TOOLS/chezmoi" state dump > "$WORK_DIR/normal-state.json"
     cmp -s "$WORK_DIR/runtime-state.json" "$WORK_DIR/normal-state.json" || die "State contents differ between normal and bootstrap commands."
     "$TOOLS/chezmoi" verify "$HOME/.ssh/config" 2> "$WORK_DIR/normal-verify-errors"
@@ -277,7 +277,7 @@ for scenario in fresh existing; do
     printf "Host test.example\n  HostName 192.0.2.2\n# synthetic secret\n" \
       | "$TOOLS/age" -r "$RECIPIENT" > "$REPO_DIR/private_dot_ssh/encrypted_private_config.age"
     validate_chezmoi_configuration
-    cm --config "$WORK_DIR/chezmoi-runtime.json" --no-tty --error-on-conflict apply "$HOME/.ssh/config"
+    cm --config "$CHEZMOI_CONFIG" --no-tty --error-on-conflict apply "$HOME/.ssh/config"
     printf "Host test.example\n  HostName 192.0.2.2\n# synthetic secret\n" | cmp -s - "$HOME/.ssh/config"
     apply_chezmoi_configuration
     [[ "$(cat "$HOME/bootstrap-runs")" == ran ]]

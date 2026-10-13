@@ -9,6 +9,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    determinate = {
+      url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     darwin = {
       url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -68,18 +72,33 @@
     # ----------------------------------------------------
     # nix.settings module
     # ----------------------------------------------------
+    # nixSettingsModule = {
+    #   nix.settings = {
+    #     substituters = [
+    #       "https://cache.nixos.org"
+    #       "https://nix-community.cachix.org"
+    #       "https://5h0uta.cachix.org"
+    #     ];
+    #     trusted-public-keys = [
+    #       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    #       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSeBo="
+    #       "5h0uta.cachix.org-1:YrFB/6azmFXnXmmosBRBwB3lEKBpUq7Hn+tJvzTqtGc="
+    #     ];
+    #   };
+    # };
     nixSettingsModule = {
-      nix.settings = {
-        substituters = [
-          "https://cache.nixos.org"
-          "https://nix-community.cachix.org"
-          "https://5h0uta.cachix.org"
-        ];
-        trusted-public-keys = [
-          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSeBo="
-          "5h0uta.cachix.org-1:YrFB/6azmFXnXmmosBRBwB3lEKBpUq7Hn+tJvzTqtGc="
-        ];
+      determinateNix = {
+        enable = true;
+        customSettings = {
+          extra-substituters = [
+            "https://nix-community.cachix.org"
+            "https://5h0uta.cachix.org"
+          ];
+          extra-trusted-public-keys = [
+            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCUSeBo="
+            "5h0uta.cachix.org-1:YrFB/6azmFXnXmmosBRBwB3lEKBpUq7Hn+tJvzTqtGc="
+          ];
+        };
       };
     };
 
@@ -165,6 +184,7 @@
           inherit identity inputs;
         };
         modules = [
+          inputs.determinate.darwinModules.default
           nixSettingsModule
           nixPackagesModule
           homeManagerModule

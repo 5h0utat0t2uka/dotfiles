@@ -206,14 +206,6 @@ validate_chezmoi_configuration() {
   cm_preview --config "$WORK_DIR/chezmoi.toml" init
   # dump-config does not initialize or write the persistent-state database.
   cm --config "$WORK_DIR/chezmoi.toml" dump-config --format json > "$WORK_DIR/chezmoi.json"
-  # An empty persistentState means "next to the active config file". Pin that
-  # default to the real config directory before using the temporary JSON config.
-  # Disable Git automation only for setup; keep the user's template unchanged.
-  "$TOOLS/jq" --arg state "${CHEZMOI_CONFIG%/*}/chezmoistate.boltdb" '
-    .persistentState = (if .persistentState == "" then $state else .persistentState end)
-    | .git.autocommit = false | .git.autopush = false | .git.autoadd = false
-  ' \
-    "$WORK_DIR/chezmoi.json" > "$WORK_DIR/chezmoi-runtime.json"
   CHEZMOI_RECIPIENT="$("$TOOLS/jq" -er '.age.recipient' "$WORK_DIR/chezmoi.json")"
   [[ "$CHEZMOI_RECIPIENT" =~ ^age1[0-9a-z]+$ ]] || die "Expected one native age recipient in the chezmoi template."
   "$TOOLS/jq" -e --arg key "$CHEZMOI_KEY" '
@@ -345,13 +337,14 @@ apply_chezmoi_configuration() {
   # Register the template with the normal persistent state using chezmoi's
   # supported init command. Render into the workdir to avoid overwriting an
   # existing config; the validated config above was installed without clobbering.
-  cm --config "$WORK_DIR/chezmoi-runtime.json" init --config-path "$WORK_DIR/chezmoi-initialized.toml"
+  # Use the installed config, so init/apply share the normal persistent state.
+  cm --config "$CHEZMOI_CONFIG" init --config-path "$WORK_DIR/chezmoi-initialized.toml"
   /usr/bin/cmp -s "$CHEZMOI_CONFIG" "$WORK_DIR/chezmoi-initialized.toml" ||
     die "chezmoi init produced a different config. Review before retrying."
   log "chezmoi changes (paths only; no decrypted diff):"
-  cm --config "$WORK_DIR/chezmoi-runtime.json" status
+  cm --config "$CHEZMOI_CONFIG" status
   # Keep normal apply history and conflict prompts. Do not use --force or --verbose.
-  cm --config "$WORK_DIR/chezmoi-runtime.json" apply
+  cm --config "$CHEZMOI_CONFIG" apply
 }
 
 verify_result() {
@@ -361,10 +354,10 @@ verify_result() {
   local profile="/etc/profiles/per-user/$USER_NAME"
   [[ -x "$profile/bin/chezmoi" && -x "$profile/bin/pre-commit" && -x "$profile/bin/zsh" ]] || die "Home Manager tools are missing."
   [[ "$(/opt/homebrew/bin/brew --prefix)" == /opt/homebrew ]] || die "Homebrew is unavailable at its expected prefix."
-  status="$(cm --config "$WORK_DIR/chezmoi-runtime.json" status)"
+  status="$(cm --config "$CHEZMOI_CONFIG" status)"
   [[ -z "$status" ]] || die "chezmoi still reports differences. Run chezmoi status to inspect paths."
   # status alone does not report all permission-only differences.
-  cm --config "$WORK_DIR/chezmoi-runtime.json" verify ||
+  cm --config "$CHEZMOI_CONFIG" verify ||
     die "chezmoi verification failed. Review chezmoi diff locally, including permissions."
 
   # SOPS is a RunAtLoad LaunchAgent; bootstrap can return before it finishes.
@@ -394,7 +387,7 @@ verify_result() {
     printf 'Login shell remains %s. To select the configured zsh after setup:\n  chsh -s %q\n' "${current_shell#UserShell: }" "$desired_shell"
   fi
   log "Setup completed. Open a new terminal."
-  log "pass/passage data and YubiKey authentication/decryption tests are separate recovery steps."
+  log "pass data and YubiKey authentication/decryption tests are separate recovery steps."
 }
 
 main() {
