@@ -12,7 +12,7 @@
     mode = "0600";
     content = ''
       OPENAI_API_KEY=${config.sops.placeholder.openai_api_key}
-      OPENAI_MODEL=gpt-4o-mini
+      OPENAI_MODEL=gpt-6-luna
       type=conventional
       locale=en
       generate=1
