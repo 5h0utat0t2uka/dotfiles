@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "agent-skills": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791801176,
+        "narHash": "sha256-7yMjYQUjpCy0IhItfGt2EJbOobNu1pkIrBX2GA3yOcU=",
+        "owner": "Kyure-A",
+        "repo": "agent-skills-nix",
+        "rev": "2948865044b2af55c8c4e4eb2abda7de79d60f0e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Kyure-A",
+        "repo": "agent-skills-nix",
+        "type": "github"
+      }
+    },
     "ax": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -76,6 +96,22 @@
       "original": {
         "owner": "nix-community",
         "repo": "bun2nix",
+        "type": "github"
+      }
+    },
+    "cloudflare-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792013289,
+        "narHash": "sha256-VGirU63I3jL/YRhCCtWlwVeDi9OE8zW202qRbLQD920=",
+        "owner": "cloudflare",
+        "repo": "skills",
+        "rev": "be68fd8db614c22ed6f4d21a439a641e4904eb94",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cloudflare",
+        "repo": "skills",
         "type": "github"
       }
     },
@@ -438,7 +474,9 @@
     },
     "root": {
       "inputs": {
+        "agent-skills": "agent-skills",
         "ax": "ax",
+        "cloudflare-skills": "cloudflare-skills",
         "darwin": "darwin",
         "determinate": "determinate",
         "home-manager": "home-manager",

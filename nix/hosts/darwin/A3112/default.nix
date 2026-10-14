@@ -31,6 +31,7 @@ in
       ../../../modules/home-manager/direnv
       ../../../modules/home-manager/lazygit
       ../../../modules/home-manager/aicommits
+      ../../../modules/home-manager/agent-skills
       ../../../modules/home-manager/aerospace
       ../../../modules/home-manager/glow
       ../../../modules/home-manager/jqp
@@ -77,7 +78,6 @@ in
         pnpm
         pinentry_mac
         ripgrep
-        skills
         smartmontools
         terraform
         terraform-ls
