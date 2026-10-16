@@ -18,6 +18,7 @@
     taps = builtins.attrNames config.nix-homebrew.taps;
     brews = [
       "termscp"
+      "wireguard-tools"
       # "quien"
     ];
 
