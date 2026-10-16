@@ -18,9 +18,12 @@
     taps = builtins.attrNames config.nix-homebrew.taps;
     brews = [
       "termscp"
-      "wireguard-tools"
+      "mas"
       # "quien"
     ];
+    masApps = {
+      WireGuard = 1451685025;
+    };
 
     # casks = map (name: { inherit name; greedy = true; }) [];
     casks = [
