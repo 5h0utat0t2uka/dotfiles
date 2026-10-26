@@ -66,8 +66,13 @@ Finderで、次のファイルをローカルへダウンロードする。
 - Homebrewの更新と `cleanup = "zap"` が適用される。既存環境では、管理外パッケージや関連データの削除が起こり得る。
 
 ## 6. 完了を確認する
-`Setup completed. Open a new terminal.` が表示されたら完了。  
-ここで再起動を行い、一度`karabiner-elements`を起動してキーボード関連の設定を確認する。
+`Setup completed. Open a new terminal.` が表示されたら、以降の Git 操作で SSH を使用するよう dotfiles の接続先を変更する。  
+```sh
+git -C "$HOME/.local/share/chezmoi" remote set-url origin \
+  git@github.com:5h0utat0t2uka/dotfiles.git
+```
+
+その後再起動を行い、一度`karabiner-elements`を起動してキーボード関連の設定を確認する。
 
 ショートカットからシェルを実行する場合は、ショートカットアプリの「設定 → 詳細 → スクリプトの実行を許可」を有効にする。
 
