@@ -94,9 +94,9 @@ in
           allowedSignersFile = "${config.xdg.configHome}/git/allowed_signers";
         };
       };
-      url."git@github.com:" = {
-        insteadOf = "https://github.com/";
-      };
+      # url."git@github.com:" = {
+      #   insteadOf = "https://github.com/";
+      # };
       alias = {
         work = "!f() { test -n \"$1\" || { echo \"Usage: git work <branch-name>\" >&2; return 1; }; git fetch --prune origin && git switch -c \"$1\" origin/main; }; f";
         done = "!f() { git switch main && git pull --ff-only --prune origin main; }; f";
