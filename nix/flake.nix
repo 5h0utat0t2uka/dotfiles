@@ -40,6 +40,10 @@
       url = "github:homebrew/homebrew-cask";
       flake = false;
     };
+    homebrew-tinycast = {
+      url = "github:abue-ammar/homebrew-tinycast";
+      flake = false;
+    };
     ax = {
       url = "github:yusukebe/ax";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -171,6 +175,7 @@
         taps = {
           "homebrew/homebrew-core" = inputs.homebrew-core;
           "homebrew/homebrew-cask" = inputs.homebrew-cask;
+          "abue-ammar/homebrew-tinycast" = inputs.homebrew-tinycast;
         };
       };
     };
