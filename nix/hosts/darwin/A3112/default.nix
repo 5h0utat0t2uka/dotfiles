@@ -53,7 +53,8 @@ in
         betterleaks
         chafa
         chezmoi
-        devbox
+        codex
+        # devbox
         eza
         fd
         fzf
@@ -69,7 +70,7 @@ in
         libwebp
         nh
         ni
-        nix-output-monitor
+        # nix-output-monitor
         nmap
         nodejs_24
         openssh
