@@ -129,7 +129,7 @@
     # ----------------------------------------------------
     # nixpkgs module
     # ----------------------------------------------------
-    nixPackagesModule = { identity, inputs, ... }: {
+    nixPackagesModule = { identity, ... }: {
       nixpkgs = {
         hostPlatform = identity.system;
         config.allowUnfree = true;
