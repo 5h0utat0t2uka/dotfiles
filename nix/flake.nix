@@ -135,8 +135,8 @@
         config.allowUnfree = true;
         overlays = [
           # tools
-          (import ./overlays/tools/aicommits.nix { inherit inputs; })
           vscodeLangserversOverlay
+          # (import ./overlays/tools/aicommits.nix { inherit inputs; })
           # (import ./overlays/tools/codex { inherit inputs; })
           # (import ./overlays/tools/claude-code { inherit inputs; })
 
