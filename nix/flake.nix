@@ -64,7 +64,9 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    git-scrivener.url = "github:5h0utat0t2uka/git-scrivener";
+    git-scrivener = {
+      url = "github:5h0utat0t2uka/git-scrivener";
+    };
   };
 
   outputs = inputs@{ nixpkgs, darwin, home-manager, nix-homebrew, ... }:
