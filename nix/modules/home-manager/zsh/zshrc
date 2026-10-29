@@ -65,7 +65,28 @@ else
   # tmuxセッションのアタッチまたは新規作成
   tm() {
     local session=${1:-$(printf %08x $RANDOM$RANDOM)}
-    tmux new -s "$session" 2>/dev/null || tmux attach -t "$session"
+    if ! command -v chafa >/dev/null 2>&1; then
+      tmux new-session -A -s "$session"
+      return
+    fi
+
+    tmux new-session -A -s "$session" -- \
+      zsh -c '
+        chafa \
+          --format symbols \
+          --symbols braille \
+          --colors full \
+          --fg-only \
+          --size 100x \
+          --animate off \
+          "$HOME/Pictures/clear.png.webp"
+
+        printf "   TMUX created new session \"%s\"\n" "$1"
+        tmux ls | sed "s/^/   /"
+
+        exec zsh -l
+    ' _ "$session"
+    # tmux new -s "$session" 2>/dev/null || tmux attach -t "$session"
   }
 fi
 
