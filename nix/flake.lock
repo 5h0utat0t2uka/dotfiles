@@ -375,14 +375,15 @@
         "agent-skills": "agent-skills_2",
         "flake-utils": "flake-utils",
         "git-hooks": "git-hooks",
+        "home-manager": "home-manager",
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1793404943,
-        "narHash": "sha256-BsOxuit1NNI6y41CaAADbSGPw+U2ZltU1YpcXKv61S8=",
+        "lastModified": 1793407022,
+        "narHash": "sha256-bQKWqID2me3NYd5BbIZTfb2jVwNCFrzyKAfWo+l7DZ4=",
         "owner": "5h0utat0t2uka",
         "repo": "git-scrivener",
-        "rev": "599a485563a3f75108cd4923696808ca5c9f2223",
+        "rev": "c0b4a99628311c9f6398a0eeac7c833923f98b28",
         "type": "github"
       },
       "original": {
@@ -392,6 +393,27 @@
       }
     },
     "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "git-scrivener",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793193205,
+        "narHash": "sha256-X6xa6sGA7RnJQuZGbFMC+K+KToWAlBDCCjJXfTwEPsw=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "095fef2f265c3c0da4fe315efba8f8a04495ab34",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "home-manager_2": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -623,7 +645,7 @@
         "darwin": "darwin",
         "determinate": "determinate",
         "git-scrivener": "git-scrivener",
-        "home-manager": "home-manager",
+        "home-manager": "home-manager_2",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
         "homebrew-tinycast": "homebrew-tinycast",
