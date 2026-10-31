@@ -63,6 +63,73 @@ if [[ -n ${TMUX-} ]]; then
   # add-zsh-hook precmd tmux_update_pane
 else
   # tmuxセッションのアタッチまたは新規作成
+#   tm() {
+#     local session=${1:-$(printf %08x $RANDOM$RANDOM)}
+#
+#     if ! command -v chafa >/dev/null 2>&1; then
+#       tmux new-session -A -s "$session"
+#       return
+#     fi
+#
+#     tmux new-session -A -s "$session" -- \
+#       zsh -c '
+#         chafa \
+#           --format symbols \
+#           --symbols braille \
+#           --colors full \
+#           --fg-only \
+#           --size 100x \
+#           --animate off \
+#           "$HOME/Pictures/sign.png.webp"
+#
+#         kernel=$(uname -r)
+#
+#         boot=$(sysctl -n kern.boottime | sed -E "s/^\{ sec = ([0-9]+),.*/\1/")
+#         elapsed=$(( $(date +%s) - boot ))
+#
+#         if (( elapsed >= 86400 )); then
+#           uptime_text="$((elapsed / 86400)) days, $((elapsed % 86400 / 3600)) hours"
+#         elif (( elapsed >= 3600 )); then
+#           uptime_text="$((elapsed / 3600)) hours, $((elapsed % 3600 / 60)) mins"
+#         else
+#           uptime_text="$((elapsed / 60)) mins"
+#         fi
+#
+#         iface=$(route -n get default 2>/dev/null |
+#           sed -nE "s/^[[:space:]]*interface: *([^[:space:]]+).*/\1/p")
+#
+#         ip=$(ifconfig "$iface" 2>/dev/null |
+#           sed -nE "s/^[[:space:]]*inet[[:space:]]+([0-9.]+).*/\1/p" |
+#           head -n 1)
+#
+#         [[ -n "$iface" ]] || iface="N/A"
+#         [[ -n "$ip" ]] || ip="N/A"
+#
+#         printf "\n"
+#
+#         paste -d " " \
+#           <(
+#             qrencode -M -t UTF8 -m 1 "$1" |
+#               sed "s/^/   /; s/$/  /"
+#           ) \
+#           <(
+#             printf "TMUX created new session \"%s\"\n" "$1"
+#
+#             tmux ls | while IFS= read -r line; do
+#               [[ "$line" == "$1":* ]] && printf "%s\n" "$line"
+#             done
+#
+#             printf "\n"
+#             printf "Kernel: %s\n" "Darwin $kernel"
+#             printf "Uptime: %s\n" "$uptime_text"
+#             printf "Local IP (%s): %s\n" "$iface" "$ip"
+#             hostname
+#           )
+#
+#         exec zsh -l
+#       ' _ "$session"
+#   }
+
   tm() {
     local session=${1:-$(printf %08x $RANDOM$RANDOM)}
     if ! command -v chafa >/dev/null 2>&1; then
@@ -79,14 +146,13 @@ else
           --fg-only \
           --size 100x \
           --animate off \
-          "$HOME/Pictures/clear.png.webp"
+          "$HOME/Pictures/sign.png.webp"
 
         printf "   TMUX created new session \"%s\"\n" "$1"
         tmux ls | sed "s/^/   /"
 
         exec zsh -l
     ' _ "$session"
-    # tmux new -s "$session" 2>/dev/null || tmux attach -t "$session"
   }
 fi
 

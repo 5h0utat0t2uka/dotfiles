@@ -79,6 +79,7 @@ in
         pre-commit
         pnpm
         pinentry_mac
+        qrencode
         ripgrep
         smartmontools
         terraform
