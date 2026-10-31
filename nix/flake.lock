@@ -378,11 +378,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1793403293,
-        "narHash": "sha256-O2jdZjJhIdMPORE1Zq5KqPdKFFxJW03OwWsqQNEposk=",
+        "lastModified": 1793404943,
+        "narHash": "sha256-BsOxuit1NNI6y41CaAADbSGPw+U2ZltU1YpcXKv61S8=",
         "owner": "5h0utat0t2uka",
         "repo": "git-scrivener",
-        "rev": "36f6a0b8aad9d1b7863a56fddd9e51418706df48",
+        "rev": "599a485563a3f75108cd4923696808ca5c9f2223",
         "type": "github"
       },
       "original": {
