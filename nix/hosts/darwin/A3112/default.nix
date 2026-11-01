@@ -51,7 +51,7 @@ in
       homeDirectory = homeDirectory;
       packages = with pkgs; [
         inputs.ax.packages.${pkgs.stdenv.hostPlatform.system}.default
-        betterleaks
+        # betterleaks
         chafa
         chezmoi
         codex
@@ -60,7 +60,7 @@ in
         fd
         fzf
         gh
-        gitleaks
+        # gitleaks
         gifski
         # gnupg
         hyperfine
@@ -73,11 +73,11 @@ in
         ni
         # nix-output-monitor
         nmap
-        nodejs_24
+        nodejs_26
         openssh
         # opentofu
         pre-commit
-        pnpm
+        # pnpm
         pinentry_mac
         qrencode
         ripgrep
