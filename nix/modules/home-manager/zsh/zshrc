@@ -66,37 +66,64 @@ else
 #   tm() {
 #     local session=${1:-$(printf %08x $RANDOM$RANDOM)}
 #
-#     if ! command -v chafa >/dev/null 2>&1; then
+#     if ! command -v chafa >/dev/null 2>&1 ||
+#        ! command -v qrencode >/dev/null 2>&1; then
 #       tmux new-session -A -s "$session"
 #       return
 #     fi
 #
 #     tmux new-session -A -s "$session" -- \
 #       zsh -c '
-#         chafa \
-#           --format symbols \
-#           --symbols braille \
-#           --colors full \
-#           --fg-only \
-#           --size 100x \
-#           --animate off \
-#           "$HOME/Pictures/sign.png.webp"
+#         setopt multibyte
 #
-#         kernel=$(uname -r)
+#         typeset -a image_lines qr_lines info_lines ascii_lines
+#         typeset line visible left right session_info
+#         typeset -i inner_width=100 qr_width=0 right_width=0
+#         typeset -i rows=0 w=0 i=0 pad_rows=0
 #
-#         boot=$(sysctl -n kern.boottime | sed -E "s/^\{ sec = ([0-9]+),.*/\1/")
-#         elapsed=$(( $(date +%s) - boot ))
+#         esc=$(printf "\033")
 #
-#         if (( elapsed >= 86400 )); then
-#           uptime_text="$((elapsed / 86400)) days, $((elapsed % 86400 / 3600)) hours"
-#         elif (( elapsed >= 3600 )); then
-#           uptime_text="$((elapsed / 3600)) hours, $((elapsed % 3600 / 60)) mins"
-#         else
-#           uptime_text="$((elapsed / 60)) mins"
+#         while IFS= read -r line || [[ -n "$line" ]]; do
+#           line=$(printf "%s" "$line" |
+#             LC_ALL=C sed -E "s/${esc}\[\?25[hl]//g")
+#           image_lines+=("$line")
+#         done < <(
+#           chafa \
+#             --format symbols \
+#             --symbols block \
+#             --colors full \
+#             --fg-only \
+#             --size 100x \
+#             --animate off \
+#             --polite on \
+#             --relative off \
+#             --optimize 0 \
+#             "$HOME/Pictures/sign.png.webp"
+#         )
+#
+#         while IFS= read -r line; do
+#           qr_lines+=("$line")
+#           w=${(m)#line}
+#           (( w > qr_width )) && qr_width=$w
+#         done < <(qrencode -M -t UTF8 -m 1 "$1" 2>/dev/null)
+#
+#         if (( qr_width == 0 )); then
+#           qr_lines=("QR unavailable")
+#           qr_width=${(m)#qr_lines[1]}
 #         fi
 #
+#         session_info=""
+#         while IFS= read -r line; do
+#           if [[ "$line" == "$1":* ]]; then
+#             session_info="$line"
+#             break
+#           fi
+#         done < <(tmux ls)
+#
+#         kernel=$(uname -sr)
+#
 #         iface=$(route -n get default 2>/dev/null |
-#           sed -nE "s/^[[:space:]]*interface: *([^[:space:]]+).*/\1/p")
+#           sed -nE "s/^[[:space:]]*interface:[[:space:]]*([^[:space:]]+).*/\1/p")
 #
 #         ip=$(ifconfig "$iface" 2>/dev/null |
 #           sed -nE "s/^[[:space:]]*inet[[:space:]]+([0-9.]+).*/\1/p" |
@@ -105,26 +132,98 @@ else
 #         [[ -n "$iface" ]] || iface="N/A"
 #         [[ -n "$ip" ]] || ip="N/A"
 #
-#         printf "\n"
+#         info_lines=(
+#           "TMUX created new session \"$1\""
+#           "$session_info"
+#           "OS: $kernel"
+#           "IP: ($iface) $ip"
+#           ""
+#         )
 #
-#         paste -d " " \
-#           <(
-#             qrencode -M -t UTF8 -m 1 "$1" |
-#               sed "s/^/   /; s/$/  /"
-#           ) \
-#           <(
-#             printf "TMUX created new session \"%s\"\n" "$1"
+#         host=$(hostname)
+#         host=${host%%.*}
 #
-#             tmux ls | while IFS= read -r line; do
-#               [[ "$line" == "$1":* ]] && printf "%s\n" "$line"
+#         if command -v toilet >/dev/null 2>&1; then
+#           while IFS= read -r line || [[ -n "$line" ]]; do
+#             ascii_lines+=("$line")
+#           done < <(toilet -f future -w 200 "$host" 2>/dev/null)
+#         fi
+#
+#         if (( ${#ascii_lines[@]} == 0 )); then
+#           ascii_lines=("$host")
+#         fi
+#
+#         pad_rows=$(( ${#qr_lines[@]} - ${#info_lines[@]} - ${#ascii_lines[@]} ))
+#
+#         for (( i = 0; i < pad_rows; i++ )); do
+#           info_lines+=("")
+#         done
+#
+#         info_lines+=("${ascii_lines[@]}")
+#
+#         right_width=$((inner_width - qr_width - 7))
+#
+#         border() {
+#           local -i j
+#           for (( j = 0; j < $1; j++ )); do
+#             printf "─"
+#           done
+#         }
+#
+#         printf "\n┌"
+#         border $((inner_width + 2))
+#         printf "┐\n"
+#
+#         for line in "${image_lines[@]}"; do
+#           visible=$(printf "%s" "$line" |
+#             LC_ALL=C sed -E "s/${esc}\[[0-9;:?]*[ -/]*[@-~]//g")
+#
+#           w=${(m)#visible}
+#
+#           printf "│ %s\033[0m%*s │\n" \
+#             "$line" "$((inner_width - w))" ""
+#         done
+#
+#         printf "├"
+#         border $((qr_width + 4))
+#         printf "┬"
+#         border $((right_width + 4))
+#         printf "┤\n"
+#
+#         printf "│%*s│%*s│\n" \
+#           "$((qr_width + 4))" "" \
+#           "$((right_width + 4))" ""
+#
+#         rows=${#qr_lines[@]}
+#         (( ${#info_lines[@]} > rows )) && rows=${#info_lines[@]}
+#
+#         for (( i = 1; i <= rows; i++ )); do
+#           left=${qr_lines[i]-}
+#           right=${info_lines[i]-}
+#
+#           if (( ${(m)#right} > right_width )); then
+#             while (( ${(m)#right} >= right_width )); do
+#               right=${right[1,-2]}
 #             done
+#             right+="…"
+#           fi
 #
-#             printf "\n"
-#             printf "Kernel: %s\n" "Darwin $kernel"
-#             printf "Uptime: %s\n" "$uptime_text"
-#             printf "Local IP (%s): %s\n" "$iface" "$ip"
-#             hostname
-#           )
+#           printf "│  %s%*s  │  %s%*s  │\n" \
+#             "$left" "$((qr_width - ${(m)#left}))" "" \
+#             "$right" "$((right_width - ${(m)#right}))" ""
+#         done
+#
+#         printf "│%*s│%*s│\n" \
+#           "$((qr_width + 4))" "" \
+#           "$((right_width + 4))" ""
+#
+#         printf "└"
+#         border $((qr_width + 4))
+#         printf "┴"
+#         border $((right_width + 4))
+#         printf "┘\n"
+#
+#         printf "\033[0m\033[?25h\033[1 q"
 #
 #         exec zsh -l
 #       ' _ "$session"
@@ -132,27 +231,21 @@ else
 
   tm() {
     local session=${1:-$(printf %08x $RANDOM$RANDOM)}
-    if ! command -v chafa >/dev/null 2>&1; then
-      tmux new-session -A -s "$session"
-      return
-    fi
-
     tmux new-session -A -s "$session" -- \
       zsh -c '
-        chafa \
-          --format symbols \
-          --symbols braille \
-          --colors full \
-          --fg-only \
-          --size 100x \
-          --animate off \
-          "$HOME/Pictures/sign.png.webp"
-
         printf "   TMUX created new session \"%s\"\n" "$1"
         tmux ls | sed "s/^/   /"
+        printf "\n"
+
+        host=$(hostname)
+        if command -v toilet >/dev/null 2>&1; then
+          toilet -f future -w 200 "${host%%.*}" | sed "s/^/   /"
+        else
+          printf "   toilet: command not found\n" >&2
+        fi
 
         exec zsh -l
-    ' _ "$session"
+      ' _ "$session"
   }
 fi
 

@@ -84,6 +84,7 @@ in
         smartmontools
         terraform
         terraform-ls
+        toilet
         tree-sitter
         tree
         viu
