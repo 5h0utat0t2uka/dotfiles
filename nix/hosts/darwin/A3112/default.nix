@@ -76,7 +76,7 @@ in
         nodejs_26
         openssh
         # opentofu
-        pre-commit
+        # pre-commit
         # pnpm
         pinentry_mac
         qrencode
@@ -92,7 +92,7 @@ in
         xz
         yubikey-manager
         zbar
-        zizmor
+        # zizmor
         zoxide
         nixd
         nil
