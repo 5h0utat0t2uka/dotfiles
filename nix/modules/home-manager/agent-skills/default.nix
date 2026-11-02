@@ -8,10 +8,10 @@
   programs.agent-skills = {
     enable = true;
     sources = {
-      cloudflare = {
-        input = "cloudflare-skills";
-        subdir = "skills";
-      };
+      # cloudflare = {
+      #   input = "cloudflare-skills";
+      #   subdir = "skills";
+      # };
       ax = {
         input = "ax";
         subdir = "skills";
@@ -20,20 +20,20 @@
 
     # Keep the existing selection; upstream additions are not installed automatically.
     skills.enable = [
-      "agents-sdk"
+      # "agents-sdk"
       "ax"
-      "cloudflare"
-      "cloudflare-email-service"
-      "cloudflare-one"
-      "cloudflare-one-migrations"
-      "durable-objects"
-      "sandbox-migrate-to-next"
-      "sandbox-next"
-      "sandbox-stable"
-      "turnstile-spin"
-      "web-perf"
-      "workers-best-practices"
-      "wrangler"
+      # "cloudflare"
+      # "cloudflare-email-service"
+      # "cloudflare-one"
+      # "cloudflare-one-migrations"
+      # "durable-objects"
+      # "sandbox-migrate-to-next"
+      # "sandbox-next"
+      # "sandbox-stable"
+      # "turnstile-spin"
+      # "web-perf"
+      # "workers-best-practices"
+      # "wrangler"
     ];
 
     targets = {

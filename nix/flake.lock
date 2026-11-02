@@ -120,22 +120,6 @@
         "type": "github"
       }
     },
-    "cloudflare-skills": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1793184922,
-        "narHash": "sha256-Tw3l/VK24yUO8TIUBBuWEFiJ+Adws8CK1C9SUDgEHBM=",
-        "owner": "cloudflare",
-        "repo": "skills",
-        "rev": "49a31e0b3229ccdffe4944be9c61bc7481d1d432",
-        "type": "github"
-      },
-      "original": {
-        "owner": "cloudflare",
-        "repo": "skills",
-        "type": "github"
-      }
-    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -641,7 +625,6 @@
       "inputs": {
         "agent-skills": "agent-skills",
         "ax": "ax",
-        "cloudflare-skills": "cloudflare-skills",
         "darwin": "darwin",
         "determinate": "determinate",
         "git-scrivener": "git-scrivener",

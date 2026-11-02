@@ -33,7 +33,7 @@ in
       # ../../../modules/home-manager/aicommits
       ../../../modules/home-manager/git-scrivener
       ../../../modules/home-manager/agent-skills
-      ../../../modules/home-manager/aerospace
+      # ../../../modules/home-manager/aerospace
       ../../../modules/home-manager/glow
       ../../../modules/home-manager/jqp
       ../../../modules/home-manager/bat

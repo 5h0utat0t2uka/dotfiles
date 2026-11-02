@@ -4,8 +4,9 @@
   programs.lf = {
     enable = true;
     settings = {
+      borderstyle = "roundoutline";
       drawbox = true;
-      roundbox = true;
+      # roundbox = true;
       icons = true;
       info = "size:perm:time";
       hidden = true;
