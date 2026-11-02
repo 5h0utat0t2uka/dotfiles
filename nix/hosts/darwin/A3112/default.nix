@@ -29,7 +29,7 @@ in
       ../../../modules/home-manager/sops
       ../../../modules/home-manager/nixvim
       ../../../modules/home-manager/direnv
-      ../../../modules/home-manager/lazygit
+      # ../../../modules/home-manager/lazygit
       # ../../../modules/home-manager/aicommits
       ../../../modules/home-manager/git-scrivener
       ../../../modules/home-manager/agent-skills
