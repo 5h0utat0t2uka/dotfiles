@@ -55,4 +55,5 @@ keybind = ctrl+'>g=esc:xg
 keybind = ctrl+'>f=esc:xf
 # Ctrl+' → r : history
 keybind = ctrl+'>r=esc:xr
-
+# Ctrl+' → p : pass
+keybind = ctrl+'>p=esc:xp

@@ -645,6 +645,37 @@ fzf_script() {
 zle -N fzf_script
 bindkey '\exs' fzf_script
 
+fzf_pass() {
+  # pass のエントリを検索して編集
+  setopt localoptions pipefail
+
+  zle -I
+  local store="${PASSWORD_STORE_DIR:-$HOME/.password-store}"
+  local file name entry
+  store="${store%/}"
+
+  if [[ ! -d "$store" ]]; then
+    zle -M "Password store not found"
+    zle -R
+    return 1
+  fi
+  entry=$(
+    for file in "$store"/**/*.gpg(N); do
+      name="${file#"$store"/}"
+      print -r -- "${name%.gpg}"
+    done \
+    | FZF_DEFAULT_OPTS="${(j: :)FZF_BASE_OPTS}" \
+      $(fzf_command) --prompt="❯${NBSP}"
+  )
+
+  [[ -z "$entry" ]] && { zle -R; return 0; }
+  BUFFER="pass edit ${(q)entry}"
+  CURSOR=$#BUFFER
+  zle accept-line
+}
+zle -N fzf_pass
+bindkey '\exp' fzf_pass
+
 copilot-usage() {
   local user="5h0utat0t2uka"
   local limit=1500

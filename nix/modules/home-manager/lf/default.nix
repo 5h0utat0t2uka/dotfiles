@@ -1,5 +1,8 @@
 { pkgs, ... }:
 
+let
+  previewer = pkgs.writeShellScript "lf-pv" (builtins.readFile ./bin/preview.sh);
+in
 {
   programs.lf = {
     enable = true;
@@ -17,8 +20,12 @@
     };
     keybindings = {
       e = ''$sh -lc 'nvim "$f"' '';
+      J = "preview-scroll down";
+      K = "preview-scroll up";
     };
     commands = {
+      on-select = "set user_preview_offset 0";
+      preview-scroll = ''%${previewer} --scroll "$1"'';
       open = ''
         ''${{
           case "$(file --mime-type -Lb "$f")" in
@@ -32,6 +39,6 @@
         }}
       '';
     };
-    previewer.source = pkgs.writeShellScript "lf-pv" (builtins.readFile ./bin/preview.sh);
+    previewer.source = previewer;
   };
 }
