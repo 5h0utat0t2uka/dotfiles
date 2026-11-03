@@ -6,6 +6,9 @@ in
 {
   programs.lf = {
     enable = true;
+    package = pkgs.lf.overrideAttrs (old: {
+      patches = (old.patches or []) ++ [ ./preview-wheel.patch ];
+    });
     settings = {
       borderstyle = "roundoutline";
       drawbox = true;
@@ -13,19 +16,21 @@ in
       icons = true;
       info = "size:perm:time";
       hidden = true;
+      mouse = true;
       preview = true;
+      user_paged_preview = "true";
       borderfmt = "\\033[38;2;59;66;82m";
       promptfmt = "\\033[34;1m%d\\033[0m\\033[1m%f\\033[0m";
       cursorpreviewfmt = "\\033[0m";
     };
     keybindings = {
       e = ''$sh -lc 'nvim "$f"' '';
-      J = "preview-scroll down";
-      K = "preview-scroll up";
+      J = "preview-scroll-down";
+      K = "preview-scroll-up";
+      "<preview-m-down>" = "preview-scroll-down";
+      "<preview-m-up>" = "preview-scroll-up";
     };
     commands = {
-      on-select = "set user_preview_offset 0";
-      preview-scroll = ''%${previewer} --scroll "$1"'';
       open = ''
         ''${{
           case "$(file --mime-type -Lb "$f")" in

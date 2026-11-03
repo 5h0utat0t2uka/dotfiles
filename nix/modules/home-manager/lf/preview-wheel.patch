@@ -1,0 +1,436 @@
+--- a/app.go
++++ b/app.go
+@@ -418,4 +418,7 @@
+ 			app.ui.draw(app.nav)
+ 		case r := <-app.nav.regChan:
++			if r.first != app.nav.scroll.first(r.path) {
++				continue // a newer wheel or selection event superseded this window
++			}
+ 			if r.height != app.nav.height {
+ 				delete(app.nav.regCache, r.path)
+@@ -426,4 +429,7 @@
+ 			if curr := app.nav.currFile(); curr != nil {
+ 				if r.path == curr.path {
++					if app.nav.scroll.move(r, 0) {
++						app.nav.previewChan <- curr.path
++					}
+ 					app.ui.sxScreen.forceClear = true
+ 					if gOpts.preload && r.volatile {
+--- a/eval.go
++++ b/eval.go
+@@ -1048,4 +1048,14 @@
+ 		if app.nav.down(e.count * app.nav.height) {
+ 			app.ui.loadFile(app, true)
++		}
++	case "preview-scroll-up", "preview-scroll-down":
++		if curr := app.nav.currFile(); gOpts.preview && curr != nil {
++			delta := e.count
++			if e.name == "preview-scroll-up" {
++				delta = -delta
++			}
++			if app.nav.scroll.move(app.nav.regCache[curr.path], delta) {
++				app.nav.previewChan <- curr.path
++			}
+ 		}
+ 	case "scroll-down":
+--- a/misc.go
++++ b/misc.go
+@@ -442,5 +442,9 @@
+ // Sixel images are also detected and stored as separate lines.
+ // C0 control bytes outside of \a \b \t \n \v \f \r \033 and DEL indicate binary content.
+-func readLines(reader io.ByteReader, maxLines int) (lines []string, binary bool, sixel bool) {
++func readLines(reader io.ByteReader, maxLines int) ([]string, bool, bool) {
++	return readPreviewLines(reader, maxLines, false)
++}
++
++func readPreviewLines(reader io.ByteReader, maxLines int, paged bool) (lines []string, binary bool, sixel bool) {
+ 	const maxLineBytes = 1 << 16 // 64 KiB per line
+ 	type state int
+@@ -486,4 +490,8 @@
+ 			default:
+ 				if buf.Len() >= maxLineBytes {
++					// Page offsets count source lines. Clip a long line instead of splitting it.
++					if paged {
++						continue
++					}
+ 					flush(true)
+ 				}
+--- a/nav.go
++++ b/nav.go
+@@ -432,4 +432,5 @@
+ 	preloadChan     chan string
+ 	previewChan     chan string
++	scroll          previewScroll
+ 	dirChan         chan *dir
+ 	regChan         chan *reg
+@@ -659,5 +660,5 @@
+ 		// drop entries that no longer match the new pane height
+ 		for path, r := range nav.regCache {
+-			if r.loading || r.sixel || (previewWin.h > len(r.lines) && len(r.lines) == r.height) {
++			if r.paged || r.loading || r.sixel || (previewWin.h > len(r.lines) && len(r.lines) == r.height) {
+ 				delete(nav.regCache, path)
+ 			}
+@@ -825,5 +826,6 @@
+ }
+ func (nav *nav) preview(path string, win *win, mode string) {
+-	reg := &reg{loadTime: time.Now(), path: path, height: win.h}
++	reg := &reg{loadTime: time.Now(), path: path, height: win.h, first: nav.scroll.first(path)}
++	limit := win.h
+ 	defer func() {
+ 		if (gOpts.preload && mode == "preview") || (!gOpts.preload && reg.volatile) {
+@@ -831,5 +833,5 @@
+ 		}
+ 
+-		if gOpts.preload == (mode == "preload") {
++		if gOpts.preload == (mode == "preload") || (reg.paged && !reg.volatile) {
+ 			nav.regChan <- reg
+ 		}
+@@ -847,4 +849,8 @@
+ 			mode,
+ 		)
++		paged := os.Getenv("lf_user_paged_preview") == "true"
++		if paged {
++			cmd.Args = append(cmd.Args, strconv.Itoa(reg.first+1), strconv.Itoa(win.h+previewBlock+1))
++		}
+ 		var stderr bytes.Buffer
+ 		cmd.Stderr = &stderr
+@@ -877,4 +883,12 @@
+ 		defer out.Close()
+ 		reader = bufio.NewReader(out)
++		if paged {
++			const marker = "lf-text-preview\n"
++			if prefix, _ := reader.Peek(len(marker)); string(prefix) == marker {
++				_, _ = reader.Discard(len(marker))
++				reg.paged = true
++				limit += previewBlock + 1
++			}
++		}
+ 	} else {
+ 		lstat, err := os.Lstat(path)
+@@ -897,5 +911,5 @@
+ 	}
+ 
+-	lines, binary, sixel := readLines(reader, win.h)
++	lines, binary, sixel := readPreviewLines(reader, limit, reg.paged)
+ 	if binary {
+ 		lines = []string{"\033[7mbinary\033[0m"}
+--- a/ui.go
++++ b/ui.go
+@@ -573,4 +573,6 @@
+ // file preview, but `previewer` now also supports non-regular files.
+ type reg struct {
++	first    int // zero-based source line at the start of this cached window
++	paged    bool
+ 	loading  bool
+ 	volatile bool
+@@ -592,4 +594,8 @@
+ 
+ 	if curr.path != ui.currentFile {
++		app.nav.scroll.reset()
++		if r := app.nav.regCache[curr.path]; r != nil && r.first != 0 {
++			delete(app.nav.regCache, curr.path)
++		}
+ 		ui.currentFile = curr.path
+ 		onSelect(app)
+@@ -979,4 +985,10 @@
+ 				reg = nav.loadReg(curr.path, false)
+ 			}
++			if reg.paged {
++				top := reg.visibleTop(nav.scroll.offset, win.h)
++				visible := *reg
++				visible.lines = reg.lines[top:]
++				reg = &visible
++			}
+ 			win.printReg(ui.screen, reg, &ui.sxScreen, nav.previewTimer)
+ 		} else if curr.IsDir() {
+@@ -1133,4 +1145,7 @@
+ 	if gOpts.drawbox {
+ 		ui.drawBox()
++		if gOpts.preview && gOpts.borderstyle&borderOutline != 0 {
++			ui.drawPreviewScrollbar(nav)
++		}
+ 	}
+ 
+@@ -1398,7 +1413,21 @@
+ 			button = "<c-" + button[1:]
+ 		}
++		if gOpts.preview && (button == "<m-up>" || button == "<m-down>") {
++			x, y := tev.Position()
++			i, pane := ui.winAt(x, y)
++			curr := nav.currFile()
++			if pane != nil && i == len(ui.wins)-1 && x <= pane.x+pane.w && curr != nil && curr.Mode().IsRegular() {
++				if expr, ok := keys["<preview-"+button[1:]]; ok {
++					return expr
++				}
++			}
++		}
+ 		if expr, ok := keys[button]; ok {
+ 			return expr
+ 		}
++		// A diagonal trackpad gesture may also send an unbound horizontal wheel event.
++		if tev.Buttons() == tcell.WheelLeft || tev.Buttons() == tcell.WheelRight {
++			return nil
++		}
+ 		if button != "<m-1>" && button != "<m-2>" {
+ 			ui.echoerrf("unknown mapping: %s", button)
+--- /dev/null
++++ b/preview_scroll.go
+@@ -0,0 +1,60 @@
++package main
++
++import "sync/atomic"
++
++// Each window has a full viewport plus one block and a lookahead line.
++const previewBlock = 64
++
++type previewWindow struct {
++	path  string
++	first int
++}
++
++type previewScroll struct {
++	// The UI owns offset. The worker takes an immutable snapshot of window.
++	offset int
++	window atomic.Pointer[previewWindow]
++	count  *previewLineCount
++}
++
++func (s *previewScroll) reset() {
++	s.cancelLineCount()
++	s.offset = 0
++	s.window.Store(nil)
++}
++
++func (s *previewScroll) first(path string) int {
++	if w := s.window.Load(); w != nil && w.path == path {
++		return w.first
++	}
++	return 0
++}
++
++// move returns true only when the worker must render a different window.
++// Keep incoming wheel deltas while it runs; clamp to EOF once it is known.
++func (s *previewScroll) move(r *reg, delta int) bool {
++	if r == nil || r.loading || !r.paged || r.sixel || r.height == 0 {
++		return false
++	}
++	s.offset = max(0, s.offset+delta)
++	bottom := r.first + max(0, len(r.lines)-r.height)
++	if len(r.lines) < r.height+previewBlock+1 {
++		s.offset = min(s.offset, bottom)
++	}
++	if r.first > 0 && len(r.lines) < r.height {
++		// The file shrank or the pane grew while this window was loading.
++		s.offset = 0
++	}
++	first := r.first
++	switch {
++	case s.offset < r.first:
++		first = max(0, s.offset-previewBlock/2)
++	case s.offset > bottom:
++		first = bottom - previewBlock/2 // overlapping windows allow a reversal without another read
++	}
++	if first == s.first(r.path) {
++		return false
++	}
++	s.window.Store(&previewWindow{path: r.path, first: first})
++	return true
++}
+--- /dev/null
++++ b/preview_scroll_test.go
+@@ -0,0 +1,69 @@
++package main
++
++import (
++	"strings"
++	"testing"
++)
++
++func TestScrollPreviewBurst(t *testing.T) {
++	var s previewScroll
++	r := &reg{path: "a", paged: true, height: 10, lines: make([]string, 10+previewBlock+1)}
++	for range previewBlock {
++		if s.move(r, 1) {
++			t.Fatal("scroll inside a cached window requested another render")
++		}
++	}
++	if !s.move(r, 6) || s.offset != 70 {
++		t.Fatal("crossing the window boundary did not schedule a read")
++	}
++	if s.move(r, 2) || s.offset != 72 {
++		t.Fatal("lost a wheel delta while the next window was loading")
++	}
++	r.first = s.first(r.path)
++	r.lines = make([]string, 78-r.first) // final window of a 78-line file
++	if s.move(r, 0) || s.offset != 68 || s.move(r, 1) || s.offset != 68 {
++		t.Fatal("last viewport should be clamped at EOF")
++	}
++	if s.move(r, -1) || s.offset != 67 {
++		t.Fatal("reversing direction should use the same window")
++	}
++	s.reset()
++	if s.offset != 0 || s.first("a") != 0 {
++		t.Fatal("selection change must reset the viewport")
++	}
++}
++
++func TestScrollbarThumb(t *testing.T) {
++	for _, tc := range []struct{ height, offset, lines, start, size int }{
++		{20, 0, 0, 0, 0},       // total still being counted
++		{20, 0, 20, 0, 0},      // fits in the pane
++		{20, 0, 100, 0, 4},     // first viewport
++		{20, 40, 100, 8, 4},    // middle viewport
++		{20, 80, 100, 16, 4},   // last viewport
++		{5, 1000, 1000, 4, 1},  // at least one cell, clamp at the bottom
++	} {
++		start, size := scrollbarThumb(tc.height, tc.offset, int64(tc.lines))
++		if start != tc.start || size != tc.size {
++			t.Errorf("%+v: got start=%d size=%d", tc, start, size)
++		}
++	}
++}
++
++func TestCountPreviewLines(t *testing.T) {
++	for _, tc := range []struct {
++		text string
++		want int64
++	}{
++		{"", 0}, {"\n\n", 2}, {"one\ntwo\n", 2}, {"one\ntwo", 2},
++		{strings.Repeat("x", 64*1024) + "\nend", 2},
++	} {
++		if got := countPreviewLines(strings.NewReader(tc.text), nil); got != tc.want {
++			t.Errorf("input length %d: got %d lines, want %d", len(tc.text), got, tc.want)
++		}
++	}
++	stop := make(chan struct{})
++	close(stop)
++	if got := countPreviewLines(strings.NewReader("unfinished"), stop); got != -1 {
++		t.Errorf("canceled count returned %d", got)
++	}
++}
+--- /dev/null
++++ b/preview_scrollbar.go
+@@ -0,0 +1,123 @@
++package main
++
++import (
++	"bytes"
++	"io"
++	"math"
++	"os"
++	"sync/atomic"
++
++	"github.com/gdamore/tcell/v3"
++)
++
++// Position the thumb using the rows actually on screen, including while the
++// preview worker is still fetching the window requested by a wheel event.
++func (r *reg) visibleTop(offset, height int) int {
++	return min(max(0, offset-r.first), max(0, len(r.lines)-height))
++}
++
++func scrollbarThumb(height, offset int, lines int64) (start, size int) {
++	if height < 2 || lines <= int64(height) {
++		return 0, 0
++	}
++	size = max(1, int(int64(height)*int64(height)/lines))
++	last := lines - int64(height)
++	progress := float64(min(max(0, int64(offset)), last)) / float64(last)
++	return int(math.Round(progress * float64(height-size))), size
++}
++
++func (ui *ui) drawPreviewScrollbar(nav *nav) {
++	f := nav.currFile()
++	if f == nil {
++		return
++	}
++	r := nav.regCache[f.path]
++	if r == nil || !r.paged || r.loading || r.sixel {
++		return
++	}
++	pane := ui.wins[len(ui.wins)-1]
++	if pane.h < 2 || pane.w < 1 {
++		return
++	}
++	total := int64(r.first + len(r.lines))
++	if len(r.lines) >= r.height+previewBlock+1 {
++		// This window did not reach EOF. Count in the background once.
++		total = nav.scroll.totalLines(f, ui.exprChan)
++	}
++	offset := r.first + r.visibleTop(nav.scroll.offset, pane.h)
++	start, size := scrollbarThumb(pane.h, offset, total)
++	for row := start; row < start+size; row++ {
++		ui.screen.PutStrStyled(pane.x+pane.w, pane.y+row, " ", tcell.StyleDefault.Reverse(true))
++	}
++}
++
++type previewLineCount struct {
++	info  os.FileInfo
++	stop  chan struct{}
++	lines atomic.Int64
++}
++
++func (s *previewScroll) cancelLineCount() {
++	if s.count != nil {
++		close(s.count.stop)
++		s.count = nil
++	}
++}
++
++func (c *previewLineCount) matches(info os.FileInfo) bool {
++	return os.SameFile(c.info, info) && c.info.Size() == info.Size() && c.info.ModTime().Equal(info.ModTime())
++}
++
++func (s *previewScroll) totalLines(f *file, redraw chan<- expr) int64 {
++	if s.count != nil && s.count.matches(f.FileInfo) {
++		return s.count.lines.Load()
++	}
++	s.cancelLineCount()
++	c := &previewLineCount{info: f.FileInfo, stop: make(chan struct{})}
++	s.count = c
++	go func(path string) {
++		input, err := os.Open(path)
++		if err != nil {
++			return
++		}
++		defer input.Close()
++		lines := countPreviewLines(input, c.stop)
++		info, err := input.Stat()
++		if lines < 0 || err != nil || !c.matches(info) {
++			return
++		}
++		c.lines.Store(lines)
++		select {
++		case redraw <- &callExpr{"draw", nil, 1}:
++		case <-c.stop:
++		}
++	}(f.path)
++	return 0
++}
++
++func countPreviewLines(reader io.Reader, stop <-chan struct{}) int64 {
++	var lines int64
++	last := byte('\n')
++	buf := make([]byte, 64*1024)
++	for {
++		select {
++		case <-stop:
++			return -1
++		default:
++		}
++		n, err := reader.Read(buf)
++		if n > 0 {
++			lines += int64(bytes.Count(buf[:n], []byte{'\n'}))
++			last = buf[n-1]
++		}
++		if err == io.EOF {
++			if last != '\n' {
++				lines++
++			}
++			return lines
++		}
++		if err != nil {
++			return -1
++		}
++	}
++}
