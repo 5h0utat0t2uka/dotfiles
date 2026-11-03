@@ -35,7 +35,7 @@ in
       ../../../modules/home-manager/agent-skills
       # ../../../modules/home-manager/aerospace
       ../../../modules/home-manager/glow
-      ../../../modules/home-manager/jqp
+      # ../../../modules/home-manager/jqp
       ../../../modules/home-manager/bat
       ../../../modules/home-manager/lf
       # ../../../modules/home-manager/nb
