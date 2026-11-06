@@ -316,7 +316,10 @@
     "git-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_2",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": [
+          "git-scrivener",
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1791909798,
@@ -360,14 +363,14 @@
         "flake-utils": "flake-utils",
         "git-hooks": "git-hooks",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1793952496,
-        "narHash": "sha256-6L0nZY1HiI0GofQzXjNUupVrJnFTQtRd2cqXgiHLF8o=",
+        "lastModified": 1793961453,
+        "narHash": "sha256-AgHGaQIPidQMKh/QlxK8u6Mp5w7z+GXM/pucZDKQb8A=",
         "owner": "5h0utat0t2uka",
         "repo": "git-scrivener",
-        "rev": "e43597ebdaf180ca2fa0d8cd90b61e72c8f6736d",
+        "rev": "d727a33e9c55daa5084e00a7d05db82ffa66635c",
         "type": "github"
       },
       "original": {
@@ -537,22 +540,6 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1787631388,
-        "narHash": "sha256-vMiXptXarfSdJb1Gkc+FYVOAibuBRj7qxGa8z68q1Uw=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "ac6b2166e7a9375683b8e98f860f273222337b16",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_3": {
-      "locked": {
         "lastModified": 1793136825,
         "narHash": "sha256-2pkE69JpFRInaARSczZytcfPw83IL82E2KdhbWGwdMs=",
         "owner": "NixOS",
@@ -567,7 +554,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_3": {
       "locked": {
         "lastModified": 1793795574,
         "narHash": "sha256-pgG/CO+txdf2sA2z6DsM+2G3F9ajfIp/3BMC4wfKMDY=",
@@ -616,7 +603,7 @@
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
         "nix-homebrew": "nix-homebrew",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_3",
         "nixvim": "nixvim",
         "sops-nix": "sops-nix"
       }
