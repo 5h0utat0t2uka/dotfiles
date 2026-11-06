@@ -190,27 +190,27 @@
 
     extraPackages = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
       # for macOS IME
-      pkgs.macism
+      # pkgs.macism
       # vscode-langservers-extracted overlays causes some issues on
       pkgs.vscode-langservers-extracted
     ];
-    extraConfigLua = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
-      local english_im = vim.env.NVIM_ENGLISH_IM or "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
-      local function switch_ime_to_english()
-        if vim.fn.executable("macism") ~= 1 then
-          return
-        end
-        vim.fn.jobstart({ "macism", english_im }, { detach = true })
-      end
-      vim.api.nvim_create_autocmd({
-        "InsertLeave",
-        "CmdlineLeave",
-        "VimEnter",
-        "VimResume",
-      }, {
-        group = vim.api.nvim_create_augroup("IMESwitcher", { clear = true }),
-        callback = switch_ime_to_english,
-      })
-    '';
+    # extraConfigLua = lib.optionalString pkgs.stdenv.hostPlatform.isDarwin ''
+    #   local english_im = vim.env.NVIM_ENGLISH_IM or "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
+    #   local function switch_ime_to_english()
+    #     if vim.fn.executable("macism") ~= 1 then
+    #       return
+    #     end
+    #     vim.fn.jobstart({ "macism", english_im }, { detach = true })
+    #   end
+    #   vim.api.nvim_create_autocmd({
+    #     "InsertLeave",
+    #     "CmdlineLeave",
+    #     "VimEnter",
+    #     "VimResume",
+    #   }, {
+    #     group = vim.api.nvim_create_augroup("IMESwitcher", { clear = true }),
+    #     callback = switch_ime_to_english,
+    #   })
+    # '';
   };
 }
