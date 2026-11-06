@@ -34,7 +34,7 @@
       # { name = "ollama-app"; greedy = true; }
       { name = "obs"; greedy = true; }
       { name = "zed"; greedy = true; }
-      { name = "abue-ammar/tinycast/tinycast"; greedy = true; trusted = true; }
+      { name = "tinycast"; greedy = true; }
     ];
   };
 }
