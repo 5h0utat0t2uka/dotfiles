@@ -32,7 +32,7 @@
       { name = "ghostty"; greedy = false; }
       { name = "karabiner-elements"; greedy = false; }
       # { name = "ollama-app"; greedy = true; }
-      { name = "obs"; greedy = true; }
+      # { name = "obs"; greedy = true; }
       { name = "zed"; greedy = true; }
       { name = "tinycast"; greedy = true; }
     ];
