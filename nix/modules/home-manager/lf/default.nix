@@ -7,7 +7,7 @@ in
   programs.lf = {
     enable = true;
     package = pkgs.lf.overrideAttrs (old: {
-      patches = (old.patches or []) ++ [ ./preview-wheel.patch ];
+      patches = (old.patches or [ ]) ++ [ ./preview-wheel.patch ];
     });
     settings = {
       borderstyle = "roundoutline";

@@ -1,4 +1,9 @@
-{ inputs, pkgs, identity, ... }:
+{
+  inputs,
+  pkgs,
+  identity,
+  ...
+}:
 
 let
   username = identity.username;

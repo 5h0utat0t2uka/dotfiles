@@ -14,25 +14,67 @@
     settings = {
       signs = false;
       keywords = {
-        FIX  = { icon = ""; color = "error"; alt = [ "FIXME" "BUG" "FIXIT" "ISSUE" ]; };
-        TODO = { icon = ""; color = "hint"; };
-        HACK = { icon = ""; color = "warning"; };
-        WARN = { icon = ""; color = "warning"; alt = [ "WARNING" "XXX" ]; };
-        PERF = { icon = ""; color = "default"; alt = [ "OPTIM" "PERFORMANCE" "OPTIMIZE" ]; };
-        NOTE = { icon = ""; color = "info"; alt = [ "INFO" ]; };
-        TEST = { icon = ""; color = "test"; alt = [ "TESTING" "PASSED" "FAILED" ]; };
+        FIX = {
+          icon = "";
+          color = "error";
+          alt = [
+            "FIXME"
+            "BUG"
+            "FIXIT"
+            "ISSUE"
+          ];
+        };
+        TODO = {
+          icon = "";
+          color = "hint";
+        };
+        HACK = {
+          icon = "";
+          color = "warning";
+        };
+        WARN = {
+          icon = "";
+          color = "warning";
+          alt = [
+            "WARNING"
+            "XXX"
+          ];
+        };
+        PERF = {
+          icon = "";
+          color = "default";
+          alt = [
+            "OPTIM"
+            "PERFORMANCE"
+            "OPTIMIZE"
+          ];
+        };
+        NOTE = {
+          icon = "";
+          color = "info";
+          alt = [ "INFO" ];
+        };
+        TEST = {
+          icon = "";
+          color = "test";
+          alt = [
+            "TESTING"
+            "PASSED"
+            "FAILED"
+          ];
+        };
       };
       highlight = {
         keyword = "wide";
         after = "fg";
       };
       colors = {
-        error   = [ "#7A3D43" ]; # #BF616A
+        error = [ "#7A3D43" ]; # #BF616A
         warning = [ "#855040" ]; # #D08770
-        info    = [ "#4C6478" ]; # #81A1C1
-        hint    = [ "#4C6478" ]; # #A3BE8C
+        info = [ "#4C6478" ]; # #81A1C1
+        hint = [ "#4C6478" ]; # #A3BE8C
         default = [ "#4C6478" ]; # #B48EAD
-        test    = [ "#9A7E4A" ]; # #EBCB8B
+        test = [ "#9A7E4A" ]; # #EBCB8B
       };
     };
   };

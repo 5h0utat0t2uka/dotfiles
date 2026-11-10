@@ -8,7 +8,11 @@
       keys = [
         {
           __unkeyed-1 = "s";
-          mode = [ "n" "x" "o" ];
+          mode = [
+            "n"
+            "x"
+            "o"
+          ];
           __unkeyed-2.__raw = ''
             function()
               local ok, undo_glow = pcall(require, "undo-glow")
@@ -23,7 +27,11 @@
         }
         {
           __unkeyed-1 = "S";
-          mode = [ "n" "x" "o" ];
+          mode = [
+            "n"
+            "x"
+            "o"
+          ];
           __unkeyed-2.__raw = ''
             function()
               require("flash").treesitter()
@@ -43,7 +51,10 @@
         }
         {
           __unkeyed-1 = "R";
-          mode = [ "o" "x" ];
+          mode = [
+            "o"
+            "x"
+          ];
           __unkeyed-2.__raw = ''
             function()
               require("flash").treesitter_search()

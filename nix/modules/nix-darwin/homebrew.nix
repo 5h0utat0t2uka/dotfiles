@@ -27,14 +27,32 @@
 
     # casks = map (name: { inherit name; greedy = true; }) [];
     casks = [
-      { name = "chatgpt"; greedy = true; }
-      { name = "claude"; greedy = true; }
-      { name = "ghostty"; greedy = false; }
-      { name = "karabiner-elements"; greedy = false; }
+      {
+        name = "chatgpt";
+        greedy = true;
+      }
+      {
+        name = "claude";
+        greedy = true;
+      }
+      {
+        name = "ghostty";
+        greedy = false;
+      }
+      {
+        name = "karabiner-elements";
+        greedy = false;
+      }
       # { name = "ollama-app"; greedy = true; }
       # { name = "obs"; greedy = true; }
-      { name = "zed"; greedy = true; }
-      { name = "tinycast"; greedy = true; }
+      {
+        name = "zed";
+        greedy = true;
+      }
+      {
+        name = "tinycast";
+        greedy = true;
+      }
     ];
   };
 }

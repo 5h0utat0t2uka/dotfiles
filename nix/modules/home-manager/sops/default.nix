@@ -9,6 +9,8 @@ in
     pkgs.age
     pkgs.age-plugin-yubikey
   ];
-  home.sessionVariables = { SOPS_AGE_KEY_FILE = ageKeyPath; };
+  home.sessionVariables = {
+    SOPS_AGE_KEY_FILE = ageKeyPath;
+  };
   sops.age.keyFile = ageKeyPath;
 }

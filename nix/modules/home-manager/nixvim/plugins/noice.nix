@@ -89,7 +89,10 @@
           };
           border = {
             style = "rounded";
-            padding = [ 1 1 ];
+            padding = [
+              1
+              1
+            ];
           };
           win_options = {
             winblend = 10;

@@ -65,9 +65,15 @@
         '';
       };
       confirmation = {
-        min_width = [ 40 0.4 ];
+        min_width = [
+          40
+          0.4
+        ];
         max_width = 0.9;
-        min_height = [ 5 0.1 ];
+        min_height = [
+          5
+          0.1
+        ];
         max_height = 0.9;
         border = "rounded";
         win_options = {

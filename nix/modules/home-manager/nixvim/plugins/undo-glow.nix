@@ -18,10 +18,12 @@ let
   };
 in
 {
-  extraPlugins = [{
-    plugin = undo-glow-nvim;
-    optional = true;
-  }];
+  extraPlugins = [
+    {
+      plugin = undo-glow-nvim;
+      optional = true;
+    }
+  ];
   plugins.lz-n.plugins = [
     {
       __unkeyed-1 = "undo-glow.nvim";
@@ -53,7 +55,10 @@ in
         }
         {
           __unkeyed-1 = "gc";
-          mode = [ "n" "x" ];
+          mode = [
+            "n"
+            "x"
+          ];
           __unkeyed-2.__raw = ''
             function()
               local pos = vim.fn.getpos(".")

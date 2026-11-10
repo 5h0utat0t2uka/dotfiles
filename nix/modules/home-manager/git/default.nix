@@ -1,4 +1,10 @@
-{ config, pkgs, lib, identity, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  identity,
+  ...
+}:
 
 let
   # 優先順位順にGit署名鍵を定義
@@ -102,11 +108,21 @@ in
         done = "!f() { git switch main && git pull --ff-only --prune origin main; }; f";
         sync = "!f() { git fetch --prune origin && git switch dev && git pull --ff-only origin dev && git merge --ff-only origin/main && git push origin dev; }; f";
       };
-      interactive = { diffFilter = "delta --color-only"; };
-      merge = { conflictstyle = "diff3"; };
-      diff = { colorMoved = "default"; };
-      init = { defaultBranch = "main"; };
-      push = { autoSetupRemote = true; };
+      interactive = {
+        diffFilter = "delta --color-only";
+      };
+      merge = {
+        conflictstyle = "diff3";
+      };
+      diff = {
+        colorMoved = "default";
+      };
+      init = {
+        defaultBranch = "main";
+      };
+      push = {
+        autoSetupRemote = true;
+      };
       delta = {
         navigate = true;
         side-by-side = true;

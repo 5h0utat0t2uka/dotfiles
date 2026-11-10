@@ -1,5 +1,10 @@
 # modules/home-manager/neovim/default.nix
-{ config, pkgs, identity, ... }:
+{
+  config,
+  pkgs,
+  identity,
+  ...
+}:
 
 let
   configRoot = "${identity.flakeRoot}/modules/home-manager/neovim/config";
@@ -13,7 +18,7 @@ in
     withPython3 = false;
     withRuby = false;
     initLua = builtins.readFile ./config/init.lua;
-    extraPackages = with pkgs; [];
+    extraPackages = with pkgs; [ ];
   };
 
   xdg.configFile = {

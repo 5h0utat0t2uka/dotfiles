@@ -7,6 +7,6 @@ final: prev: {
     checkPhase = "true";
     installCheckPhase = "true";
 
-    nativeInstallCheckInputs = [];
+    nativeInstallCheckInputs = [ ];
   });
 }

@@ -1,4 +1,10 @@
-{ config, inputs, lib, pkgs, ... }:
+{
+  config,
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   scrivener = inputs.git-scrivener.packages.${pkgs.stdenv.hostPlatform.system}.git-scrivener;

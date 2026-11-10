@@ -24,15 +24,15 @@
     userSettings = {
       agent = {
         dock = "right";
-        favorite_models = [];
-        model_parameters = [];
+        favorite_models = [ ];
+        model_parameters = [ ];
       };
       auto_update = false;
       restore_on_startup = "launchpad";
       edit_predictions = {
         provider = "zed";
       };
-      edit_predictions_disabled_in = ["comment"];
+      edit_predictions_disabled_in = [ "comment" ];
       theme_overrides = {
         "Nord-Custom" = {
           players = [
@@ -263,7 +263,7 @@
         shell = {
           with_arguments = {
             program = "/run/current-system/sw/bin/zsh";
-            args = ["-l"];
+            args = [ "-l" ];
           };
         };
         toolbar = {
@@ -285,7 +285,7 @@
           remove_trailing_whitespace_on_save = false;
         };
         "Nix" = {
-          language_servers = ["nixd"];
+          language_servers = [ "nixd" ];
         };
         "Lua" = {
           tab_size = 2;
@@ -301,30 +301,40 @@
     userKeymaps = [
       {
         context = "Workspace";
-        bindings = {};
+        bindings = { };
       }
       {
         context = "Editor && edit_prediction";
-        bindings = { "alt-right" = "editor::AcceptEditPrediction"; };
+        bindings = {
+          "alt-right" = "editor::AcceptEditPrediction";
+        };
       }
       {
         context = "Editor && edit_prediction && (showing_completions || in_leading_whitespace)";
-        bindings = { "alt-enter" = "editor::AcceptEditPrediction"; };
+        bindings = {
+          "alt-enter" = "editor::AcceptEditPrediction";
+        };
       }
       {
         context = "Editor && vim_mode == insert";
-        bindings = {};
+        bindings = { };
       }
       {
-        bindings = { "cmd-shift-w" = null; };
+        bindings = {
+          "cmd-shift-w" = null;
+        };
       }
       {
         context = "Editor";
-        bindings = { "cmd-shift-w" = "editor::WrapSelectionsInTag"; };
+        bindings = {
+          "cmd-shift-w" = "editor::WrapSelectionsInTag";
+        };
       }
       {
         context = "ProjectPanel";
-        bindings = { "cmd-shift-c" = "project_panel::CollapseAllEntries"; };
+        bindings = {
+          "cmd-shift-c" = "project_panel::CollapseAllEntries";
+        };
       }
     ];
     themes = {

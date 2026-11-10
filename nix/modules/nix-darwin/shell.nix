@@ -1,4 +1,9 @@
-{ pkgs, lib, identity, ... }:
+{
+  pkgs,
+  lib,
+  identity,
+  ...
+}:
 
 let
   userShell = "${pkgs.zsh}/bin/zsh";

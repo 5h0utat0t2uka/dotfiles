@@ -1,4 +1,11 @@
-{ buildNpmPackage, lib, fetchurl, makeWrapper, nodejs, jq }:
+{
+  buildNpmPackage,
+  lib,
+  fetchurl,
+  makeWrapper,
+  nodejs,
+  jq,
+}:
 
 buildNpmPackage rec {
   pname = "vscode-langservers-extracted";

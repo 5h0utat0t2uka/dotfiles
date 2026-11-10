@@ -67,7 +67,10 @@
       keys = [
         {
           __unkeyed-1 = "<leader>aa";
-          mode = [ "n" "x" ];
+          mode = [
+            "n"
+            "x"
+          ];
           __unkeyed-2 = "<cmd>CodeCompanionActions<CR>";
           desc = "AI actions";
         }

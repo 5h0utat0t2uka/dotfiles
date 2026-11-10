@@ -80,18 +80,18 @@
         '';
       };
     };
-#     luaConfig.post = ''
-#       local Terminal = require("toggleterm.terminal").Terminal
-#       local lazygit = Terminal:new({ cmd = "lazygit", hidden = true })
-#       _G._lazygit_toggle = function()
-#         lazygit:toggle()
-#       end
-#
-#       vim.keymap.set("n", "<C-g>", _G._lazygit_toggle, {
-#         noremap = true,
-#         silent = true,
-#         desc = "Toggle lazygit",
-#       })
-#     '';
+    #     luaConfig.post = ''
+    #       local Terminal = require("toggleterm.terminal").Terminal
+    #       local lazygit = Terminal:new({ cmd = "lazygit", hidden = true })
+    #       _G._lazygit_toggle = function()
+    #         lazygit:toggle()
+    #       end
+    #
+    #       vim.keymap.set("n", "<C-g>", _G._lazygit_toggle, {
+    #         noremap = true,
+    #         silent = true,
+    #         desc = "Toggle lazygit",
+    #       })
+    #     '';
   };
 }
