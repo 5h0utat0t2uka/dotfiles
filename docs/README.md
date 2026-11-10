@@ -44,13 +44,11 @@ just switch
 
 ## 手動更新  
 各 `input` に対する確認と更新のコマンドは下記  
-| 対象 | 確認 | 更新 |
+| 対象 | 更新 | 確認 |
 | :--- | :--- | :--- |
-| `nixpkgs`      | `just check-update-pkg` | `just update-pkg` |
-| `home-manager` | `just check-update-all` | `just update-all` |
-| `nix-homebrew` | 〃 | 〃 |
-| `darwin`       | 〃 | 〃 |
-| `nixvim`       | 〃 | 〃 |
+| `nixpkgs` のみ | `nix flake update nixpkgs --flake ~/.local/share/chezmoi/nix` | `just check-build` |
+| 特定の input | `nix flake update home-manager darwin nixvim --flake ~/.local/share/chezmoi/nix` | 〃 |
+| 全ての input | `nix flake update --flake ~/.local/share/chezmoi/nix` | 〃 |
 
 ### `flake.lcok` 更新後の検証と反映  
 ``` sh

@@ -49,10 +49,17 @@ jobs:
         with:
           kvm: false
 
+      # - name: Use Cachix
+      #   uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
+      #   with:
+      #     name: 5h0uta
+      #     authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
       - name: Use Cachix
         uses: cachix/cachix-action@38b082610b782e7e93e209c35fd730d399dee866 # v17
         with:
           name: 5h0uta
+          extraPullNames: nix-community
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - run: nix --version
