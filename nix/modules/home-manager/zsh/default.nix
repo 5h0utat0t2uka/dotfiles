@@ -59,8 +59,9 @@
         nrb = "nr build";
         nrs = "nr start";
         ll = "eza -alo --time-style iso";
-        lg = "lazygit";
-        cu = "copilot-usage";
+        la = "eza -al --tree --color=never --level=2 -I 'node_modules|*.log|.git'";
+        # lg = "lazygit";
+        # cu = "copilot-usage";
       };
     };
     shellAliases = {

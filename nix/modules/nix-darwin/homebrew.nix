@@ -12,7 +12,7 @@
       cleanup = "zap";
       extraEnv = {
         HOMEBREW_NO_ANALYTICS = "1";
-        # HOMEBREW_NO_INSTALL_FROM_API = "1";
+        HOMEBREW_NO_INSTALL_FROM_API = "1";
       };
     };
     taps = builtins.attrNames config.nix-homebrew.taps;

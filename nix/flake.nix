@@ -64,8 +64,14 @@
       url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # git-scrivener = {
+    #   url = "github:5h0utat0t2uka/git-scrivener";
+    # };
     git-scrivener = {
       url = "github:5h0utat0t2uka/git-scrivener";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+      inputs.agent-skills.follows = "agent-skills";
     };
   };
 
@@ -248,7 +254,7 @@
       in
       {
         default = pkgs.mkShellNoCC {
-          packages = with pkgs; [ pre-commit betterleaks ];
+          packages = with pkgs; [ pre-commit betterleaks nixfmt ];
         };
       }
     );

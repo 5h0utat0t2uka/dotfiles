@@ -16,3 +16,11 @@ repos:
     rev: c92afdf2c6ca336aaa8f39e2bd8d48f62dbd8e1f  # v1.31.1
     hooks:
       - id: zizmor
+
+  # - repo: local
+  #   hooks:
+  #     - id: nixfmt
+  #       name: nixfmt
+  #       entry: nixfmt
+  #       language: system
+  #       files: \.nix$

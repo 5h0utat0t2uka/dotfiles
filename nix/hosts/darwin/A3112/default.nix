@@ -51,7 +51,7 @@ in
       homeDirectory = homeDirectory;
       packages = with pkgs; [
         inputs.ax.packages.${pkgs.stdenv.hostPlatform.system}.default
-        # betterleaks
+        betterleaks
         chafa
         chezmoi
         codex
@@ -76,7 +76,7 @@ in
         nodejs_26
         openssh
         # opentofu
-        # pre-commit
+        pre-commit
         # pnpm
         pinentry_mac
         qrencode
