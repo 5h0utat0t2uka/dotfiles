@@ -44,6 +44,20 @@
     extraPackages = with pkgs; [
       file
     ];
+    settings.mgr = {
+      show_hidden = true;
+    };
+    keymap.mgr.prepend_keymap = [
+      {
+        on = "<Backspace>";
+        run = "remove";
+        desc = "Trash selected files";
+      }
+      {
+        on = "d";
+        run = "noop";
+      }
+    ];
 
     theme = {
       icon = {
