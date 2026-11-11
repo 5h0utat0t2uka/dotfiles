@@ -372,29 +372,15 @@ export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --ty
 #   __editor_with_ai vim "$@"
 # }
 
-lfc() {
-  local dir
-  dir="$(command lf -print-last-dir "$@")" || return
-  [[ -n "$dir" && -d "$dir" ]] && cd "$dir"
-}
-
-lfp() {
-  [[ -n "$TMUX" ]] || {
-    lfcd "$@"
-    return
-  }
-  local tmp dir
-  tmp="$(mktemp "${TMPDIR:-/tmp}/lfcd.XXXXXX")" || return
-  tmux display-popup \
-    -E \
-    -w 80% \
-    -h 70% \
-    -d "$PWD" \
-    "sh -c 'command lf -print-last-dir \"\$@\" > \"$tmp\"' sh \"$@\"" \
-    "$@"
-  dir="$(cat "$tmp" 2>/dev/null)"
-  rm -f "$tmp"
-  [[ -n "$dir" && -d "$dir" ]] && cd "$dir"
+y() {
+  if [[ -n ${TMUX-} ]]; then
+    tmux display-popup \
+      -w 80% -h 70% -x C -y C \
+      -d "$PWD" \
+      -E yazi
+  else
+    yy
+  fi
 }
 
 dff() {

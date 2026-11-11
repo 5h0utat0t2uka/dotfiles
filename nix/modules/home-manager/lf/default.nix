@@ -5,7 +5,7 @@ let
 in
 {
   programs.lf = {
-    enable = true;
+    enable = false;
     package = pkgs.lf.overrideAttrs (old: {
       patches = (old.patches or [ ]) ++ [ ./preview-wheel.patch ];
     });
