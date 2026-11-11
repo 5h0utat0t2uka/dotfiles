@@ -45,6 +45,11 @@
       file
     ];
     settings.mgr = {
+      ratio = [
+        1
+        3
+        3
+      ];
       show_hidden = true;
     };
     keymap.mgr.prepend_keymap = [
