@@ -8,6 +8,8 @@
     settings = {
       preview = {
         wrap = "yes";
+        max_width = 1200;
+        max_height = 1200;
       };
     };
     initLua = ''
@@ -23,6 +25,7 @@
       -- 既存のモード表示とファイルサイズ表示を削除
       Status:children_remove(1, Status.LEFT)
       Status:children_remove(2, Status.LEFT)
+      Status:children_remove(3, Status.LEFT)
 
       -- NOR [180B] の形式で表示
       Status:children_add(function(self)
@@ -30,16 +33,13 @@
         local hovered = self._current.hovered
         local size = ya.readable_size(hovered and hovered.cha.len or 0)
         return ui.Line {
-          -- ui.Span(" " .. mode .. " [" .. size .. "] "):style(self:style().main),
-          ui.Span(" " .. mode .. " " .. size .. " "):style(self:style().main),
+          ui.Span(" " .. mode .. "・" .. size .. " "):style(self:style().main),
         }
       end, 1000, Status.LEFT)
 
+      Status:children_remove(4, Status.RIGHT)
       Status:children_remove(5, Status.RIGHT)
       Status:children_remove(6, Status.RIGHT)
-      Status:children_add(function()
-        return ui.Span(" ")
-      end, 4000, Status.RIGHT)
     '';
     extraPackages = with pkgs; [
       file
@@ -51,6 +51,7 @@
         3
       ];
       show_hidden = true;
+      linemode = "permissions";
     };
     keymap.mgr.prepend_keymap = [
       {
@@ -61,6 +62,16 @@
       {
         on = "d";
         run = "noop";
+      }
+      {
+        on = "q";
+        run = "quit --no-cwd-file";
+        desc = "Quit without changing directory";
+      }
+      {
+        on = "Q";
+        run = "quit";
+        desc = "Quit and change directory";
       }
     ];
 
@@ -85,7 +96,7 @@
       mode.normal_main = {
         fg = "blue";
         bg = "reset";
-        bold = false;
+        bold = true;
       };
       indicator = {
         preview = {

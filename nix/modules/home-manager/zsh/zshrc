@@ -372,15 +372,31 @@ export FZF_ALT_C_COMMAND='fd --hidden --exclude .git --exclude node_modules --ty
 #   __editor_with_ai vim "$@"
 # }
 
+
 y() {
-  if [[ -n ${TMUX-} ]]; then
-    tmux display-popup \
-      -w 80% -h 70% -x C -y C \
-      -d "$PWD" \
-      -E yazi
-  else
-    yy
+  if [[ -z ${TMUX-} ]]; then
+    yy "$@"
+    return
   fi
+  local cwd_file cwd="" popup_status
+  cwd_file=$(mktemp -t yazi-cwd.XXXXXX) || return 1
+  tmux display-popup \
+    -w 80% -h 70% -x C -y C \
+    -d "$PWD" \
+    -e "YAZI_CWD_FILE=$cwd_file" \
+    -e "PATH=$PATH" \
+    -E 'yazi --cwd-file="$YAZI_CWD_FILE"'
+
+  popup_status=$?
+  if [[ -s "$cwd_file" ]]; then
+    IFS= read -r -d '' cwd < "$cwd_file" || true
+  fi
+
+  command rm -f -- "$cwd_file"
+  if [[ $popup_status -eq 0 && -n $cwd && $cwd != $PWD && -d $cwd ]]; then
+    builtin cd -- "$cwd" || return
+  fi
+  return "$popup_status"
 }
 
 dff() {
