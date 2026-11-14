@@ -27,6 +27,7 @@ in
       ../../../modules/home-manager/zsh
       ../../../modules/home-manager/mise
       ../../../modules/home-manager/starship
+      ../../../modules/home-manager/codex
       ../../../modules/home-manager/copilot
       ../../../modules/home-manager/gnupg
       # ../../../modules/home-manager/passage
@@ -60,7 +61,7 @@ in
         betterleaks
         chafa
         chezmoi
-        codex
+        # codex
         # devbox
         eza
         fd
