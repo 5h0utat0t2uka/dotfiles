@@ -44,10 +44,6 @@
     #   url = "github:abue-ammar/homebrew-tinycast";
     #   flake = false;
     # };
-    ax = {
-      url = "github:yusukebe/ax";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     # herdr = {
     #   url = "github:ogulcancelik/herdr";
     #   inputs.nixpkgs.follows = "nixpkgs";
@@ -72,6 +68,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
       inputs.agent-skills.follows = "agent-skills";
+    };
+    # skills
+    ax = {
+      url = "github:yusukebe/ax";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    modern-web-guidance = {
+      url = "github:GoogleChrome/modern-web-guidance";
+      flake = false;
     };
   };
 

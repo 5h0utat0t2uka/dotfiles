@@ -16,12 +16,17 @@
         input = "ax";
         subdir = "skills";
       };
+      modern-web-guidance = {
+        input = "modern-web-guidance";
+        subdir = "skills";
+      };
     };
 
     # Keep the existing selection; upstream additions are not installed automatically.
     skills.enable = [
       # "agents-sdk"
       "ax"
+      "modern-web-guidance"
       # "cloudflare"
       # "cloudflare-email-service"
       # "cloudflare-one"
