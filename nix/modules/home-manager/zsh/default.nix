@@ -72,6 +72,7 @@
     shellAliases = {
       ".." = "cd ..";
       vpn = "${config.home.homeDirectory}/Development/scripts/vpn/connect.sh";
+      graph = "${config.home.homeDirectory}/Development/scripts/gh/graph.sh";
       webp = "${config.home.homeDirectory}/Development/scripts/webp.sh";
     };
     initContent = lib.mkMerge [

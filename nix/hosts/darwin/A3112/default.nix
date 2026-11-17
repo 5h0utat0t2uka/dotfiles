@@ -75,6 +75,14 @@ in
         jq
         # keepassxc
         # keifu
+        (keifu.overrideAttrs (old: {
+          buildInputs = (old.buildInputs or [ ]) ++ [
+            oniguruma
+          ];
+          preBuild = (old.preBuild or "") + ''
+            export LIBGIT2_NO_VENDOR=0
+          '';
+        }))
         libwebp
         nh
         ni
