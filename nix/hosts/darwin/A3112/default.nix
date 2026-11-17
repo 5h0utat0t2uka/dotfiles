@@ -74,7 +74,7 @@ in
         just
         jq
         # keepassxc
-        keifu
+        # keifu
         libwebp
         nh
         ni
